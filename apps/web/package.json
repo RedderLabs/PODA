@@ -1,0 +1,39 @@
+{
+  "name": "@poda/web",
+  "version": "0.1.0",
+  "private": true,
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RedderLabs/PODA.git",
+    "directory": "apps/web"
+  },
+  "homepage": "https://podamovil.com",
+  "bugs": {
+    "url": "https://github.com/RedderLabs/PODA/issues"
+  },
+  "type": "module",
+  "scripts": {
+    "lista": "node scripts/lista.mjs",
+    "dev": "pnpm lista && next dev",
+    "build": "pnpm lista && next build",
+    "typecheck": "tsc --noEmit",
+    "start": "npx serve out"
+  },
+  "dependencies": {
+    "@poda/nucleo": "workspace:*",
+    "@yume-chan/adb": "2.6.4",
+    "@yume-chan/adb-credential-web": "2.1.0",
+    "@yume-chan/adb-daemon-webusb": "2.3.2",
+    "next": "15.5.29",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/w3c-web-usb": "^1.0.10",
+    "typescript": "^5.9.3"
+  }
+}

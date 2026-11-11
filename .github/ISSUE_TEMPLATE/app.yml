@@ -1,0 +1,35 @@
+name: App mal clasificada
+description: Poda propone quitar algo que no debería, o deja fuera algo que sobra
+title: "[App] com.ejemplo.app"
+labels: ["lista"]
+body:
+  - type: input
+    id: paquete
+    attributes:
+      label: Nombre del paquete
+      placeholder: com.ejemplo.app
+    validations:
+      required: true
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Qué pasa
+      options:
+        - Al quitarla dejó de funcionar algo
+        - Al quitarla el móvil no arrancó
+        - Sobra y Poda no la propone
+        - La descripción está mal o falta
+    validations:
+      required: true
+  - type: input
+    id: movil
+    attributes:
+      label: Móvil, Android y capa
+      placeholder: Samsung Galaxy A54, Android 14, One UI 6.1
+    validations:
+      required: true
+  - type: textarea
+    id: detalles
+    attributes:
+      label: Detalles
+      description: Qué función se perdió, cómo lo arreglaste, enlaces que lo confirmen…

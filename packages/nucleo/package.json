@@ -1,0 +1,34 @@
+{
+  "name": "@poda/nucleo",
+  "version": "0.1.0",
+  "description": "Reglas comunes de Poda: niveles, perfiles, ficha del móvil, recuento y validación.",
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RedderLabs/PODA.git",
+    "directory": "packages/nucleo"
+  },
+  "homepage": "https://podamovil.com",
+  "bugs": {
+    "url": "https://github.com/RedderLabs/PODA/issues"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test test/nucleo.test.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "@types/node": "^22.0.0"
+  }
+}

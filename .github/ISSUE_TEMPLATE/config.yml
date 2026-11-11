@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Mi móvil se queda en el logo
+    url: https://github.com/RedderLabs/PODA/blob/main/docs/rescate.md
+    about: Se recupera sin borrar nada. Sigue la guía de rescate y, si quieres, abre después una issue con lo que pasó.
+  - name: Dudas y propuestas
+    url: https://github.com/RedderLabs/PODA/discussions
+    about: Preguntas generales, ideas y conversación.
+  - name: Problema de seguridad
+    url: https://github.com/RedderLabs/PODA/security/advisories/new
+    about: Avísanos en privado, no en una issue pública.

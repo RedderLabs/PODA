@@ -1,0 +1,21 @@
+name: Error
+description: Algo de la web, del MCP o de la línea de comandos no funciona
+labels: ["error"]
+body:
+  - type: textarea
+    id: que
+    attributes:
+      label: Qué pasa
+      description: Qué hiciste, qué esperabas y qué pasó. Copia el texto exacto del error.
+    validations:
+      required: true
+  - type: input
+    id: entorno
+    attributes:
+      label: Navegador y sistema del ordenador
+      placeholder: Chrome 142 en Windows 11
+  - type: input
+    id: movil
+    attributes:
+      label: Móvil, Android y capa
+      placeholder: Google Pixel 8, Android 15

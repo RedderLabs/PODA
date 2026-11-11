@@ -1,0 +1,43 @@
+{
+  "name": "@poda/mcp",
+  "version": "0.1.0",
+  "description": "Servidor MCP de Poda: analiza y quita el bloatware de móviles Android con adb, con copia de seguridad y vuelta atrás.",
+  "type": "module",
+  "bin": {
+    "poda-mcp": "dist/index.js",
+    "poda": "dist/cli.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "data"
+  ],
+  "scripts": {
+    "copiar-datos": "node -e \"require('fs').mkdirSync('data',{recursive:true});require('fs').copyFileSync('../../data/uad_lists.json','data/uad_lists.json')\"",
+    "build": "npm run copiar-datos && tsc && node -e \"for (const f of ['dist/index.js','dist/cli.js']) require('fs').chmodSync(f,0o755)\"",
+    "test": "node test/prueba.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RedderLabs/PODA.git",
+    "directory": "apps/mcp"
+  },
+  "homepage": "https://podamovil.com",
+  "bugs": {
+    "url": "https://github.com/RedderLabs/PODA/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^3.25.0",
+    "@poda/nucleo": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.3"
+  }
+}

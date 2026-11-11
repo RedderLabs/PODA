@@ -1,0 +1,22 @@
+{
+  "_nota": "Prefijos de paquete usados para agrupar la lista por fabricante. Un fabricante puede usar varios prefijos.",
+  "Samsung (One UI)": ["com.samsung.", "com.sec."],
+  "Xiaomi, Redmi y POCO (HyperOS / MIUI)": ["com.miui.", "com.xiaomi.", "com.mi."],
+  "OPPO, realme y OnePlus (ColorOS / OxygenOS / realme UI)": ["com.oplus.", "com.coloros.", "com.oppo.", "com.heytap.", "com.nearme.", "com.realme.", "com.oneplus.", "net.oneplus.", "cn.oneplus."],
+  "vivo e iQOO (Funtouch / OriginOS)": ["com.vivo.", "com.bbk.", "com.iqoo."],
+  "Huawei (EMUI / HarmonyOS 4 o anterior)": ["com.huawei."],
+  "Honor (MagicOS)": ["com.hihonor."],
+  "Motorola": ["com.motorola."],
+  "LG": ["com.lge."],
+  "Nokia / HMD": ["com.evenwell.", "com.hmdglobal."],
+  "Sony Xperia": ["com.sonymobile.", "com.sonyericsson.", "com.sony."],
+  "ASUS (ZenUI / ROG)": ["com.asus."],
+  "Tecno, Infinix e itel (Transsion)": ["com.transsion."],
+  "ZTE y nubia": ["com.zte.", "cn.nubia."],
+  "TCL y Alcatel": ["com.tct.", "com.tcl.", "com.jrdcom."],
+  "Lenovo (ZUI)": ["com.zui.", "com.lenovo."],
+  "Meizu (Flyme)": ["com.meizu."],
+  "Nothing (Nothing OS)": ["com.nothing."],
+  "Blackview": ["com.blackview."],
+  "Google Pixel": ["com.google."]
+}

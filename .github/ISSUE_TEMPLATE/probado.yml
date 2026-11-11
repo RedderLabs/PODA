@@ -1,0 +1,57 @@
+name: Probado en mi móvil
+description: Cuéntanos cómo le fue a Poda con tu móvil (bien o mal)
+title: "[Probado] Marca Modelo, Android X"
+labels: ["probado"]
+body:
+  - type: input
+    id: movil
+    attributes:
+      label: Marca y modelo
+      placeholder: Xiaomi Redmi Note 13
+    validations:
+      required: true
+  - type: input
+    id: sistema
+    attributes:
+      label: Android y capa
+      description: Lo verás en la ficha de Poda.
+      placeholder: Android 14, HyperOS 1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: via
+    attributes:
+      label: Cómo lo usaste
+      options:
+        - Web (podamovil.com)
+        - Con Claude / MCP
+        - Línea de comandos
+    validations:
+      required: true
+  - type: dropdown
+    id: perfil
+    attributes:
+      label: Perfil
+      options:
+        - Seguro
+        - Recomendado
+        - Experto
+        - Elegí las apps a mano
+    validations:
+      required: true
+  - type: dropdown
+    id: resultado
+    attributes:
+      label: ¿Qué tal fue?
+      options:
+        - Todo bien, también después de reiniciar
+        - Algo dejó de funcionar (lo cuento abajo)
+        - Se quedó en el logo al reiniciar
+        - No pude conectar el móvil
+    validations:
+      required: true
+  - type: textarea
+    id: detalles
+    attributes:
+      label: Detalles
+      description: Qué se quitó, qué dejó de funcionar, mensajes de error… Si se quedó en el logo, adjunta el poda-crash.txt de la guía de rescate.

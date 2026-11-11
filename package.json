@@ -1,0 +1,30 @@
+{
+  "name": "poda",
+  "private": true,
+  "description": "PODA, Programa para Ocultar y Desactivar Apps: quita el bloatware de tu móvil Android sin root y con vuelta atrás.",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RedderLabs/PODA.git"
+  },
+  "homepage": "https://podamovil.com",
+  "bugs": {
+    "url": "https://github.com/RedderLabs/PODA/issues"
+  },
+  "packageManager": "pnpm@10.34.9",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "turbo run dev --filter=@poda/web",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "resumen": "node scripts/resumen.mjs"
+  },
+  "devDependencies": {
+    "turbo": "^2.11.10",
+    "typescript": "^5.9.3",
+    "@poda/nucleo": "workspace:*"
+  }
+}
