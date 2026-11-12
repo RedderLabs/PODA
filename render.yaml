@@ -1,0 +1,46 @@
+# Publicación de la web en Render (podamovil.com). Ver docs/desarrollo.md.
+services:
+  - type: web
+    runtime: static
+    name: podamovil
+    # Solo despliega cuando el CI de GitHub (compilar, probar, tipos) ha pasado en main.
+    branch: main
+    autoDeployTrigger: checksPass
+    # Instala la versión de pnpm fijada en package.json (packageManager) sin tocar carpetas del sistema.
+    buildCommand: >-
+      corepack enable --install-directory "$HOME/.local/bin" &&
+      export PATH="$HOME/.local/bin:$PATH" &&
+      pnpm install --frozen-lockfile &&
+      pnpm build
+    staticPublishPath: apps/web/out
+    previews:
+      generation: off
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+    # Al añadir la raíz, Render añade www y la redirige a la raíz.
+    domains:
+      - podamovil.com
+    # WebUSB solo para esta web, y nunca dentro de un marco de otra página.
+    headers:
+      - path: /*
+        name: Permissions-Policy
+        value: usb=(self), camera=(), microphone=(), geolocation=()
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Content-Security-Policy
+        value: frame-ancestors 'none'
+      # Los archivos de _next/static llevan una huella en el nombre: no cambian nunca.
+      - path: /_next/static/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable

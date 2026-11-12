@@ -53,11 +53,11 @@ Las tres vías (web, MCP y prompt) usan `@poda/nucleo`, así que se comportan ig
 
 ## Publicar la web
 
-`pnpm build` deja `apps/web/out/` con HTML estático, imágenes para compartir y `lista.json`, `detalles.json` y `protegidas.json`. Sirve en cualquier alojamiento con **HTTPS** (WebUSB lo exige): Coolify, Caddy, Nginx, Cloudflare Pages…
+`pnpm build` deja `apps/web/out/` con HTML estático, imágenes para compartir y `lista.json`, `detalles.json` y `protegidas.json`. Sirve en cualquier alojamiento con **HTTPS** (WebUSB lo exige): Render, Coolify, Caddy, Nginx, Cloudflare Pages…
 
 La dirección del sitio para el sitemap, las canónicas y las imágenes se toma de `NEXT_PUBLIC_URL_BASE` (por defecto `https://podamovil.com`).
 
-Cabeceras recomendadas (en Cloudflare Pages ya las pone `apps/web/public/_headers`; en otro alojamiento, cópialas a su configuración):
+Cabeceras recomendadas (en Render ya las pone `render.yaml`; en otro alojamiento, cópialas a su configuración):
 
 ```
 Permissions-Policy: usb=(self), camera=(), microphone=(), geolocation=()
@@ -67,19 +67,16 @@ X-Frame-Options: DENY
 Content-Security-Policy: frame-ancestors 'none'
 ```
 
-### podamovil.com (Cloudflare Pages)
+### podamovil.com (Render)
 
-Cada push a `main` que pasa las pruebas se publica solo: el trabajo `publicar` de `.github/workflows/ci.yml` sube `apps/web/out/` al proyecto `podamovil` de Cloudflare Pages. Los PR nunca publican.
+`render.yaml` describe el sitio estático `podamovil`: compila con `pnpm build`, publica `apps/web/out/` y pone las cabeceras. Render despliega `main` solo cuando el CI de GitHub ha pasado (`autoDeployTrigger: checksPass`). No hay vistas previas de PR.
 
 Preparación (una vez):
 
-1. En Cloudflare, **Workers & Pages → Create → Pages → Upload assets**, con el nombre `podamovil` y rama de producción `main`. (O `npx wrangler pages project create podamovil --production-branch=main`.)
-2. En el proyecto, **Custom domains**: añade `podamovil.com` y `www.podamovil.com`.
-3. Para que `www` lleve a la raíz: **Rules → Redirect Rules** en la zona `podamovil.com`, de `www.podamovil.com/*` a `https://podamovil.com/${1}` con 301.
-4. Crea un token en **My Profile → API Tokens** con el permiso *Account → Cloudflare Pages → Edit* y nada más.
-5. En GitHub, **Settings → Secrets and variables → Actions**, añade `CLOUDFLARE_API_TOKEN` (el token) y `CLOUDFLARE_ACCOUNT_ID` (está en la portada de tu cuenta de Cloudflare).
-
-Sin esos dos secretos el CI sigue pasando y solo avisa de que no ha publicado.
+1. En Render, **New → Blueprint**, conecta el repositorio `RedderLabs/PODA` y aplica `render.yaml`.
+2. En el sitio, **Settings → Custom Domains**: Render muestra los registros DNS para `podamovil.com` (y añade `www`, que redirige a la raíz).
+3. En Cloudflare, zona `podamovil.com` → **DNS**: crea esos registros con el proxy **desactivado** (nube gris, «DNS only»), o Render no podrá emitir el certificado.
+4. Vuelve a Render y pulsa **Verify** en los dos dominios.
 
 ## Actualizar la lista de apps
 
