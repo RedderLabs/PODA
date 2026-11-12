@@ -57,13 +57,29 @@ Las tres vías (web, MCP y prompt) usan `@poda/nucleo`, así que se comportan ig
 
 La dirección del sitio para el sitemap, las canónicas y las imágenes se toma de `NEXT_PUBLIC_URL_BASE` (por defecto `https://podamovil.com`).
 
-Cabeceras recomendadas:
+Cabeceras recomendadas (en Cloudflare Pages ya las pone `apps/web/public/_headers`; en otro alojamiento, cópialas a su configuración):
 
 ```
-Permissions-Policy: usb=(self)
+Permissions-Policy: usb=(self), camera=(), microphone=(), geolocation=()
 X-Content-Type-Options: nosniff
 Referrer-Policy: strict-origin-when-cross-origin
+X-Frame-Options: DENY
+Content-Security-Policy: frame-ancestors 'none'
 ```
+
+### podamovil.com (Cloudflare Pages)
+
+Cada push a `main` que pasa las pruebas se publica solo: el trabajo `publicar` de `.github/workflows/ci.yml` sube `apps/web/out/` al proyecto `podamovil` de Cloudflare Pages. Los PR nunca publican.
+
+Preparación (una vez):
+
+1. En Cloudflare, **Workers & Pages → Create → Pages → Upload assets**, con el nombre `podamovil` y rama de producción `main`. (O `npx wrangler pages project create podamovil --production-branch=main`.)
+2. En el proyecto, **Custom domains**: añade `podamovil.com` y `www.podamovil.com`.
+3. Para que `www` lleve a la raíz: **Rules → Redirect Rules** en la zona `podamovil.com`, de `www.podamovil.com/*` a `https://podamovil.com/${1}` con 301.
+4. Crea un token en **My Profile → API Tokens** con el permiso *Account → Cloudflare Pages → Edit* y nada más.
+5. En GitHub, **Settings → Secrets and variables → Actions**, añade `CLOUDFLARE_API_TOKEN` (el token) y `CLOUDFLARE_ACCOUNT_ID` (está en la portada de tu cuenta de Cloudflare).
+
+Sin esos dos secretos el CI sigue pasando y solo avisa de que no ha publicado.
 
 ## Actualizar la lista de apps
 
