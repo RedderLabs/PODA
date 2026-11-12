@@ -146,3 +146,18 @@ test("lista compacta aplica las protecciones", () => {
   const uad = { "org.codeaurora.ims": { list: "Misc", description: "", dependencies: [], neededBy: [], labels: [], removal: "Advanced" } };
   assert.equal(compactar(uad).p["org.codeaurora.ims"][0], 3);
 });
+
+import { comandoVerificarBloqueo, entreComillas, esCredencialValida, leerRespuestaBloqueo } from "../dist/index.js";
+
+test("PIN: va entre comillas y no se puede inyectar", () => {
+  assert.deepEqual(comandoVerificarBloqueo("1234"), ["cmd", "lock_settings", "verify", "--old", "'1234'"]);
+  assert.equal(entreComillas("a'; reboot; '"), `'a'\\''; reboot; '\\'''`);
+  assert.throws(() => comandoVerificarBloqueo(""));
+  assert.throws(() => comandoVerificarBloqueo("12\n34"));
+  assert.ok(!esCredencialValida("x".repeat(65)));
+  assert.equal(leerRespuestaBloqueo("Lock credential verified successfully"), "correcto");
+  assert.equal(leerRespuestaBloqueo("Old password '1111' didn't match"), "incorrecto");
+  assert.equal(leerRespuestaBloqueo("Old password provided but user has no password"), "sin-bloqueo");
+  assert.equal(leerRespuestaBloqueo("Request throttled"), "esperar");
+  assert.equal(leerRespuestaBloqueo("Can't find service: lock_settings"), "no-disponible");
+});

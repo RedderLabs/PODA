@@ -140,6 +140,9 @@ export function movilDemo(): Movil {
         const conIcono = ["com.android.chrome", "com.facebook.katana", "com.mi.globalbrowser", "com.miui.notes", "com.miui.player", "com.miui.videoplayer", "com.miui.weather2", "com.netflix.partner.activation", "com.google.android.apps.youtube.music", "com.android.settings"];
         return `${conIcono.length} activities found:\n` + conIcono.filter((p) => presentes.has(p)).map((p, i) => `  Activity #${i}:\n    ${p}/.Main`).join("\n");
       }
+      if (args[0] === "cmd" && args[1] === "lock_settings" && args[2] === "verify") {
+        return p === "'1234'" ? "Lock credential verified successfully" : `Old password ${p} didn't match`; // PIN del demo: 1234
+      }
       if (args[0] === "pm" && args[1] === "list") {
         if (args.includes("-u")) return lista(todos);
         if (args.includes("-d")) return lista(desactivados);

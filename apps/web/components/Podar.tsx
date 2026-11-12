@@ -8,10 +8,13 @@ import {
   AVISO_PODA,
   COMANDO_CON_ICONO,
   COMANDOS,
+  comandoVerificarBloqueo,
   crearCopiaEstado,
   DESCRIPCION_NIVEL,
+  esCredencialValida,
   estadosDe,
   leerCopiaEstado,
+  leerRespuestaBloqueo,
   paquetesConIcono,
   paquetesDe,
   pasosParaRestaurar,
@@ -30,7 +33,7 @@ import type { Movil } from "@/lib/conexion";
 import { cargarDetalles, cargarLista, copiasGuardadas, descargarCopia, guardarCopiaLocal, type Detalles } from "@/lib/datos";
 
 type Modo = "quitar" | "desactivar";
-type Resultado = { paquete: string; ok: boolean; texto: string };
+type Resultado = { paquete: string; ok: boolean; texto: string; saltada?: boolean };
 
 type Paso =
   | { t: "leyendo" }
@@ -60,7 +63,7 @@ async function leerEstados(movil: Movil) {
   return estadosDe(paquetesDe(todos), paquetesDe(presentes), paquetesDe(desactivados));
 }
 
-/** Apps con icono en el cajón: puede que el usuario las use, así que salen desmarcadas. */
+/** Apps con icono en el cajón: se marcan igual, pero se señalan por si el usuario las usa. */
 async function leerConIcono(movil: Movil): Promise<Set<string>> {
   try {
     return paquetesConIcono(await movil.shell(COMANDO_CON_ICONO));
@@ -69,8 +72,8 @@ async function leerConIcono(movil: Movil): Promise<Set<string>> {
   }
 }
 
-/** Por defecto solo se marcan las seguras que no tienen icono. Lo demás lo elige el usuario. */
-const marcadaPorDefecto = (x: ItemPlan, conIcono: Set<string>) => x.nivel === "seguro" && !conIcono.has(x.paquete);
+/** Máximo de intentos de PIN: cada fallo cuenta en el móvil y no queremos que se bloquee. */
+const MAX_FALLOS_PIN = 3;
 
 export function Podar({
   movil,
@@ -94,7 +97,9 @@ export function Podar({
   const [perfil, setPerfil] = useState<Perfil>("recomendado");
   const [modo, setModo] = useState<Modo>("quitar");
   const [conIcono, setConIcono] = useState<Set<string>>(new Set());
-  const [cambiados, setCambiados] = useState<Set<string>>(new Set()); // los que el usuario cambió respecto al valor por defecto
+  const [desmarcadas, setDesmarcadas] = useState<Set<string>>(new Set()); // por defecto va marcado todo el perfil
+  const [confirmado, setConfirmado] = useState(false); // PIN comprobado por el móvil, o casilla si no se puede
+  const [fallosPin, setFallosPin] = useState(0);
   const [filtro, setFiltro] = useState("");
   const [entiendo, setEntiendo] = useState(false);
   const detener = useRef(false);
@@ -117,22 +122,22 @@ export function Podar({
   const plan = useMemo(() => (lista ? planDePerfil(estados, lista, perfil) : []), [estados, lista, perfil]);
   const tamanos = useMemo(() => (lista ? tamanoPerfiles(estados, lista) : null), [estados, lista]);
   const aplicables = useMemo(() => plan.filter((x) => !(modo === "desactivar" && x.estado === "desactivado")), [plan, modo]);
-  const marcada = useCallback((x: ItemPlan) => marcadaPorDefecto(x, conIcono) !== cambiados.has(x.paquete), [conIcono, cambiados]);
+  const marcada = useCallback((x: ItemPlan) => !desmarcadas.has(x.paquete), [desmarcadas]);
   const elegidos = useMemo(() => aplicables.filter(marcada), [aplicables, marcada]);
   const hayExperto = elegidos.some((x) => x.nivel === "experto");
 
   const alternar = (p: string) =>
-    setCambiados((s) => {
+    setDesmarcadas((s) => {
       const n = new Set(s);
       if (n.has(p)) n.delete(p);
       else n.add(p);
       return n;
     });
   const marcarGrupo = (items: ItemPlan[], marcar: boolean) =>
-    setCambiados((s) => {
+    setDesmarcadas((s) => {
       const n = new Set(s);
       for (const x of items) {
-        if (marcadaPorDefecto(x, conIcono) === marcar) n.delete(x.paquete);
+        if (marcar) n.delete(x.paquete);
         else n.add(x.paquete);
       }
       return n;
@@ -151,6 +156,15 @@ export function Podar({
 
       const validos = new Set(planDePerfil(e, l, "experto").map((x) => x.paquete)); // nunca bloqueados ni desconocidos
       const objetivo = elegidos.map((x) => x.paquete).filter((p) => validos.has(p));
+      // Las que no pasan el filtro se cuentan en los resultados con su motivo, no desaparecen sin avisar.
+      const saltadas: Resultado[] = elegidos
+        .filter((x) => !validos.has(x.paquete))
+        .map(({ paquete }) => ({
+          paquete,
+          ok: false,
+          saltada: true,
+          texto: !e.has(paquete) || e.get(paquete) === "quitado" ? "Ya no estaba en el móvil." : "Poda no deja tocarla: el sistema la necesita.",
+        }));
       const hechos: Resultado[] = [];
       for (const p of objetivo) {
         if (detener.current) break;
@@ -163,13 +177,16 @@ export function Podar({
           }
         }
         // Algunos fabricantes no dejan quitar ciertos paquetes, pero sí desactivarlos.
-        if (e.get(p) === "desactivado" && modo === "desactivar") continue;
+        if (e.get(p) === "desactivado" && modo === "desactivar") {
+          hechos.push({ paquete: p, ok: true, texto: "ya estaba desactivada" });
+          continue;
+        }
         const r2 = await movil.shell(COMANDOS.desactivar(p));
         if (RESPUESTA_OK.desactivar(r2)) hechos.push({ paquete: p, ok: true, texto: modo === "quitar" ? "desactivada (no se dejó quitar)" : "desactivada" });
         else hechos.push({ paquete: p, ok: false, texto: r2.trim().slice(0, 140) || "sin respuesta" });
       }
       await recargar();
-      setPaso({ t: "hecho", resultados: hechos, copia, copiaLocal, detenido: detener.current });
+      setPaso({ t: "hecho", resultados: [...hechos, ...saltadas], copia, copiaLocal, detenido: detener.current });
     } catch (err) {
       setPaso({ t: "error", mensaje: err instanceof Error ? err.message : String(err) });
     }
@@ -252,7 +269,7 @@ export function Podar({
                   className={`perfil ${perfil === p ? "activo" : ""}`}
                   onClick={() => {
                     setPerfil(p);
-                    setCambiados(new Set());
+                    setDesmarcadas(new Set());
                     setEntiendo(false);
                   }}
                 >
@@ -282,15 +299,23 @@ export function Podar({
             </fieldset>
 
             <div className="acciones">
-              <button type="button" className="boton primario" disabled={!elegidos.length} onClick={() => setPaso({ t: "confirmar" })}>
-                Revisar y aplicar ({elegidos.length})
+              <button
+                type="button"
+                className="boton primario"
+                disabled={!elegidos.length}
+                onClick={() => {
+                  setConfirmado(false);
+                  setPaso({ t: "confirmar" });
+                }}
+              >
+                {elegidos.length ? `Revisar y aplicar (${elegidos.length})` : aplicables.length ? "Marca al menos una app" : "No hay nada que quitar"}
               </button>
               <button type="button" className="boton" onClick={alSalir}>
                 Volver
               </button>
             </div>
             <p className="sub">
-              Vienen marcadas solo las seguras que no tienen icono en tu móvil. Las demás, márcalas tú si sabes que no las usas. Antes de cambiar nada, Poda guarda una copia
+              Vienen marcadas todas las apps del perfil. Las que llevan «tiene icono» las ves en tu móvil: desmárcalas si las usas. Antes de cambiar nada, Poda guarda una copia
               del estado de tus apps (en este navegador y como archivo). Lo que no conocemos y lo que el sistema necesita para arrancar no se toca nunca.
             </p>
           </div>
@@ -334,6 +359,16 @@ export function Podar({
                 borran del sistema: no se libera almacenamiento.
               </li>
             </ol>
+            <ConfirmarBloqueo
+              movil={movil}
+              sdk={ficha.sdk}
+              accion={modo === "quitar" ? "quitar" : "desactivar"}
+              total={elegidos.length}
+              confirmado={confirmado}
+              setConfirmado={setConfirmado}
+              fallos={fallosPin}
+              setFallos={setFallosPin}
+            />
             {hayExperto && (
               <label className="entiendo">
                 <input type="checkbox" checked={entiendo} onChange={(e) => setEntiendo(e.target.checked)} />
@@ -341,7 +376,7 @@ export function Podar({
               </label>
             )}
             <div className="acciones">
-              <button type="button" className="boton primario" disabled={hayExperto && !entiendo} onClick={aplicar}>
+              <button type="button" className="boton primario" disabled={!confirmado || (hayExperto && !entiendo)} onClick={aplicar}>
                 Hacer copia y {modo === "quitar" ? "quitar" : "desactivar"}
               </button>
               <button type="button" className="boton" onClick={() => setPaso({ t: "elegir" })}>
@@ -378,7 +413,7 @@ export function Podar({
 
     case "hecho": {
       const ok = paso.resultados.filter((r) => r.ok);
-      const mal = paso.resultados.filter((r) => !r.ok);
+      const mal = paso.resultados.filter((r) => !r.ok && !r.saltada);
       const pasos = pasosParaRestaurar(paso.copia, estados);
       return (
         <section className="tarjeta dos">
@@ -524,10 +559,120 @@ function Lista({
         );
       })}
       <p className="sub">
-        Las apps con «tiene icono» aparecen en tu cajón de apps: puede que las uses, por eso no vienen marcadas. Avisos en español de Poda; descripciones en inglés de la
+        Las apps con «tiene icono» aparecen en tu cajón de apps: vienen marcadas, desmárcalas si las usas. Avisos en español de Poda; descripciones en inglés de la
         lista de Universal Android Debloater (UAD-ng).
       </p>
     </div>
+  );
+}
+
+/**
+ * Confirmación con el PIN, la contraseña o el patrón del móvil. Lo comprueba el propio móvil
+ * (`cmd lock_settings verify`); la web no lo guarda. Si el móvil no lo admite o no tiene bloqueo, casilla.
+ */
+function ConfirmarBloqueo({
+  movil,
+  sdk,
+  accion,
+  total,
+  confirmado,
+  setConfirmado,
+  fallos,
+  setFallos,
+}: {
+  movil: Movil;
+  sdk: number;
+  accion: "quitar" | "desactivar";
+  total: number;
+  confirmado: boolean;
+  setConfirmado: (v: boolean) => void;
+  fallos: number;
+  setFallos: (n: number) => void;
+}) {
+  const [forma, setForma] = useState<"pin" | "casilla">(sdk >= 26 ? "pin" : "casilla"); // lock_settings verify: Android 8+
+  const [pin, setPin] = useState("");
+  const [comprobando, setComprobando] = useState(false);
+  const [mensaje, setMensaje] = useState("");
+  const agotado = fallos >= MAX_FALLOS_PIN;
+
+  const comprobar = async () => {
+    if (!esCredencialValida(pin)) {
+      setMensaje("Escribe el PIN, la contraseña o el patrón (como números del 1 al 9).");
+      return;
+    }
+    setComprobando(true);
+    setMensaje("");
+    let r;
+    try {
+      r = leerRespuestaBloqueo(await movil.shell(comandoVerificarBloqueo(pin)));
+    } catch {
+      r = "no-disponible" as const;
+    }
+    setPin("");
+    setComprobando(false);
+    if (r === "correcto") setConfirmado(true);
+    else if (r === "incorrecto") {
+      const n = fallos + 1;
+      setFallos(n);
+      setMensaje(
+        n >= MAX_FALLOS_PIN
+          ? "Has fallado 3 veces. Para que el móvil no se bloquee, Poda no deja probar más. Desbloquea el móvil a mano para comprobar el PIN y vuelve a abrir esta página."
+          : `No es correcto. Te quedan ${MAX_FALLOS_PIN - n} intentos.`,
+      );
+    } else if (r === "esperar") setMensaje("El móvil pide esperar un poco antes de otro intento.");
+    else {
+      setForma("casilla");
+      setMensaje(r === "sin-bloqueo" ? "Tu móvil no tiene bloqueo de pantalla: confirma con la casilla." : "Tu móvil no deja comprobar el PIN por el cable: confirma con la casilla.");
+    }
+  };
+
+  if (forma === "casilla") {
+    return (
+      <>
+        {mensaje && <p className="sub">{mensaje}</p>}
+        <label className="entiendo">
+          <input type="checkbox" checked={confirmado} onChange={(e) => setConfirmado(e.target.checked)} />
+          <span>
+            Confirmo que quiero {accion} estas {total} apps.
+          </span>
+        </label>
+      </>
+    );
+  }
+  if (confirmado) return <p className="sub">PIN correcto: ya puedes {accion} las apps.</p>;
+  return (
+    <form
+      className="pin"
+      onSubmit={(e) => {
+        e.preventDefault();
+        void comprobar();
+      }}
+    >
+      <label htmlFor="pin-movil">
+        <strong>Confirma con el PIN, la contraseña o el patrón de tu móvil.</strong> Lo comprueba el móvil; Poda no lo guarda. El patrón se escribe con los números de
+        los puntos (1 a 9, de arriba abajo y de izquierda a derecha). Cada fallo cuenta como un intento de desbloqueo.
+      </label>
+      <div className="acciones">
+        <input
+          id="pin-movil"
+          className="buscar"
+          type="password"
+          autoComplete="off"
+          value={pin}
+          maxLength={64}
+          disabled={agotado || comprobando}
+          onChange={(e) => setPin(e.target.value)}
+        />
+        <button type="submit" className="boton" disabled={agotado || comprobando || !pin}>
+          {comprobando ? "Comprobando…" : "Comprobar"}
+        </button>
+      </div>
+      {mensaje && (
+        <p className="sub" role="alert">
+          {mensaje}
+        </p>
+      )}
+    </form>
   );
 }
 
@@ -541,7 +686,7 @@ function Resultados({ resultados }: { resultados: Resultado[] }) {
             <code>{r.paquete}</code>
           </span>
           <span className="app-chips">
-            <span className={`chip-claro ${r.ok ? "" : "fuerte"}`}>{r.ok ? r.texto : "no se pudo"}</span>
+            <span className={`chip-claro ${r.ok ? "" : "fuerte"}`}>{r.ok ? r.texto : r.saltada ? "saltada" : "no se pudo"}</span>
           </span>
           {!r.ok && <span className="app-desc">{r.texto}</span>}
         </li>

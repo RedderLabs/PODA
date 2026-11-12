@@ -79,6 +79,39 @@ export function paquetesConIcono(salida: string): Set<string> {
   return out;
 }
 
+/**
+ * Credencial de bloqueo aceptable: texto imprimible, sin caracteres de control y de longitud razonable.
+ * El patrón se escribe como los números de los puntos (1 a 9).
+ */
+export function esCredencialValida(c: string): boolean {
+  return c.length > 0 && c.length <= 64 && !/[\x00-\x1f\x7f]/.test(c);
+}
+
+/** Entre comillas simples para la línea de shell del móvil: dentro no se interpreta nada. */
+export function entreComillas(s: string): string {
+  return "'" + s.replace(/'/g, `'\\''`) + "'";
+}
+
+/**
+ * Comprueba el PIN, la contraseña o el patrón del móvil (Android 8 o superior).
+ * Cada fallo cuenta en el móvil como un intento de desbloqueo fallido.
+ */
+export function comandoVerificarBloqueo(credencial: string): string[] {
+  if (!esCredencialValida(credencial)) throw new Error("Credencial no válida.");
+  return ["cmd", "lock_settings", "verify", "--old", entreComillas(credencial)];
+}
+
+export type RespuestaBloqueo = "correcto" | "incorrecto" | "sin-bloqueo" | "esperar" | "no-disponible";
+
+/** Lee la respuesta de `cmd lock_settings verify`. Lo que no se reconoce cuenta como «no disponible». */
+export function leerRespuestaBloqueo(s: string): RespuestaBloqueo {
+  if (/verified successfully/i.test(s)) return "correcto";
+  if (/didn't match|did not match/i.test(s)) return "incorrecto";
+  if (/no password|has no lock|not secure/i.test(s)) return "sin-bloqueo";
+  if (/throttled|timeout/i.test(s)) return "esperar";
+  return "no-disponible";
+}
+
 export const RESPUESTA_OK = {
   quitar: (s: string) => /Success/i.test(s),
   desactivar: (s: string) => /disabled-user|new state: disabled/i.test(s),
