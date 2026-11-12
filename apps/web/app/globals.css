@@ -313,6 +313,8 @@ a:hover { color: var(--acento-texto); }
 .resultado-texto { flex: 1 1 260px; display: flex; flex-direction: column; gap: 10px; }
 .resultado-cifra { margin: 0; font-family: var(--grotesk); font-size: clamp(32px, 4vw, 44px); letter-spacing: -0.03em; line-height: 1.1; }
 .ah-recuadro.oscuro { background: linear-gradient(var(--oscuro), var(--oscuro)) padding-box, var(--degradado) border-box; }
+.resultado-redes { display: flex; flex-direction: column; gap: 8px; }
+.resultado-redes .boton { color: var(--fondo); border-color: #5a554c; }
 .resultado-sub { margin: 0; color: #c9c3b7; font-size: 15px; line-height: 1.5; }
 .tarjeta .titulo em { background: linear-gradient(var(--blanco), var(--blanco)) padding-box, var(--degradado) border-box; }
 @media (min-width: 1024px) {
