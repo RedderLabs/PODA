@@ -23,6 +23,7 @@ PODA (Programa para Ocultar y Desactivar Apps) quita las apps de serie de un And
 ## Estilo
 
 - Textos para el usuario en **español de España**, claros y sin jerga. Identificadores y comentarios también en español, como el resto del código.
+- La web está en español, inglés, portugués (Brasil), francés y catalán. **Ningún texto va escrito en un componente**: va en `apps/web/textos/es.ts` y, con la misma clave, en `en.ts`, `pt.ts`, `fr.ts` y `ca.ts`. Los textos del núcleo (niveles, avisos por app y por marca, grupos protegidos) se traducen en `packages/nucleo/src/traducciones/`. Si cambias un texto en español, cambia también sus traducciones.
 - TypeScript estricto. Componentes pequeños. CSS en `apps/web/app/globals.css` con las variables existentes.
 - La web es **estática** (`output: "export"`): nada de rutas de servidor dinámicas ni APIs.
 

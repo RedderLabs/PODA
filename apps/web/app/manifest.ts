@@ -1,13 +1,17 @@
 import type { MetadataRoute } from "next";
-import { DESCRIPCION, NOMBRE } from "@/lib/seo";
+import { NOMBRE } from "@/lib/seo";
+import { textosDe } from "@/lib/i18n";
+
+// Un solo manifiesto (la app instalada abre la portada en español).
+const t = textosDe("es").seo;
 
 export const dynamic = "force-static";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: `${NOMBRE} — quita el bloatware de tu Android`,
+    name: t.manifiesto,
     short_name: NOMBRE,
-    description: DESCRIPCION,
+    description: t.descripcion,
     lang: "es",
     start_url: "/",
     display: "standalone",

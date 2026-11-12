@@ -131,31 +131,44 @@ function capaDe(p: Record<string, string>, familia: Familia): string | null {
   if (emui) return emui.replace(/^EmotionUI_?/i, "EMUI ").replace(/^MagicUI_?/i, "MagicOS ");
   const magic = p["ro.build.version.magic"];
   if (magic) return `MagicOS ${magic.replace(/^MagicUI_?|^MagicOS_?/i, "")}`;
-  if (familia === "google") return "Android de Google (Pixel)";
+  if (familia === "google") return CAPA_PIXEL;
   return null;
 }
 
-function avisosDe(f: Omit<Ficha, "avisos">): string[] {
-  const a: string[] = [];
-  if (f.romPersonalizada) {
-    a.push(`Llevas ${f.romPersonalizada}, un sistema alternativo: casi no trae apps de fábrica, así que Poda encontrará poco que quitar.`);
-  }
+/** Avisos que pueden salir en la ficha. El texto de cada uno está en `TEXTOS_NUCLEO[idioma].aviso`. */
+export type ClaveAviso = "rom" | "xiaomi" | "samsung" | "huawei" | "sinSdk" | "sinQuitar" | "soloCable";
+
+/** Qué avisos tocan para este móvil, en orden. */
+export function clavesAviso(f: Omit<Ficha, "avisos">): ClaveAviso[] {
+  const a: ClaveAviso[] = [];
+  if (f.romPersonalizada) a.push("rom");
   const deFabrica = !f.romPersonalizada;
-  if (deFabrica && f.familia === "xiaomi") {
-    a.push(
-      "Activa también «Depuración USB (ajustes de seguridad)» en Opciones de desarrollador. Pide iniciar sesión con tu cuenta Xiaomi y, en algunas versiones, tener una SIM puesta. Sin ella, algunos paquetes no se dejarán tocar.",
-    );
-  }
-  if (deFabrica && f.familia === "samsung") {
-    a.push("Si tienes activado el «Bloqueador automático» (Ajustes → Seguridad y privacidad), apágalo mientras usas Poda: bloquea los comandos por USB. Vuelve a encenderlo al terminar.");
-  }
-  if (deFabrica && (f.familia === "huawei" || f.familia === "honor")) {
-    a.push("Funciona con EMUI, MagicOS y HarmonyOS 4 o anterior. HarmonyOS NEXT (5 o superior) ya no es Android.");
-  }
-  if (f.sdk === 0) a.push("No se pudo leer la versión de Android: comprueba que el móvil sigue conectado y autorizado.");
-  if (!f.quitarPosible) a.push("Tu versión de Android es anterior a la 5.0: solo se pueden desactivar apps, no quitarlas.");
-  if (f.sdk > 0 && !f.wifiPosible) a.push("Con esta versión de Android la conexión tiene que ser por cable (la depuración inalámbrica llega en Android 11).");
+  if (deFabrica && f.familia === "xiaomi") a.push("xiaomi");
+  if (deFabrica && f.familia === "samsung") a.push("samsung");
+  if (deFabrica && (f.familia === "huawei" || f.familia === "honor")) a.push("huawei");
+  if (f.sdk === 0) a.push("sinSdk");
+  if (!f.quitarPosible) a.push("sinQuitar");
+  if (f.sdk > 0 && !f.wifiPosible) a.push("soloCable");
   return a;
+}
+
+/** Textos en español de cada aviso. `{rom}` se sustituye por el nombre del sistema alternativo. */
+export const TEXTO_AVISO: Readonly<Record<ClaveAviso, string>> = {
+  rom: "Llevas {rom}, un sistema alternativo: casi no trae apps de fábrica, así que Poda encontrará poco que quitar.",
+  xiaomi:
+    "Activa también «Depuración USB (ajustes de seguridad)» en Opciones de desarrollador. Pide iniciar sesión con tu cuenta Xiaomi y, en algunas versiones, tener una SIM puesta. Sin ella, algunos paquetes no se dejarán tocar.",
+  samsung: "Si tienes activado el «Bloqueador automático» (Ajustes → Seguridad y privacidad), apágalo mientras usas Poda: bloquea los comandos por USB. Vuelve a encenderlo al terminar.",
+  huawei: "Funciona con EMUI, MagicOS y HarmonyOS 4 o anterior. HarmonyOS NEXT (5 o superior) ya no es Android.",
+  sinSdk: "No se pudo leer la versión de Android: comprueba que el móvil sigue conectado y autorizado.",
+  sinQuitar: "Tu versión de Android es anterior a la 5.0: solo se pueden desactivar apps, no quitarlas.",
+  soloCable: "Con esta versión de Android la conexión tiene que ser por cable (la depuración inalámbrica llega en Android 11).",
+};
+
+/** Capa que se muestra en los Pixel, donde no hay una capa del fabricante con nombre propio. */
+export const CAPA_PIXEL = "Android de Google (Pixel)";
+
+function avisosDe(f: Omit<Ficha, "avisos">): string[] {
+  return clavesAviso(f).map((c) => TEXTO_AVISO[c].replace("{rom}", f.romPersonalizada ?? ""));
 }
 
 export function fichaDesdeProps(p: Record<string, string>): Ficha {

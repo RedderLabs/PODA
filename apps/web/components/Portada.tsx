@@ -4,21 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Robot, type Expresion } from "./Robot";
 import { MenuPrincipal } from "./Navegacion";
+import { ruta } from "@/lib/rutas";
+import { useTextos } from "./Textos";
 
-const ORDENES = [
-  "Quita la publicidad de mi Xiaomi.",
-  "¿Qué es com.miui.msa.global?",
-  "Deja mi Samsung como vino, pero sin Bixby.",
-  "Desactiva las apps de mi operadora.",
-];
-
-const CAPACIDADES = ["Anuncios", "Telemetría", "Apps de operadora", "Y mucho más"];
-
-const PASOS = [
-  { n: "01", texto: "Reconoce tu móvil", cara: "agobio" as Expresion, pantalla: "27 APPS" },
-  { n: "02", texto: "Explica cada app", cara: "pensando" as Expresion, pantalla: "LEYENDO" },
-  { n: "03", texto: "Copia y vuelta atrás", cara: "feliz" as Expresion, pantalla: "23 FUERA" },
-];
+/** Cara del robot en cada paso de la portada (los textos están en el diccionario). */
+const CARAS: Expresion[] = ["agobio", "pensando", "feliz"];
 
 function useEscribir(frases: string[]) {
   const [i, setI] = useState(0);
@@ -43,7 +33,10 @@ function useEscribir(frases: string[]) {
 export function Portada() {
   const escena = useRef<HTMLElement>(null);
   const [p, setP] = useState(0);
-  const { texto, siguiente } = useEscribir(ORDENES);
+  const { idioma, t: textos } = useTextos();
+  const t = textos.portada;
+  const { texto, siguiente } = useEscribir(t.ordenes);
+  const PASOS = t.pasos.map((x, i) => ({ n: String(i + 1).padStart(2, "0"), texto: x.texto, pantalla: x.pantalla, cara: CARAS[i] ?? "normal" }));
 
   useEffect(() => {
     const reducir = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -72,20 +65,20 @@ export function Portada() {
   return (
     <>
       <header className="ah-nav">
-        <Link href="/" className="ah-logo" aria-label="Poda, inicio">
+        <Link href={ruta(idioma, "/")} className="ah-logo" aria-label={textos.nav.inicio}>
           <span className="ah-logo-caja" aria-hidden="true">
             <i />
             <i />
           </span>
           PODA
         </Link>
-        <MenuPrincipal />
-        <Link href="/conectar/" className="ah-lanzar">
-          <span aria-hidden="true">••</span> Conectar móvil
+        <MenuPrincipal idioma={idioma} t={textos.nav} />
+        <Link href={ruta(idioma, "/conectar/")} className="ah-lanzar">
+          <span aria-hidden="true">••</span> {textos.nav.conectar}
         </Link>
       </header>
 
-      <section ref={escena} className="ah-escena" aria-label="Presentación de Poda">
+      <section ref={escena} className="ah-escena" aria-label={t.aria}>
         <div className="ah-fijo">
           <div className="ah-rejilla" aria-hidden="true">
             <span style={{ left: "17%" }} />
@@ -113,53 +106,53 @@ export function Portada() {
           </ol>
 
           <ul className={`ah-capacidades ${fase2 ? "oculto" : ""}`}>
-            {CAPACIDADES.map((c) => (
+            {t.capacidades.map((c) => (
               <li key={c}>{c}</li>
             ))}
           </ul>
 
           <div className="ah-riel" aria-hidden="true">
-            <span>{fase2 ? "PASOS" : "INTRO"}</span>
+            <span>{fase2 ? t.rielPasos : t.rielIntro}</span>
             <i />
-            <span>MENÚ</span>
+            <span>{t.rielMenu}</span>
           </div>
 
           <div
             className="ah-robot"
             style={{ transform: `translate(${-50 + zoom * 21}%, ${zoom * 3}%) scale(${1 + zoom * 1.1})` }}
           >
-            <Robot expresion={actual?.cara ?? "normal"} pantalla={actual?.pantalla} titulo="Robot de Poda" />
+            <Robot expresion={actual?.cara ?? "normal"} pantalla={actual?.pantalla} titulo={t.robot} />
           </div>
 
           <div className={`ah-titular ${fase2 ? "fase2" : ""}`}>
-            <p className="ah-sobre">{fase2 ? "· ·" : "Poda lo que no pediste"}</p>
+            <p className="ah-sobre">{fase2 ? "· ·" : t.sobre}</p>
             <h1>
               {fase2 ? (
                 <>
-                  <span className="ah-recuadro">Tu móvil,</span>
+                  <span className="ah-recuadro">{t.titular1}</span>
                   <br />
-                  como debería venir.
+                  {t.titularFase2}
                 </>
               ) : (
                 <>
-                  <span className="ah-recuadro">Tu móvil,</span>
+                  <span className="ah-recuadro">{t.titular1}</span>
                   <br />
-                  <span className="ah-recuadro">sin relleno.</span>
+                  <span className="ah-recuadro">{t.titular2}</span>
                 </>
               )}
             </h1>
           </div>
 
           <div className={`ah-pie ${fase2 ? "oculto" : ""}`}>
-            <p>Tu experto en quitar el bloatware de cualquier Android. Sin root y con vuelta atrás.</p>
-            <a href="#como" className="ah-scroll" aria-label="Bajar a cómo funciona">
-              <span>SCROLL</span>
+            <p>{t.pie}</p>
+            <a href="#como" className="ah-scroll" aria-label={t.bajar}>
+              <span>{t.scroll}</span>
               <span className="ah-flecha" aria-hidden="true">↓</span>
             </a>
           </div>
           {fase2 && (
-            <Link href="/conectar/" className="ah-cta-fase2">
-              Conectar mi móvil →
+            <Link href={ruta(idioma, "/conectar/")} className="ah-cta-fase2">
+              {t.cta}
             </Link>
           )}
         </div>

@@ -2,13 +2,17 @@
 // Tarjeta de resultado para compartir: el motor de viralidad de Poda.
 import { useState } from "react";
 import { Robot } from "./Robot";
+import { useTextos } from "./Textos";
+import { fmt, ruta } from "@/lib/rutas";
 
 export function TarjetaResultado({ nombre, quitables, total, rom }: { nombre: string; quitables: number; total: number; rom?: string | null }) {
+  const { idioma, t: textos } = useTextos();
+  const t = textos.compartir;
   const [estado, setEstado] = useState<"" | "copiado" | "compartido" | "sin-portapapeles">("");
-  const url = typeof window !== "undefined" ? window.location.origin : "https://podamovil.com";
-  const texto = rom
-    ? `Mi ${nombre} con ${rom} solo tiene ${quitables} apps que sobran. ¿Cuántas trae el tuyo? Míralo con Poda, sin instalar nada:`
-    : `Mi ${nombre} traía ${quitables} apps de serie que se pueden quitar sin riesgo (de ${total} instaladas). Míralo en el tuyo con Poda, sin instalar nada:`;
+  // La portada en el idioma de la página, para que quien lo reciba la lea en el mismo idioma.
+  const url = (typeof window !== "undefined" ? window.location.origin : "https://podamovil.com") + ruta(idioma, "/");
+  const datos = { nombre, n: quitables, total, rom: rom ?? "" };
+  const texto = fmt(rom ? t.textoRom : t.texto, datos);
 
   const mensaje = `${texto} ${url}`;
   const redes = [
@@ -49,25 +53,23 @@ export function TarjetaResultado({ nombre, quitables, total, rom }: { nombre: st
       </div>
       <div className="resultado-texto">
         <p className="etiqueta" style={{ color: "#a7a196" }}>
-          Resultado
+          {t.etiqueta}
         </p>
         <p className="resultado-cifra">
-          <span className="ah-recuadro oscuro">{quitables} apps</span> {rom ? "que sobran" : "de serie"}
+          <span className="ah-recuadro oscuro">{fmt(t.apps, datos)}</span> {rom ? t.queSobran : t.deSerie}
         </p>
         <p className="resultado-sub">
-          {rom
-            ? `Con ${rom} tu ${nombre} ya viene ligero. ¿Y el de tus amigos, con el sistema de fábrica?`
-            : `Tu ${nombre} trae ${quitables} apps que no pediste y que puedes quitar sin riesgo. ¿Y el de tus amigos?`}
+          {fmt(rom ? t.subRom : t.sub, datos)}
         </p>
         <div className="acciones">
           <button type="button" className="boton primario" onClick={compartir}>
-            {estado === "copiado" ? "Copiado, pégalo donde quieras" : estado === "compartido" ? "¡Compartido!" : "Compartir resultado"}
+            {estado === "copiado" ? t.copiado : estado === "compartido" ? t.compartido : t.boton}
           </button>
         </div>
         {(estado === "copiado" || estado === "sin-portapapeles") && (
           <div className="resultado-redes">
-            {estado === "sin-portapapeles" && <p className="resultado-sub">Copia este texto: {mensaje}</p>}
-            <p className="resultado-sub">O compártelo directamente en:</p>
+            {estado === "sin-portapapeles" && <p className="resultado-sub">{fmt(t.copiaTexto, { texto: mensaje })}</p>}
+            <p className="resultado-sub">{t.enRedes}</p>
             <div className="acciones">
               {redes.map((r) => (
                 <a key={r.nombre} className="boton pequeno oscuro" href={r.href} target="_blank" rel="noopener noreferrer">

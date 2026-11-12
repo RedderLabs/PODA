@@ -395,5 +395,16 @@ a:hover { color: var(--acento-texto); }
 .pie-firma .pie-red { background: none; color: var(--gris); padding: 4px 8px; border: 1px solid var(--linea); border-radius: 999px; }
 .pie-firma .pie-red:hover { color: var(--acento-texto); border-color: var(--acento-claro); }
 @media (max-width: 1280px) { .pie-navegadores { display: none; } }
+/* --- selector de idioma (pie) --- */
+.idiomas { position: relative; }
+.idiomas summary { list-style: none; cursor: pointer; }
+.idiomas summary::-webkit-details-marker { display: none; }
+.idiomas[open] summary { color: var(--acento-texto); border-color: var(--acento-claro); }
+.idiomas ul { position: absolute; bottom: calc(100% + 8px); right: 0; margin: 0; padding: 6px; list-style: none; background: var(--blanco); border: 1px solid var(--linea); border-radius: 12px; box-shadow: 0 8px 24px rgba(20, 20, 20, 0.08); min-width: 140px; z-index: 20; }
+.idiomas li a { display: block; padding: 8px 12px; border-radius: 8px; background: none; color: var(--tinta); font-family: var(--sans); font-size: 13px; letter-spacing: 0; }
+.idiomas li a:hover, .idiomas li a:focus-visible { background: #f3f1ec; color: var(--acento-texto); }
+.idiomas li a[aria-current] { color: var(--acento-texto); font-weight: 600; }
+@media (max-width: 860px) { .idiomas ul { right: auto; left: 0; } } /* en el móvil el botón queda a la izquierda */
+
 
 

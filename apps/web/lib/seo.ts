@@ -1,31 +1,9 @@
 // Datos comunes de SEO: dirección del sitio, textos base y datos estructurados (JSON-LD).
 export const URL_BASE = (process.env.NEXT_PUBLIC_URL_BASE ?? "https://podamovil.com").replace(/\/$/, "");
 export const NOMBRE = "Poda";
-/** Qué significa PODA. «Ocultar y desactivar»: Poda no borra nada del sistema. */
 export const REPO = "https://github.com/RedderLabs/PODA";
 export const WEB_REDDER = "https://redderlabs.com";
 export const X_REDDER = "https://x.com/redderlabs";
-export const ACRONIMO = "Programa para Ocultar y Desactivar Apps";
-export const TITULO = "Poda — quita el bloatware de tu móvil Android";
-export const DESCRIPCION =
-  "Poda detecta las apps que el fabricante y la operadora metieron de serie en tu Android y las quita por ti. Desde el navegador, sin instalar nada, sin root y con vuelta atrás.";
-export const PALABRAS = [
-  "bloatware",
-  "quitar bloatware Android",
-  "desinstalar apps preinstaladas",
-  "apps de fábrica",
-  "debloat",
-  "sin root",
-  "ADB",
-  "WebUSB",
-  "Xiaomi",
-  "Samsung",
-  "MIUI",
-  "HyperOS",
-  "One UI",
-  "limpiar móvil Android",
-];
-
 export const ORGANIZACION = {
   "@type": "Organization",
   name: "Redder Labs",
@@ -46,26 +24,60 @@ export function migas(items: { nombre: string; ruta: string }[]) {
 }
 
 import type { Metadata } from "next";
+import { alternativas, ruta as rutaEn, textosDe, type Idioma } from "./i18n";
 
-export const IMAGEN_OG = { url: "/og.png", width: 1200, height: 630, alt: "Poda: tu móvil, sin relleno. Quita las apps de serie de tu Android desde el navegador." };
+type Imagen = { url: string; width: number; height: number; alt: string };
 
-/** Metadatos de una página: título, descripción, dirección canónica y tarjetas para redes. */
+/** Imagen para compartir de la portada en un idioma. */
+export function imagenOg(idioma: Idioma): Imagen {
+  return { url: rutaEn(idioma, "/og.png"), width: 1200, height: 630, alt: textosDe(idioma).seo.imagenAlt };
+}
+
+/** Metadatos comunes de un idioma (los pone el layout). */
+export function metaRaiz(idioma: Idioma): Metadata {
+  const t = textosDe(idioma);
+  const imagen = imagenOg(idioma);
+  return {
+    metadataBase: new URL(URL_BASE),
+    title: { default: t.seo.titulo, template: `%s | ${NOMBRE}` },
+    description: t.seo.descripcion,
+    applicationName: NOMBRE,
+    keywords: t.seo.palabras,
+    authors: [{ name: "Redder Labs", url: "https://redderlabs.com" }],
+    creator: "Redder Labs",
+    publisher: "Redder Labs",
+    category: "technology",
+    alternates: { canonical: rutaEn(idioma, "/"), languages: alternativas("/") },
+    openGraph: { type: "website", locale: t.idioma.locale, siteName: NOMBRE, url: rutaEn(idioma, "/"), title: t.seo.titulo, description: t.seo.descripcion, images: [imagen] },
+    twitter: { card: "summary_large_image", site: "@redderlabs", creator: "@redderlabs", title: t.seo.titulo, description: t.seo.descripcion, images: [imagen] },
+    icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }], apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }] },
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
+    formatDetection: { telephone: false, email: false, address: false },
+  };
+}
+
+/** Metadatos de una página: título, descripción, canónica, hreflang y tarjetas para redes. `r` es la ruta en español. */
 export function metaPagina({
+  idioma,
   titulo,
   descripcion,
-  ruta,
-  imagen = IMAGEN_OG,
+  r,
+  imagen,
 }: {
+  idioma: Idioma;
   titulo: string;
   descripcion: string;
-  ruta: string;
-  imagen?: { url: string; width: number; height: number; alt: string };
+  r: string;
+  imagen?: Imagen;
 }): Metadata {
+  const t = textosDe(idioma);
+  const url = rutaEn(idioma, r);
+  const img = imagen ?? imagenOg(idioma);
   return {
     title: titulo,
     description: descripcion,
-    alternates: { canonical: ruta },
-    openGraph: { type: "website", locale: "es_ES", siteName: NOMBRE, url: ruta, title: `${titulo} | ${NOMBRE}`, description: descripcion, images: [imagen] },
-    twitter: { card: "summary_large_image", site: "@redderlabs", title: `${titulo} | ${NOMBRE}`, description: descripcion, images: [imagen] },
+    alternates: { canonical: url, languages: alternativas(r) },
+    openGraph: { type: "website", locale: t.idioma.locale, siteName: NOMBRE, url, title: `${titulo} | ${NOMBRE}`, description: descripcion, images: [img] },
+    twitter: { card: "summary_large_image", site: "@redderlabs", title: `${titulo} | ${NOMBRE}`, description: descripcion, images: [img] },
   };
 }

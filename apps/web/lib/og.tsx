@@ -57,3 +57,26 @@ export function iconoPng(lado: number) {
     { width: lado, height: lado },
   );
 }
+
+// ------------------------------------------------------------------ imágenes de cada página e idioma
+import { fmt, textosDe, type Idioma } from "./i18n";
+import { marcaPorSlug, resumenDe } from "./marcas";
+
+export function ogPortada(idioma: Idioma) {
+  const t = textosDe(idioma).og;
+  return imagenOg({ etiqueta: t.portadaEtiqueta, titulo: t.portadaTitulo, resaltado: t.portadaResaltado, pie: t.portadaPie });
+}
+
+export function ogMarca(idioma: Idioma, archivo: string) {
+  const m = marcaPorSlug(archivo.replace(/\.png$/, ""));
+  if (!m) return new Response("No existe", { status: 404 });
+  const textos = textosDe(idioma);
+  const r = resumenDe(m);
+  const nombre = (textos.marcas.nombres as Record<string, string>)[m.slug] ?? m.nombre;
+  return imagenOg({
+    etiqueta: textos.og.marcaEtiqueta,
+    titulo: nombre,
+    resaltado: fmt(textos.og.marcaResaltado, { n: r.seguro }),
+    pie: fmt(textos.og.marcaPie, { total: r.total }),
+  });
+}

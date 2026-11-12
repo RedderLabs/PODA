@@ -1,6 +1,8 @@
 // Enlaces principales de Poda con sus iconos: los usan el menú de la cabecera (escritorio)
 // y la barra del pie (móvil), para que siempre sean los mismos.
 import Link from "next/link";
+import { ruta, type Idioma } from "@/lib/rutas";
+import type { Textos } from "@/textos/es";
 
 /** Iconos de trazo para la barra del pie en el móvil (dibujados para Poda). */
 export const ICONO = {
@@ -47,17 +49,24 @@ export const ICONO = {
   ),
 };
 
+type ClaveEnlace = keyof typeof ICONO;
+
 /** Los mismos enlaces que el menú de la cabecera. En el móvil, el pie los muestra con icono. */
-export const ENLACES: { href: string; texto: string; corto: string; icono: keyof typeof ICONO }[] = [
-  { href: "/#como", texto: "Cómo funciona", corto: "Cómo", icono: "como" },
-  { href: "/marcas/", texto: "Marcas", corto: "Marcas", icono: "marcas" },
-  { href: "/#perfiles", texto: "Perfiles", corto: "Perfiles", icono: "perfiles" },
-  { href: "/#claude", texto: "Con Claude", corto: "Claude", icono: "claude" },
-  { href: "/sin-pc/", texto: "Sin ordenador", corto: "Sin PC", icono: "sinpc" },
-  { href: "/#faq", texto: "Preguntas", corto: "Dudas", icono: "preguntas" },
+const ENLACES: { r: string; ancla?: string; clave: ClaveEnlace }[] = [
+  { r: "/", ancla: "#como", clave: "como" },
+  { r: "/marcas/", clave: "marcas" },
+  { r: "/", ancla: "#perfiles", clave: "perfiles" },
+  { r: "/", ancla: "#claude", clave: "claude" },
+  { r: "/sin-pc/", clave: "sinpc" },
+  { r: "/", ancla: "#faq", clave: "preguntas" },
 ];
 
-export function Icono({ nombre, tamano = 18 }: { nombre: keyof typeof ICONO; tamano?: number }) {
+/** Enlaces con su dirección y su texto en un idioma. */
+export function enlaces(idioma: Idioma, t: Textos["nav"]) {
+  return ENLACES.map((e) => ({ href: ruta(idioma, e.r) + (e.ancla ?? ""), clave: e.clave, ...t.enlaces[e.clave] }));
+}
+
+export function Icono({ nombre, tamano = 18 }: { nombre: ClaveEnlace; tamano?: number }) {
   return (
     <svg viewBox="0 0 24 24" width={tamano} height={tamano} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       {ICONO[nombre]}
@@ -66,12 +75,12 @@ export function Icono({ nombre, tamano = 18 }: { nombre: keyof typeof ICONO; tam
 }
 
 /** Menú de la cabecera en escritorio: icono y texto. */
-export function MenuPrincipal() {
+export function MenuPrincipal({ idioma, t }: { idioma: Idioma; t: Textos["nav"] }) {
   return (
-    <nav className="ah-menu" aria-label="Principal">
-      {ENLACES.map((e) => (
+    <nav className="ah-menu" aria-label={t.principal}>
+      {enlaces(idioma, t).map((e) => (
         <Link key={e.href} href={e.href}>
-          <Icono nombre={e.icono} tamano={16} />
+          <Icono nombre={e.clave} tamano={16} />
           {e.texto}
         </Link>
       ))}

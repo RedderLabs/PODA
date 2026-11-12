@@ -161,3 +161,24 @@ test("PIN: va entre comillas y no se puede inyectar", () => {
   assert.equal(leerRespuestaBloqueo("Request throttled"), "esperar");
   assert.equal(leerRespuestaBloqueo("Can't find service: lock_settings"), "no-disponible");
 });
+import { IDIOMAS, TEXTOS_NUCLEO, PROTEGIDOS as GRUPOS } from "../dist/index.js";
+
+test("idiomas: cada traducción del núcleo tiene todos los textos", () => {
+  const base = TEXTOS_NUCLEO.es;
+  for (const idioma of IDIOMAS) {
+    const t = TEXTOS_NUCLEO[idioma];
+    const donde = (x) => `${idioma}: ${x}`;
+    for (const k of Object.keys(base.nivel)) assert.ok(t.nivel?.[k]?.trim(), donde(`nivel.${k}`));
+    for (const k of Object.keys(base.origen)) assert.ok(t.origen?.[k]?.trim(), donde(`origen.${k}`));
+    for (const k of Object.keys(base.avisoPoda)) assert.ok(t.avisoPoda?.[k]?.trim(), donde(`avisoPoda.${k}`));
+    assert.deepEqual(Object.keys(t.avisoPoda).sort(), Object.keys(base.avisoPoda).sort(), donde("avisoPoda sobra o falta"));
+    for (const k of Object.keys(base.aviso)) assert.ok(t.aviso?.[k]?.trim(), donde(`aviso.${k}`));
+    assert.ok(t.aviso.rom.includes("{rom}"), donde("aviso.rom sin {rom}"));
+    assert.ok(t.capaPixel?.trim(), donde("capaPixel"));
+    assert.equal(t.protegidos?.length, GRUPOS.length, donde("protegidos"));
+    GRUPOS.forEach((g, i) => {
+      assert.ok(t.protegidos[i].titulo?.trim() && t.protegidos[i].motivo?.trim(), donde(`protegidos[${i}]`));
+      assert.equal(t.protegidos[i].familias?.length ?? 0, g.familias?.length ?? 0, donde(`protegidos[${i}].familias`));
+    });
+  }
+});

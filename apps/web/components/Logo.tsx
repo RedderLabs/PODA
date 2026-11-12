@@ -1,101 +1,72 @@
 import Link from "next/link";
-import { ACRONIMO, REPO, WEB_REDDER, X_REDDER } from "@/lib/seo";
-import { ENLACES, Icono, MenuPrincipal } from "./Navegacion";
+import { ruta, textosDe, type Idioma } from "@/lib/i18n";
+import { REPO, WEB_REDDER, X_REDDER } from "@/lib/seo";
+import { enlaces, Icono, MenuPrincipal } from "./Navegacion";
+import { rico } from "./Rico";
+import { SelectorIdioma } from "./SelectorIdioma";
 
-export function Logo() {
+/** Logo de la cabecera y del pie: la cabeza del robot y PODA. */
+function Marca({ idioma, className, aria }: { idioma: Idioma; className: string; aria: string }) {
   return (
-    <Link href="/" className="logo">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-        <path d="M6 3v18" />
-        <path d="M6 8c4 0 6-2 7-5" />
-        <path d="M6 14c5 0 8-2 10-6" />
-        <circle cx="18" cy="18" r="3" />
-      </svg>
-      Poda
+    <Link href={ruta(idioma, "/")} className={className} aria-label={aria}>
+      <span className="ah-logo-caja" aria-hidden="true">
+        <i />
+        <i />
+      </span>
+      PODA
     </Link>
   );
 }
 
-export function Cabecera({ conNav = true }: { conNav?: boolean }) {
+export function Cabecera({ idioma, conNav = true }: { idioma: Idioma; conNav?: boolean }) {
+  const t = textosDe(idioma).nav;
   return (
     <header className="ah-nav">
-      <Link href="/" className="ah-logo" aria-label="Poda, inicio">
-        <span className="ah-logo-caja" aria-hidden="true">
-          <i />
-          <i />
-        </span>
-        PODA
-      </Link>
-      {conNav ? (
-        <MenuPrincipal />
-      ) : (
-        <span className="ah-menu" aria-hidden="true" />
-      )}
-      <Link href="/conectar/" className="ah-lanzar">
-        <span aria-hidden="true">••</span> Conectar móvil
+      <Marca idioma={idioma} className="ah-logo" aria={t.inicio} />
+      {conNav ? <MenuPrincipal idioma={idioma} t={t} /> : <span className="ah-menu" aria-hidden="true" />}
+      <Link href={ruta(idioma, "/conectar/")} className="ah-lanzar">
+        <span aria-hidden="true">••</span> {t.conectar}
       </Link>
     </header>
   );
 }
 
-/** «Programa para Ocultar…» con las iniciales de PODA resaltadas. */
-function Acronimo() {
-  return (
-    <span className="pie-acronimo">
-      {ACRONIMO.split(" ").map((p, i) =>
-        /^[PODA]/.test(p) && ["Programa", "Ocultar", "Desactivar", "Apps"].includes(p) ? (
-          <span key={i}>
-            <b>{p[0]}</b>
-            {p.slice(1)}{" "}
-          </span>
-        ) : (
-          <span key={i}>{p} </span>
-        ),
-      )}
-    </span>
-  );
-}
-
 /**
  * Pie fijo abajo. En escritorio: marca, significado de PODA y firma, con la misma rejilla que la cabecera.
- * En el móvil, donde la cabecera no tiene menú, muestra los enlaces.
+ * En el móvil, donde la cabecera no tiene menú, muestra los enlaces. El selector de idioma va en la firma.
  */
-export function Pie() {
+export function Pie({ idioma }: { idioma: Idioma }) {
+  const t = textosDe(idioma);
   return (
     <footer className="pie">
-      <Link href="/" className="pie-marca" aria-label="Poda, inicio">
-        <span className="ah-logo-caja" aria-hidden="true">
-          <i />
-          <i />
-        </span>
-        PODA
-      </Link>
+      <Marca idioma={idioma} className="pie-marca" aria={t.nav.inicio} />
       <div className="pie-centro">
-        <Acronimo />
-        <nav className="pie-enlaces" aria-label="Pie de página">
-          {ENLACES.map((e) => (
+        <span className="pie-acronimo">{rico(t.pie.acronimo, idioma, "b")}</span>
+        <nav className="pie-enlaces" aria-label={t.pie.aria}>
+          {enlaces(idioma, t.nav).map((e) => (
             <Link key={e.href} href={e.href} aria-label={e.texto} title={e.texto}>
-              <Icono nombre={e.icono} tamano={22} />
+              <Icono nombre={e.clave} tamano={22} />
               <span>{e.corto}</span>
             </Link>
           ))}
         </nav>
       </div>
-      <p className="pie-firma">
-        <span className="pie-navegadores">Chrome · Edge · Brave · Opera</span>
+      <div className="pie-firma">
+        <span className="pie-navegadores">{t.pie.navegadores}</span>
+        <SelectorIdioma />
         <a href={REPO} rel="noopener" className="pie-red">
           GitHub
         </a>
-        <a href={X_REDDER} rel="noopener" className="pie-red" aria-label="Redder Labs en X">
+        <a href={X_REDDER} rel="noopener" className="pie-red" aria-label={t.pie.enX}>
           X
         </a>
         <span>
-          Un producto de{" "}
+          {t.pie.producto}{" "}
           <a href={WEB_REDDER} rel="noopener">
             Redder Labs
           </a>
         </span>
-      </p>
+      </div>
     </footer>
   );
 }

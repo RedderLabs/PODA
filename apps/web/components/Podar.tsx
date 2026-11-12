@@ -10,16 +10,17 @@ import {
   COMANDOS,
   comandoVerificarBloqueo,
   crearCopiaEstado,
-  DESCRIPCION_NIVEL,
   esCredencialValida,
   estadosDe,
   leerCopiaEstado,
   leerRespuestaBloqueo,
+  origenEn,
   paquetesConIcono,
   paquetesDe,
   pasosParaRestaurar,
   planDePerfil,
   RESPUESTA_OK,
+  TEXTOS_NUCLEO,
   tamanoPerfiles,
   type CopiaEstado,
   type EstadoPaquete,
@@ -30,16 +31,22 @@ import {
   type PasoRestaurar,
 } from "@poda/nucleo";
 import type { Movil } from "@/lib/conexion";
+import { fmt } from "@/lib/rutas";
+import { rico } from "./Rico";
+import { useTextos } from "./Textos";
 import { cargarDetalles, cargarLista, copiasGuardadas, descargarCopia, guardarCopiaLocal, type Detalles } from "@/lib/datos";
 
 type Modo = "quitar" | "desactivar";
-type Resultado = { paquete: string; ok: boolean; texto: string; saltada?: boolean };
+/** Estado de cada app en los resultados. El texto sale del diccionario (podar.estado). */
+type EstadoResultado = "quitada" | "desactivada" | "desactivadaNoQuitar" | "yaDesactivada" | "reinstalada" | "reactivada" | "saltada" | "fallo";
+/** `detalle`: respuesta del móvil cuando falla (tal cual, en inglés) o el motivo de una saltada. */
+type Resultado = { paquete: string; ok: boolean; estado: EstadoResultado; detalle?: string };
 
 type Paso =
   | { t: "leyendo" }
   | { t: "elegir" }
   | { t: "confirmar" }
-  | { t: "aplicando"; hechos: Resultado[]; total: number; actual: string }
+  | { t: "aplicando"; hechos: Resultado[]; total: number; actual: string | null }
   | { t: "hecho"; resultados: Resultado[]; copia: CopiaEstado; copiaLocal: boolean; detenido: boolean }
   | { t: "restaurar" }
   | { t: "restaurar-confirmar"; copia: CopiaEstado; pasos: PasoRestaurar[] }
@@ -47,12 +54,8 @@ type Paso =
   | { t: "restaurado"; resultados: Resultado[] }
   | { t: "error"; mensaje: string };
 
-const PERFIL_INFO: Record<Perfil, { nombre: string; etiqueta: string; texto: string }> = {
-  seguro: { nombre: "Seguro", etiqueta: "para todos", texto: "Publicidad, analítica y apps duplicadas. Nada que afecte al sistema." },
-  recomendado: { nombre: "Recomendado", etiqueta: "por defecto", texto: "Lo anterior más servicios del fabricante y la operadora que casi nadie usa." },
-  experto: { nombre: "Experto", etiqueta: "con avisos", texto: "Todo lo que se puede quitar sin root. Puede afectar a funciones del sistema." },
-};
-const NOMBRE_GRUPO = { seguro: "Seguras", avanzado: "Avanzadas", experto: "Para expertos" } as const;
+/** Respuesta del móvil cuando algo falla: se enseña tal cual, recortada. */
+const respuesta = (s: string) => s.trim().slice(0, 140) || undefined;
 
 async function leerEstados(movil: Movil) {
   const [todos, presentes, desactivados] = await Promise.all([
@@ -90,6 +93,9 @@ export function Podar({
   reiniciar: () => void;
   alSalir: () => void;
 }) {
+  const { idioma, t: textos } = useTextos();
+  const t = textos.podar;
+  const r = (x: string) => rico(x, idioma);
   const [paso, setPaso] = useState<Paso>({ t: "leyendo" });
   const [lista, setLista] = useState<ListaCompacta | null>(null);
   const [detalles, setDetalles] = useState<Detalles>({});
@@ -146,7 +152,7 @@ export function Podar({
   // ------------------------------------------------------------------ aplicar
   const aplicar = async () => {
     detener.current = false;
-    setPaso({ t: "aplicando", hechos: [], total: elegidos.length, actual: "Haciendo la copia de seguridad…" });
+    setPaso({ t: "aplicando", hechos: [], total: elegidos.length, actual: null });
     try {
       // Estado justo antes de tocar nada: es lo que guarda la copia y lo que se vuelve a comprobar.
       const { l, e } = await recargar();
@@ -162,8 +168,8 @@ export function Podar({
         .map(({ paquete }) => ({
           paquete,
           ok: false,
-          saltada: true,
-          texto: !e.has(paquete) || e.get(paquete) === "quitado" ? "Ya no estaba en el móvil." : "Poda no deja tocarla: el sistema la necesita.",
+          estado: "saltada" as const,
+          detalle: !e.has(paquete) || e.get(paquete) === "quitado" ? t.saltadaNoEsta : t.saltadaProtegida,
         }));
       const hechos: Resultado[] = [];
       for (const p of objetivo) {
@@ -172,18 +178,18 @@ export function Podar({
         if (modo === "quitar") {
           const r = await movil.shell(COMANDOS.quitar(p));
           if (RESPUESTA_OK.quitar(r)) {
-            hechos.push({ paquete: p, ok: true, texto: "quitada" });
+            hechos.push({ paquete: p, ok: true, estado: "quitada" });
             continue;
           }
         }
         // Algunos fabricantes no dejan quitar ciertos paquetes, pero sí desactivarlos.
         if (e.get(p) === "desactivado" && modo === "desactivar") {
-          hechos.push({ paquete: p, ok: true, texto: "ya estaba desactivada" });
+          hechos.push({ paquete: p, ok: true, estado: "yaDesactivada" });
           continue;
         }
         const r2 = await movil.shell(COMANDOS.desactivar(p));
-        if (RESPUESTA_OK.desactivar(r2)) hechos.push({ paquete: p, ok: true, texto: modo === "quitar" ? "desactivada (no se dejó quitar)" : "desactivada" });
-        else hechos.push({ paquete: p, ok: false, texto: r2.trim().slice(0, 140) || "sin respuesta" });
+        if (RESPUESTA_OK.desactivar(r2)) hechos.push({ paquete: p, ok: true, estado: modo === "quitar" ? "desactivadaNoQuitar" : "desactivada" });
+        else hechos.push({ paquete: p, ok: false, estado: "fallo", detalle: respuesta(r2) });
       }
       await recargar();
       setPaso({ t: "hecho", resultados: [...hechos, ...saltadas], copia, copiaLocal, detenido: detener.current });
@@ -209,14 +215,14 @@ export function Podar({
           let r = await movil.shell(COMANDOS.reinstalar(paquete));
           if (!RESPUESTA_OK.reinstalar(r)) r = await movil.shell(COMANDOS.reinstalarAntiguo(paquete)); // Android antiguo
           if (!RESPUESTA_OK.reinstalar(r)) {
-            hechos.push({ paquete, ok: false, texto: r.trim().slice(0, 140) || "sin respuesta" });
+            hechos.push({ paquete, ok: false, estado: "fallo", detalle: respuesta(r) });
             continue;
           }
           if (copia.paquetes[paquete] === "instalado") await movil.shell(COMANDOS.activar(paquete)); // por si además estaba desactivada
-          hechos.push({ paquete, ok: true, texto: "reinstalada" });
+          hechos.push({ paquete, ok: true, estado: "reinstalada" });
         } else {
           const r = await movil.shell(COMANDOS.activar(paquete));
-          hechos.push(RESPUESTA_OK.activar(r) ? { paquete, ok: true, texto: "reactivada" } : { paquete, ok: false, texto: r.trim().slice(0, 140) || "sin respuesta" });
+          hechos.push(RESPUESTA_OK.activar(r) ? { paquete, ok: true, estado: "reactivada" } : { paquete, ok: false, estado: "fallo", detalle: respuesta(r) });
         }
       }
       await recargar();
@@ -232,20 +238,20 @@ export function Podar({
       return (
         <section className="tarjeta" aria-live="polite">
           <div className="pulso" aria-hidden="true" />
-          <h1 className="titulo t-l">Leyendo las apps de {ficha.nombre}…</h1>
+          <h1 className="titulo t-l">{fmt(t.leyendo, { nombre: ficha.nombre })}</h1>
         </section>
       );
 
     case "error":
       return (
         <section className="tarjeta">
-          <p className="etiqueta error">Algo no ha ido bien</p>
-          <h1 className="titulo t-l">No se pudo terminar.</h1>
+          <p className="etiqueta error">{t.errorEtiqueta}</p>
+          <h1 className="titulo t-l">{t.errorTitulo}</h1>
           <p className="lead">{paso.mensaje}</p>
-          <p className="sub">Si se desconectó el cable, vuelve a enchufarlo. Lo que ya se hizo se puede deshacer desde «Restaurar una copia».</p>
+          <p className="sub">{t.errorConsejo}</p>
           <div className="acciones">
             <button type="button" className="boton primario" onClick={alSalir}>
-              Volver
+              {t.volver}
             </button>
           </div>
         </section>
@@ -255,11 +261,9 @@ export function Podar({
       return (
         <section className="tarjeta dos podar">
           <div className="col podar-lateral">
-            <p className="etiqueta">Paso 2 · Elegir perfil</p>
-            <h1 className="titulo t-l">
-              ¿Hasta <em>dónde?</em>
-            </h1>
-            <div className="perfiles" role="radiogroup" aria-label="Perfil">
+            <p className="etiqueta">{t.elegirEtiqueta}</p>
+            <h1 className="titulo t-l">{r(t.elegirTitulo)}</h1>
+            <div className="perfiles" role="radiogroup" aria-label={t.perfilAria}>
               {(["seguro", "recomendado", "experto"] as const).map((p) => (
                 <button
                   key={p}
@@ -274,27 +278,23 @@ export function Podar({
                   }}
                 >
                   <span className="perfil-cab">
-                    <strong>{PERFIL_INFO[p].nombre}</strong>
-                    <span className="perfil-n">{tamanos?.[p] ?? 0} apps</span>
+                    <strong>{t.perfil[p].nombre}</strong>
+                    <span className="perfil-n">{fmt(t.nApps, { n: tamanos?.[p] ?? 0 })}</span>
                   </span>
-                  <span className="perfil-texto">{PERFIL_INFO[p].texto}</span>
+                  <span className="perfil-texto">{t.perfil[p].texto}</span>
                 </button>
               ))}
             </div>
 
             <fieldset className="modo">
-              <legend>Cómo</legend>
+              <legend>{t.como}</legend>
               <label>
                 <input type="radio" name="modo" checked={modo === "quitar"} onChange={() => setModo("quitar")} />
-                <span>
-                  <strong>Quitar para tu usuario</strong> — desaparecen y dejan de ejecutarse. Se recuperan con un clic.
-                </span>
+                <span>{r(t.modoQuitar)}</span>
               </label>
               <label>
                 <input type="radio" name="modo" checked={modo === "desactivar"} onChange={() => setModo("desactivar")} />
-                <span>
-                  <strong>Solo desactivar</strong> — más prudente: siguen en el móvil, pero apagadas.
-                </span>
+                <span>{r(t.modoDesactivar)}</span>
               </label>
             </fieldset>
 
@@ -308,16 +308,13 @@ export function Podar({
                   setPaso({ t: "confirmar" });
                 }}
               >
-                {elegidos.length ? `Revisar y aplicar (${elegidos.length})` : aplicables.length ? "Marca al menos una app" : "No hay nada que quitar"}
+                {elegidos.length ? fmt(t.revisar, { n: elegidos.length }) : aplicables.length ? t.marcaUna : t.nadaQueQuitar}
               </button>
               <button type="button" className="boton" onClick={alSalir}>
-                Volver
+                {t.volver}
               </button>
             </div>
-            <p className="sub">
-              Vienen marcadas todas las apps del perfil. Las que llevan «tiene icono» las ves en tu móvil: desmárcalas si las usas. Antes de cambiar nada, Poda guarda una copia
-              del estado de tus apps (en este navegador y como archivo). Lo que no conocemos y lo que el sistema necesita para arrancar no se toca nunca.
-            </p>
+            <p className="sub">{t.elegirNota}</p>
           </div>
 
           <div className="col">
@@ -332,32 +329,22 @@ export function Podar({
       return (
         <section className="tarjeta dos">
           <div className="col">
-            <p className="etiqueta">Paso 3 · Confirmar</p>
-            <h1 className="titulo t-l">
-              Vas a {modo === "quitar" ? "quitar" : "desactivar"} <em>{elegidos.length} apps</em> de {ficha.nombre}.
-            </h1>
+            <p className="etiqueta">{t.confirmarEtiqueta}</p>
+            <h1 className="titulo t-l">{r(fmt(modo === "quitar" ? t.vasAQuitar : t.vasADesactivar, { n: elegidos.length, nombre: ficha.nombre }))}</h1>
             <ul className="niveles">
               {(["seguro", "avanzado", "experto"] as const).map((n) => (
                 <li key={n} className={`nivel ${n}`}>
                   <span className="n">{porNivel[n]}</span>
-                  <span>{NOMBRE_GRUPO[n].toLowerCase()}</span>
+                  <span>{t.grupo[n].toLowerCase()}</span>
                 </li>
               ))}
             </ul>
           </div>
           <div className="col">
             <ol className="pasos">
-              <li>
-                <strong>Copia de seguridad. </strong>Se guarda en este navegador y se descarga un archivo <span className="mono">poda-copia-….json</span>. Guárdalo: con él puedes
-                deshacerlo todo aunque borres el navegador.
-              </li>
-              <li>
-                <strong>{modo === "quitar" ? "Quitar" : "Desactivar"} una a una. </strong>Si el fabricante no deja quitar alguna, se desactiva. Puedes parar en cualquier momento.
-              </li>
-              <li>
-                <strong>Prueba el móvil antes de reiniciarlo: </strong>una llamada, escribir algo y una alarma. Si algo falla, lo deshaces desde aquí mismo. Las apps no se
-                borran del sistema: no se libera almacenamiento.
-              </li>
+              <li>{r(t.pasoCopia)}</li>
+              <li>{r(modo === "quitar" ? t.pasoQuitar : t.pasoDesactivar)}</li>
+              <li>{r(t.pasoProbar)}</li>
             </ol>
             <ConfirmarBloqueo
               movil={movil}
@@ -372,15 +359,15 @@ export function Podar({
             {hayExperto && (
               <label className="entiendo">
                 <input type="checkbox" checked={entiendo} onChange={(e) => setEntiendo(e.target.checked)} />
-                <span>Entiendo que las apps «para expertos» pueden afectar a funciones del sistema y que, si algo falla, tendré que restaurar la copia.</span>
+                <span>{t.entiendo}</span>
               </label>
             )}
             <div className="acciones">
               <button type="button" className="boton primario" disabled={!confirmado || (hayExperto && !entiendo)} onClick={aplicar}>
-                Hacer copia y {modo === "quitar" ? "quitar" : "desactivar"}
+                {modo === "quitar" ? t.hacerQuitar : t.hacerDesactivar}
               </button>
               <button type="button" className="boton" onClick={() => setPaso({ t: "elegir" })}>
-                Volver a la lista
+                {t.volverLista}
               </button>
             </div>
           </div>
@@ -394,17 +381,15 @@ export function Podar({
       const pct = paso.total ? Math.round((hechos / paso.total) * 100) : 0;
       return (
         <section className="tarjeta" aria-live="polite">
-          <p className="etiqueta">{paso.t === "aplicando" ? "Aplicando" : "Restaurando"} · no desconectes el cable</p>
-          <h1 className="titulo t-l">
-            {hechos} de {paso.total}
-          </h1>
+          <p className="etiqueta">{paso.t === "aplicando" ? t.aplicando : t.restaurando}</p>
+          <h1 className="titulo t-l">{fmt(t.deTotal, { n: hechos, total: paso.total })}</h1>
           <div className="barra" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
             <span style={{ width: `${pct}%` }} />
           </div>
-          <p className="sub mono">{paso.actual}</p>
+          <p className="sub mono">{paso.actual ?? t.copiaEnCurso}</p>
           <div className="acciones">
             <button type="button" className="boton" onClick={() => (detener.current = true)}>
-              Parar después de esta
+              {t.parar}
             </button>
           </div>
         </section>
@@ -412,48 +397,44 @@ export function Podar({
     }
 
     case "hecho": {
-      const ok = paso.resultados.filter((r) => r.ok);
-      const mal = paso.resultados.filter((r) => !r.ok && !r.saltada);
+      const ok = paso.resultados.filter((x) => x.ok);
+      const mal = paso.resultados.filter((x) => !x.ok && x.estado !== "saltada");
       const pasos = pasosParaRestaurar(paso.copia, estados);
       return (
         <section className="tarjeta dos">
           <div className="col">
-            <p className="etiqueta">{paso.detenido ? "Parado a mitad" : "Hecho"}</p>
-            <h1 className="titulo t-l">
-              <em>{ok.length} apps</em> menos en {ficha.nombre}.
-            </h1>
+            <p className="etiqueta">{paso.detenido ? t.parado : t.hecho}</p>
+            <h1 className="titulo t-l">{r(fmt(t.menos, { n: ok.length, nombre: ficha.nombre }))}</h1>
             <div className="avisos" role="note">
-              <h2>Antes de reiniciar el móvil</h2>
+              <h2>{t.antesReiniciar}</h2>
               <ul>
-                <li>Haz una llamada, escribe algo con el teclado y pon una alarma de prueba.</li>
-                <li>Abre las apps que más usas.</li>
-                <li>Si algo no va, pulsa «Deshacer estos cambios» ahora, con el móvil conectado.</li>
+                {t.probar.map((x) => (
+                  <li key={x}>{x}</li>
+                ))}
               </ul>
             </div>
-            <p className="sub">
-              Si después de reiniciar el móvil se queda en el logo, no lo borres: tiene arreglo. <Link href="/rescate/">Cómo recuperarlo</Link>.
-            </p>
-            {!paso.copiaLocal && <p className="sub">Este navegador no dejó guardar la copia: usa el archivo que se ha descargado.</p>}
+            <p className="sub">{r(t.enElLogo)}</p>
+            {!paso.copiaLocal && <p className="sub">{t.sinCopiaLocal}</p>}
             <div className="acciones">
               <button type="button" className="boton primario" onClick={reiniciar}>
-                Ya lo he probado: reiniciar el móvil
+                {t.yaProbado}
               </button>
               <button type="button" className="boton" onClick={alSalir}>
-                Volver a la ficha
+                {t.volverFicha}
               </button>
               {pasos.length > 0 && (
                 <button type="button" className="boton" onClick={() => setPaso({ t: "restaurar-confirmar", copia: paso.copia, pasos })}>
-                  Deshacer estos cambios
+                  {t.deshacer}
                 </button>
               )}
               <button type="button" className="boton" onClick={() => descargarCopia(paso.copia, ficha.nombre)}>
-                Descargar la copia otra vez
+                {t.descargarOtra}
               </button>
             </div>
           </div>
           <div className="col">
             <Resultados resultados={paso.resultados} />
-            {mal.length > 0 && <p className="sub">{mal.length} no se pudieron cambiar. Suele ser porque el fabricante lo impide; el resto del móvil no se ve afectado.</p>}
+            {mal.length > 0 && <p className="sub">{fmt(t.noSePudieron, { n: mal.length })}</p>}
           </div>
         </section>
       );
@@ -469,17 +450,15 @@ export function Podar({
       return (
         <section className="tarjeta dos">
           <div className="col">
-            <p className="etiqueta">Restaurado</p>
-            <h1 className="titulo t-l">
-              <em>{paso.resultados.filter((r) => r.ok).length} apps</em> de vuelta.
-            </h1>
-            <p className="lead">Reinicia el móvil para que todo vuelva a su sitio.</p>
+            <p className="etiqueta">{t.restauradoEtiqueta}</p>
+            <h1 className="titulo t-l">{r(fmt(t.deVuelta, { n: paso.resultados.filter((x) => x.ok).length }))}</h1>
+            <p className="lead">{t.reiniciaTexto}</p>
             <div className="acciones">
               <button type="button" className="boton primario" onClick={reiniciar}>
-                Reiniciar el móvil
+                {t.reiniciar}
               </button>
               <button type="button" className="boton" onClick={alSalir}>
-                Volver a la ficha
+                {t.volverFicha}
               </button>
             </div>
           </div>
@@ -510,12 +489,15 @@ function Lista({
   alternar: (p: string) => void;
   marcarGrupo: (items: ItemPlan[], marcar: boolean) => void;
 }) {
+  const { idioma, t: textos } = useTextos();
+  const t = textos.podar;
+  const avisos = TEXTOS_NUCLEO[idioma].avisoPoda;
   const f = filtro.trim().toLowerCase();
   const visibles = f ? items.filter((x) => x.paquete.toLowerCase().includes(f) || (detalles[x.paquete]?.[0] ?? "").toLowerCase().includes(f)) : items;
-  if (!items.length) return <p className="sub">En este perfil no hay nada que quitar en tu móvil.</p>;
+  if (!items.length) return <p className="sub">{t.vacio}</p>;
   return (
     <div className="podar-lista">
-      <input className="buscar" type="search" placeholder="Buscar por nombre o descripción…" value={filtro} onChange={(e) => setFiltro(e.target.value)} aria-label="Buscar app" />
+      <input className="buscar" type="search" placeholder={t.buscar} value={filtro} onChange={(e) => setFiltro(e.target.value)} aria-label={t.buscarAria} />
       {(["seguro", "avanzado", "experto"] as const).map((n) => {
         const grupo = visibles.filter((x) => x.nivel === n);
         if (!grupo.length) return null;
@@ -524,17 +506,17 @@ function Lista({
           <section key={n} className="grupo">
             <header className="grupo-cab">
               <h2>
-                {NOMBRE_GRUPO[n]} <span className="mono">({marcadas}/{grupo.length})</span>
+                {t.grupo[n]} <span className="mono">({marcadas}/{grupo.length})</span>
               </h2>
               <button type="button" className="enlace" onClick={() => marcarGrupo(grupo, marcadas < grupo.length)}>
-                {marcadas < grupo.length ? "Marcar todas" : "Desmarcar todas"}
+                {marcadas < grupo.length ? t.marcarTodas : t.desmarcarTodas}
               </button>
             </header>
-            <p className="sub">{DESCRIPCION_NIVEL[n]}</p>
+            <p className="sub">{TEXTOS_NUCLEO[idioma].nivel[n]}</p>
             <ul className="apps">
               {grupo.map((x) => {
                 const d = detalles[x.paquete];
-                const aviso = AVISO_PODA[x.paquete];
+                const aviso = AVISO_PODA[x.paquete] && avisos[x.paquete];
                 return (
                   <li key={x.paquete}>
                     <label>
@@ -543,12 +525,12 @@ function Lista({
                         <code>{x.paquete}</code>
                         {aviso && <span className="app-aviso fuerte">{aviso}</span>}
                         {d?.[0] && <span className="app-desc">{d[0]}</span>}
-                        {d?.[1]?.length ? <span className="app-aviso">Lo usan: {d[1].join(", ")}</span> : null}
+                        {d?.[1]?.length ? <span className="app-aviso">{fmt(t.loUsan, { lista: d[1].join(", ") })}</span> : null}
                       </span>
                       <span className="app-chips">
-                        {conIcono.has(x.paquete) && <span className="chip-claro icono">tiene icono</span>}
-                        <span className="chip-claro">{x.origen}</span>
-                        {x.estado === "desactivado" && <span className="chip-claro">ya desactivada</span>}
+                        {conIcono.has(x.paquete) && <span className="chip-claro icono">{t.tieneIcono}</span>}
+                        <span className="chip-claro">{origenEn(x.origen, idioma)}</span>
+                        {x.estado === "desactivado" && <span className="chip-claro">{t.yaDesactivada}</span>}
                       </span>
                     </label>
                   </li>
@@ -558,10 +540,7 @@ function Lista({
           </section>
         );
       })}
-      <p className="sub">
-        Las apps con «tiene icono» aparecen en tu cajón de apps: vienen marcadas, desmárcalas si las usas. Avisos en español de Poda; descripciones en inglés de la
-        lista de Universal Android Debloater (UAD-ng).
-      </p>
+      <p className="sub">{t.listaNota}</p>
     </div>
   );
 }
@@ -589,6 +568,8 @@ function ConfirmarBloqueo({
   fallos: number;
   setFallos: (n: number) => void;
 }) {
+  const { idioma, t: textos } = useTextos();
+  const t = textos.podar;
   const [forma, setForma] = useState<"pin" | "casilla">(sdk >= 26 ? "pin" : "casilla"); // lock_settings verify: Android 8+
   const [pin, setPin] = useState("");
   const [comprobando, setComprobando] = useState(false);
@@ -597,7 +578,7 @@ function ConfirmarBloqueo({
 
   const comprobar = async () => {
     if (!esCredencialValida(pin)) {
-      setMensaje("Escribe el PIN, la contraseña o el patrón (como números del 1 al 9).");
+      setMensaje(t.pinVacio);
       return;
     }
     setComprobando(true);
@@ -615,14 +596,12 @@ function ConfirmarBloqueo({
       const n = fallos + 1;
       setFallos(n);
       setMensaje(
-        n >= MAX_FALLOS_PIN
-          ? "Has fallado 3 veces. Para que el móvil no se bloquee, Poda no deja probar más. Desbloquea el móvil a mano para comprobar el PIN y vuelve a abrir esta página."
-          : `No es correcto. Te quedan ${MAX_FALLOS_PIN - n} intentos.`,
+        n >= MAX_FALLOS_PIN ? t.pinAgotado : fmt(t.pinMal, { n: MAX_FALLOS_PIN - n }),
       );
-    } else if (r === "esperar") setMensaje("El móvil pide esperar un poco antes de otro intento.");
+    } else if (r === "esperar") setMensaje(t.pinEsperar);
     else {
       setForma("casilla");
-      setMensaje(r === "sin-bloqueo" ? "Tu móvil no tiene bloqueo de pantalla: confirma con la casilla." : "Tu móvil no deja comprobar el PIN por el cable: confirma con la casilla.");
+      setMensaje(r === "sin-bloqueo" ? t.pinSinBloqueo : t.pinNoDisponible);
     }
   };
 
@@ -632,14 +611,12 @@ function ConfirmarBloqueo({
         {mensaje && <p className="sub">{mensaje}</p>}
         <label className="entiendo">
           <input type="checkbox" checked={confirmado} onChange={(e) => setConfirmado(e.target.checked)} />
-          <span>
-            Confirmo que quiero {accion} estas {total} apps.
-          </span>
+          <span>{fmt(accion === "quitar" ? t.pinCasillaQuitar : t.pinCasillaDesactivar, { n: total })}</span>
         </label>
       </>
     );
   }
-  if (confirmado) return <p className="sub">PIN correcto: ya puedes {accion} las apps.</p>;
+  if (confirmado) return <p className="sub">{accion === "quitar" ? t.pinOkQuitar : t.pinOkDesactivar}</p>;
   return (
     <form
       className="pin"
@@ -648,10 +625,7 @@ function ConfirmarBloqueo({
         void comprobar();
       }}
     >
-      <label htmlFor="pin-movil">
-        <strong>Confirma con el PIN, la contraseña o el patrón de tu móvil.</strong> Lo comprueba el móvil; Poda no lo guarda. El patrón se escribe con los números de
-        los puntos (1 a 9, de arriba abajo y de izquierda a derecha). Cada fallo cuenta como un intento de desbloqueo.
-      </label>
+      <label htmlFor="pin-movil">{rico(t.pinTitulo, idioma)}</label>
       <div className="acciones">
         <input
           id="pin-movil"
@@ -664,7 +638,7 @@ function ConfirmarBloqueo({
           onChange={(e) => setPin(e.target.value)}
         />
         <button type="submit" className="boton" disabled={agotado || comprobando || !pin}>
-          {comprobando ? "Comprobando…" : "Comprobar"}
+          {comprobando ? t.comprobando : t.comprobar}
         </button>
       </div>
       {mensaje && (
@@ -677,7 +651,8 @@ function ConfirmarBloqueo({
 }
 
 function Resultados({ resultados }: { resultados: Resultado[] }) {
-  if (!resultados.length) return <p className="sub">No se ha cambiado nada.</p>;
+  const { t } = useTextos();
+  if (!resultados.length) return <p className="sub">{t.podar.sinCambios}</p>;
   return (
     <ul className="apps resultados">
       {resultados.map((r) => (
@@ -686,9 +661,9 @@ function Resultados({ resultados }: { resultados: Resultado[] }) {
             <code>{r.paquete}</code>
           </span>
           <span className="app-chips">
-            <span className={`chip-claro ${r.ok ? "" : "fuerte"}`}>{r.ok ? r.texto : r.saltada ? "saltada" : "no se pudo"}</span>
+            <span className={`chip-claro ${r.ok ? "" : "fuerte"}`}>{t.podar.estado[r.estado]}</span>
           </span>
-          {!r.ok && <span className="app-desc">{r.texto}</span>}
+          {!r.ok && <span className="app-desc">{r.detalle ?? t.podar.estado.sinRespuesta}</span>}
         </li>
       ))}
     </ul>
@@ -696,6 +671,8 @@ function Resultados({ resultados }: { resultados: Resultado[] }) {
 }
 
 function ElegirCopia({ serie, alElegir, alVolver }: { serie: string; alElegir: (c: CopiaEstado) => void; alVolver: () => void }) {
+  const { idioma, t: textos } = useTextos();
+  const t = textos.podar;
   const [copias] = useState(() => copiasGuardadas(serie));
   const [error, setError] = useState("");
   const leerArchivo = async (f: File | undefined) => {
@@ -703,24 +680,22 @@ function ElegirCopia({ serie, alElegir, alVolver }: { serie: string; alElegir: (
     try {
       alElegir(leerCopiaEstado(await f.text()));
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo leer el archivo.");
+      setError(e instanceof Error ? e.message : t.archivoMal);
     }
   };
   return (
     <section className="tarjeta dos">
       <div className="col">
-        <p className="etiqueta">Restaurar una copia</p>
-        <h1 className="titulo t-l">
-          Volver a como <em>estaba.</em>
-        </h1>
-        <p className="lead">Elige una copia guardada en este navegador o sube el archivo poda-copia-….json que se descargó. Restaurar solo devuelve apps: no quita nada.</p>
+        <p className="etiqueta">{t.restaurarEtiqueta}</p>
+        <h1 className="titulo t-l">{rico(t.restaurarTitulo, idioma)}</h1>
+        <p className="lead">{t.restaurarTexto}</p>
         <div className="acciones">
           <label className="boton">
-            Subir archivo de copia
+            {t.subirArchivo}
             <input type="file" accept="application/json,.json" hidden onChange={(e) => leerArchivo(e.target.files?.[0])} />
           </label>
           <button type="button" className="boton" onClick={alVolver}>
-            Volver
+            {t.volver}
           </button>
         </div>
         {error && <p className="sub" style={{ color: "#b42318" }}>{error}</p>}
@@ -731,17 +706,17 @@ function ElegirCopia({ serie, alElegir, alVolver }: { serie: string; alElegir: (
             {copias.map((c) => (
               <li key={c.creada}>
                 <span className="app-texto">
-                  <strong>{new Date(c.creada).toLocaleString("es-ES", { dateStyle: "long", timeStyle: "short" })}</strong>
-                  <span className="app-desc">{Object.values(c.paquetes).filter((x) => x !== "quitado").length} apps en el móvil en ese momento</span>
+                  <strong>{new Date(c.creada).toLocaleString(textos.idioma.fecha, { dateStyle: "long", timeStyle: "short" })}</strong>
+                  <span className="app-desc">{fmt(t.appsEnCopia, { n: Object.values(c.paquetes).filter((x) => x !== "quitado").length })}</span>
                 </span>
                 <button type="button" className="boton pequeno" onClick={() => alElegir(c)}>
-                  Usar esta
+                  {t.usarEsta}
                 </button>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="sub">No hay copias de este móvil en este navegador.</p>
+          <p className="sub">{t.sinCopias}</p>
         )}
       </div>
     </section>
@@ -763,24 +738,27 @@ function ConfirmarRestaurar({
   volver: () => void;
   salir: () => void;
 }) {
+  const { idioma, t: textos } = useTextos();
+  const t = textos.podar;
+  const avisos = TEXTOS_NUCLEO[idioma].avisoPoda;
   const [fuera, setFuera] = useState<Set<string>>(new Set()); // desmarcadas
   const [filtro, setFiltro] = useState("");
   const elegidos = pasos.filter((p) => !fuera.has(p.paquete));
   const f = filtro.trim().toLowerCase();
   const visibles = f ? pasos.filter((p) => p.paquete.toLowerCase().includes(f)) : pasos;
-  const fecha = new Date(copia.creada).toLocaleString("es-ES", { dateStyle: "long", timeStyle: "short" });
+  const fecha = new Date(copia.creada).toLocaleString(textos.idioma.fecha, { dateStyle: "long", timeStyle: "short" });
 
   if (!pasos.length) {
     return (
       <section className="tarjeta">
-        <p className="etiqueta">Restaurar · copia del {fecha}</p>
-        <h1 className="titulo t-l">Ya está todo como en la copia.</h1>
+        <p className="etiqueta">{fmt(t.copiaDel, { fecha })}</p>
+        <h1 className="titulo t-l">{t.yaComoCopia}</h1>
         <div className="acciones">
           <button type="button" className="boton primario" onClick={salir}>
-            Volver a la ficha
+            {t.volverFicha}
           </button>
           <button type="button" className="boton" onClick={volver}>
-            Elegir otra copia
+            {t.elegirOtra}
           </button>
         </div>
       </section>
@@ -789,29 +767,27 @@ function ConfirmarRestaurar({
   return (
     <section className="tarjeta dos podar">
       <div className="col podar-lateral">
-        <p className="etiqueta">Restaurar · copia del {fecha}</p>
-        <h1 className="titulo t-l">
-          Recuperar <em>{elegidos.length} apps.</em>
-        </h1>
-        <p className="lead">Elige qué apps quieres de vuelta. Restaurar solo reinstala o reactiva: nunca quita nada.</p>
-        {otroMovil && <p className="sub">Ojo: esta copia es de otro móvil. Solo se recuperarán las apps que existan en este.</p>}
+        <p className="etiqueta">{fmt(t.copiaDel, { fecha })}</p>
+        <h1 className="titulo t-l">{rico(fmt(t.recuperar, { n: elegidos.length }), idioma)}</h1>
+        <p className="lead">{t.recuperarTexto}</p>
+        {otroMovil && <p className="sub">{t.otroMovil}</p>}
         <div className="acciones">
           <button type="button" className="boton primario" disabled={!elegidos.length} onClick={() => restaurar(copia, elegidos)}>
-            Restaurar ({elegidos.length})
+            {fmt(t.restaurarN, { n: elegidos.length })}
           </button>
           <button type="button" className="boton" onClick={volver}>
-            Elegir otra copia
+            {t.elegirOtra}
           </button>
         </div>
       </div>
       <div className="col podar-lista">
-        <input className="buscar" type="search" placeholder="Buscar app…" value={filtro} onChange={(e) => setFiltro(e.target.value)} aria-label="Buscar app" />
+        <input className="buscar" type="search" placeholder={t.buscarCorto} value={filtro} onChange={(e) => setFiltro(e.target.value)} aria-label={t.buscarAria} />
         <header className="grupo-cab">
           <h2>
-            Apps de la copia <span className="mono">({elegidos.length}/{pasos.length})</span>
+            {t.appsCopia} <span className="mono">({elegidos.length}/{pasos.length})</span>
           </h2>
           <button type="button" className="enlace" onClick={() => setFuera(elegidos.length < pasos.length ? new Set() : new Set(pasos.map((p) => p.paquete)))}>
-            {elegidos.length < pasos.length ? "Marcar todas" : "Desmarcar todas"}
+            {elegidos.length < pasos.length ? t.marcarTodas : t.desmarcarTodas}
           </button>
         </header>
         <ul className="apps">
@@ -832,10 +808,10 @@ function ConfirmarRestaurar({
                 />
                 <span className="app-texto">
                   <code>{p.paquete}</code>
-                  {AVISO_PODA[p.paquete] && <span className="app-desc">{AVISO_PODA[p.paquete]}</span>}
+                  {AVISO_PODA[p.paquete] && <span className="app-desc">{avisos[p.paquete]}</span>}
                 </span>
                 <span className="app-chips">
-                  <span className="chip-claro">{p.accion === "reinstalar" ? "reinstalar" : "reactivar"}</span>
+                  <span className="chip-claro">{p.accion === "reinstalar" ? t.reinstalar : t.reactivar}</span>
                 </span>
               </label>
             </li>

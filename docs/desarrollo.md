@@ -49,7 +49,18 @@ Las tres vías (web, MCP y prompt) usan `@poda/nucleo`, así que se comportan ig
 | `packages/nucleo/src/ficha.ts` | Reconoce el móvil (marca, modelo, capa, ROM personalizada) y genera los avisos |
 | `apps/web/lib/conexion.ts` | Conexión WebUSB (Tango) y el móvil de ejemplo |
 | `apps/web/components/Podar.tsx` | Elegir perfil, copia, aplicar, reiniciar y restaurar |
+| `apps/web/textos/` | Textos de la web: `es.ts` es la referencia y `en`, `pt`, `fr` y `ca` tienen las mismas claves |
+| `apps/web/paginas/` | Cada página, con el idioma como parámetro. `app/(es)/` y `app/[idioma]/` solo las llaman |
 | `apps/mcp/src/logica.ts` | Lo mismo para el MCP y la línea de comandos |
+
+## Idiomas
+
+La web está en español (en la raíz: `/conectar/`), inglés (`/en/`), portugués de Brasil (`/pt/`), francés (`/fr/`) y catalán (`/ca/`). Cada idioma tiene su layout raíz, así que el HTML estático sale con su `lang` y con `hreflang` hacia los demás.
+
+- **Textos de la web:** `apps/web/textos/es.ts`. Las demás lenguas tienen exactamente las mismas claves (TypeScript avisa si falta alguna). Marcas que se pueden usar dentro de un texto: `*cursiva*`, `**negrita**`, `` `mono` ``, `[enlace](/ruta/)` (la ruta se adapta sola al idioma) y `{dato}`.
+- **Textos del núcleo:** niveles, orígenes, avisos por app (`AVISO_PODA`), grupos protegidos y avisos de la ficha. El español sale de las mismas constantes que usan las reglas; las traducciones están en `packages/nucleo/src/traducciones/`. `pnpm test` comprueba que no falte ninguna.
+- **Lo que no se traduce:** las descripciones de cada paquete (vienen en inglés de UAD-ng), los nombres de paquete y los comandos.
+- **Añadir un idioma:** añádelo a `IDIOMAS` en `packages/nucleo/src/idiomas.ts`, crea su archivo en `traducciones/` y en `apps/web/textos/`, y regístralo en `apps/web/lib/i18n.ts` y en `NOMBRE_IDIOMA` (`apps/web/lib/rutas.ts`).
 
 ## Publicar la web
 

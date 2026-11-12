@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
+import { useTextos } from "./Textos";
 
 export function CopiarPrompt({ texto }: { texto: string }) {
+  const { t } = useTextos();
   const [estado, setEstado] = useState<"listo" | "copiado" | "fallo">("listo");
   const copiar = async () => {
     try {
@@ -13,7 +15,7 @@ export function CopiarPrompt({ texto }: { texto: string }) {
   };
   return (
     <button type="button" className="boton oscuro pequeno" onClick={copiar}>
-      {estado === "copiado" ? "Copiado" : estado === "fallo" ? "Selecciónalo y cópialo" : "Copiar prompt"}
+      {estado === "copiado" ? t.inicio.copiado : estado === "fallo" ? t.inicio.copiarFallo : t.inicio.copiar}
     </button>
   );
 }

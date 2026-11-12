@@ -3,16 +3,22 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
+  avisosFicha,
+  capaEn,
   CLAVES_TECNICAS,
   contar,
   fichaDesdeProps,
   NIVELES,
+  origenEn,
   paquetesDe,
   parsearGetprop,
   type Ficha,
   type Recuento,
 } from "@poda/nucleo";
 import { TarjetaResultado } from "./Compartir";
+import { rico } from "./Rico";
+import { useTextos } from "./Textos";
+import { fmt, ruta } from "@/lib/rutas";
 import { Podar } from "./Podar";
 import { cargarLista } from "@/lib/datos";
 import { conectar, dispositivosConPermiso, elegirDispositivo, ErrorConexion, esperarArranque, movilDemo, webUsbDisponible, type Movil } from "@/lib/conexion";
@@ -30,10 +36,11 @@ type Estado =
   | { t: "desconectado"; nombre: string }
   | { t: "error"; mensaje: string };
 
-const NOMBRE_NIVEL = { seguro: "seguras", avanzado: "avanzadas", experto: "para expertos" } as const;
-
 
 export function Conectar() {
+  const { idioma, t: textos } = useTextos();
+  const t = textos.conectar;
+  const r = (x: string) => rico(x, idioma);
   const [estado, setEstado] = useState<Estado>({ t: "cargando" });
   const movilRef = useRef<Movil | null>(null);
   const ocupado = useRef(false);
@@ -88,12 +95,13 @@ export function Conectar() {
         await leerMovil(movil, false);
       } catch (e) {
         if (e instanceof ErrorConexion && e.tipo === "cancelado") setEstado({ t: "inicio" });
+        else if (e instanceof ErrorConexion && e.tipo === "ocupado") setEstado({ t: "error", mensaje: t.errores.ocupado });
         else setEstado({ t: "error", mensaje: e instanceof Error ? e.message : String(e) });
       } finally {
         ocupado.current = false;
       }
     },
-    [leerMovil],
+    [leerMovil, t],
   );
 
   const reiniciar = async (nombre: string) => {
@@ -141,7 +149,7 @@ export function Conectar() {
     const alDesconectar = () => {
       if (movilRef.current) {
         movilRef.current = null;
-        setEstado((e) => ({ t: "desconectado", nombre: e.t === "listo" ? e.ficha.nombre : "El móvil" }));
+        setEstado((e) => ({ t: "desconectado", nombre: e.t === "listo" ? e.ficha.nombre : t.elMovil }));
       }
     };
     navigator.usb.addEventListener("connect", alConectar);
@@ -155,21 +163,16 @@ export function Conectar() {
 
   switch (estado.t) {
     case "cargando":
-      return <Espera titulo="Un momento…" texto="Comprobando tu navegador." />;
+      return <Espera titulo={t.cargandoTitulo} texto={t.cargandoTexto} />;
     case "sin-webusb":
       return (
         <section className="tarjeta">
-          <p className="etiqueta error">Navegador no compatible</p>
-          <h1 className="titulo t-l">
-            Abre Poda en <em>Chrome o Edge.</em>
-          </h1>
-          <p className="lead">
-            Para hablar con el móvil por cable hace falta WebUSB, que solo tienen Chrome, Edge, Brave y Opera de ordenador. Firefox y Safari no lo
-            incluyen, y desde un iPhone no se puede.
-          </p>
+          <p className="etiqueta error">{t.sinWebusbEtiqueta}</p>
+          <h1 className="titulo t-l">{r(t.sinWebusbTitulo)}</h1>
+          <p className="lead">{t.sinWebusbTexto}</p>
           <div className="acciones">
             <button type="button" className="boton" onClick={verDemo}>
-              Ver con un móvil de ejemplo
+              {t.verDemo}
             </button>
           </div>
         </section>
@@ -178,52 +181,39 @@ export function Conectar() {
       return (
         <section className="tarjeta dos">
           <div className="col">
-          <p className="etiqueta">Paso 1 · Conectar</p>
-          <h1 className="titulo t-l">
-            Conecta tu móvil <em>por cable.</em>
-          </h1>
-          <p className="lead">
-            Poda reconoce el modelo y la versión de Android en cuanto lo conectas. Nada sale de tu ordenador y no se cambia nada sin que lo confirmes.
-          </p>
+          <p className="etiqueta">{t.inicioEtiqueta}</p>
+          <h1 className="titulo t-l">{r(t.inicioTitulo)}</h1>
+          <p className="lead">{t.inicioTexto}</p>
           <div className="acciones">
             <button type="button" className="boton primario" onClick={conectarNuevo}>
-              Conectar móvil
+              {t.conectar}
             </button>
             <button type="button" className="boton" onClick={verDemo}>
-              Ver con un móvil de ejemplo
+              {t.verDemo}
             </button>
           </div>
           </div>
           <div className="col">
           <ol className="pasos">
-            <li>
-              <strong>Activa las opciones de desarrollador. </strong>Ajustes → Información del teléfono → pulsa 7 veces en «Número de compilación» (en
-              Xiaomi, en «Versión de MIUI» o «de HyperOS»).
-            </li>
-            <li>
-              <strong>Activa «Depuración USB» </strong>en Ajustes → Opciones de desarrollador. En Xiaomi activa también «Depuración USB (ajustes de
-              seguridad)».
-            </li>
-            <li>
-              <strong>Conecta el cable. </strong>Que sea de datos, no solo de carga. Si el móvil pregunta qué hacer con el USB, elige «Transferencia de
-              archivos».
-            </li>
+            {t.pasos.map((p) => (
+              <li key={p}>{r(p)}</li>
+            ))}
           </ol>
           </div>
         </section>
       );
     case "eligiendo":
-      return <Espera titulo="Elige tu móvil" texto="En la ventana del navegador, selecciona tu móvil y pulsa «Conectar»." />;
+      return <Espera titulo={t.eligiendoTitulo} texto={t.eligiendoTexto} />;
     case "autorizando":
       return (
         <Espera
           nombre={estado.nombre}
-          titulo="Mira la pantalla del móvil"
-          texto="Acepta «¿Permitir depuración USB?» y marca «Permitir siempre desde este ordenador» para no repetirlo."
+          titulo={t.autorizandoTitulo}
+          texto={t.autorizandoTexto}
         />
       );
     case "leyendo":
-      return <Espera nombre={estado.nombre} titulo="Leyendo tu móvil…" texto="Comprobando modelo, versión y apps instaladas." />;
+      return <Espera nombre={estado.nombre} titulo={t.leyendoTitulo} texto={t.leyendoTexto} />;
     case "listo":
       return (
         <Ficha_
@@ -257,12 +247,12 @@ export function Conectar() {
     case "desconectado":
       return (
         <section className="tarjeta">
-          <p className="etiqueta">Desconectado</p>
-          <h1 className="titulo t-l">{estado.nombre} se ha desconectado.</h1>
-          <p className="lead">Vuelve a enchufarlo y Poda lo reconocerá solo.</p>
+          <p className="etiqueta">{t.desconectadoEtiqueta}</p>
+          <h1 className="titulo t-l">{fmt(t.desconectadoTitulo, { nombre: estado.nombre })}</h1>
+          <p className="lead">{t.desconectadoTexto}</p>
           <div className="acciones">
             <button type="button" className="boton primario" onClick={conectarNuevo}>
-              Conectar otro móvil
+              {t.conectarOtro}
             </button>
           </div>
         </section>
@@ -270,13 +260,13 @@ export function Conectar() {
     case "error":
       return (
         <section className="tarjeta">
-          <p className="etiqueta error">No se pudo conectar</p>
-          <h1 className="titulo t-l">Algo no ha ido bien.</h1>
+          <p className="etiqueta error">{t.errorEtiqueta}</p>
+          <h1 className="titulo t-l">{t.errorTitulo}</h1>
           <p className="lead">{estado.mensaje}</p>
-          <p className="sub">Comprueba también que el cable es de datos y que aceptaste el aviso en la pantalla del móvil.</p>
+          <p className="sub">{t.errorConsejo}</p>
           <div className="acciones">
             <button type="button" className="boton primario" onClick={conectarNuevo}>
-              Reintentar
+              {t.reintentar}
             </button>
           </div>
         </section>
@@ -285,10 +275,11 @@ export function Conectar() {
 }
 
 function Espera({ titulo, texto, nombre }: { titulo: string; texto: string; nombre?: string }) {
+  const { t } = useTextos();
   return (
     <section className="tarjeta" aria-live="polite">
       <div className="pulso" aria-hidden="true" />
-      {nombre && <p className="etiqueta">Detectado: {nombre}</p>}
+      {nombre && <p className="etiqueta">{fmt(t.conectar.detectado, { nombre })}</p>}
       <h1 className="titulo t-l">{titulo}</h1>
       <p className="lead">{texto}</p>
     </section>
@@ -296,10 +287,12 @@ function Espera({ titulo, texto, nombre }: { titulo: string; texto: string; nomb
 }
 
 function Ficha_({ e, volver, podar }: { e: Extract<Estado, { t: "listo" }>; volver: () => void; podar: (inicio: "perfil" | "restaurar") => void }) {
+  const { idioma, t: textos } = useTextos();
+  const t = textos.conectar;
   const f = e.ficha;
   const r = e.recuento;
   const [copiado, setCopiado] = useState(false);
-  const fecha = f.parche ? new Date(f.parche + "T00:00:00").toLocaleDateString("es-ES", { year: "numeric", month: "long" }) : null;
+  const fecha = f.parche ? new Date(f.parche + "T00:00:00").toLocaleDateString(textos.idioma.fecha, { year: "numeric", month: "long" }) : null;
   const tecnicos = CLAVES_TECNICAS.filter((k) => e.props[k]).map((k) => `${k} = ${e.props[k]}`);
   // La cifra principal solo cuenta lo que se puede quitar sin riesgo: es la que se comparte, así que no puede exagerar.
   const quitables = r ? r.porNivel.seguro : 0;
@@ -310,59 +303,55 @@ function Ficha_({ e, volver, podar }: { e: Extract<Estado, { t: "listo" }>; volv
       <div className="col">
       {e.reiniciado && (
         <p className="arranco" role="status">
-          El móvil ha arrancado bien después de la limpieza.
+          {t.arranco}
         </p>
       )}
-      <p className="etiqueta">{e.demo ? "Móvil de ejemplo (modo demo)" : "Móvil reconocido"}</p>
+      <p className="etiqueta">{e.demo ? t.demo : t.reconocido}</p>
       <h1 className="titulo t-l">
         <em>{f.nombre}</em>
       </h1>
       <div className="chips">
         <span className="chip-claro fuerte">Android {f.android}</span>
-        {f.capa && <span className="chip-claro">{f.capa}</span>}
+        {f.capa && <span className="chip-claro">{capaEn(f.capa, idioma)}</span>}
         <span className="chip-claro">
           {f.fabricante} · {f.modelo}
         </span>
-        {fecha && <span className="chip-claro">Parche de seguridad: {fecha}</span>}
-        <span className="chip-claro">{f.wifiPosible ? "Admite conexión por Wi‑Fi" : "Solo por cable"}</span>
+        {fecha && <span className="chip-claro">{fmt(t.parche, { fecha })}</span>}
+        <span className="chip-claro">{f.wifiPosible ? t.wifi : t.soloCable}</span>
       </div>
 
       <div className="recuento">
         {r ? (
           <>
             {quitables === 0 && r.yaQuitados > 0 ? (
-              <p className="grande">
-                <strong>{r.yaQuitados}</strong> apps ya quitadas: no queda nada seguro por quitar
-              </p>
+              <p className="grande">{rico(fmt(t.yaQuitadas, { n: r.yaQuitados }), idioma)}</p>
             ) : (
-              <p className="grande">
-                <strong>{quitables}</strong> apps de serie que puedes quitar sin riesgo
-              </p>
+              <p className="grande">{rico(fmt(t.quitables, { n: quitables }), idioma)}</p>
             )}
             <p className="sub">
-              {masAlla > 0 && <>Y {masAlla} más si quieres ir más lejos, con más cuidado. </>}
-              De {r.total} apps instaladas, {r.conocidos} están en nuestra lista; las que no conocemos no se tocan.
+              {masAlla > 0 && fmt(t.masAlla, { n: masAlla })}
+              {fmt(t.totales, { total: r.total, conocidas: r.conocidos })}
             </p>
             <ul className="niveles">
               {NIVELES.filter((n) => n !== "bloqueado").map((n) => (
                 <li key={n} className={`nivel ${n}`}>
                   <span className="n">{r.porNivel[n]}</span>
-                  <span>{NOMBRE_NIVEL[n as keyof typeof NOMBRE_NIVEL]}</span>
+                  <span>{t.nombreNivel[n as keyof typeof t.nombreNivel]}</span>
                 </li>
               ))}
             </ul>
             <p className="sub">
-              Por origen:{" "}
+              {t.porOrigen}{" "}
               {Object.entries(r.porOrigen)
                 .sort((a, b) => b[1] - a[1])
-                .map(([o, n]) => `${n} de ${o}`)
-                .join(" · ") || "ninguna"}
-              {r.yaQuitados ? ` · ${r.yaQuitados} ya estaban quitadas` : ""}
+                .map(([o, n]) => fmt(t.deOrigen, { n, origen: origenEn(o, idioma) }))
+                .join(" · ") || t.ninguna}
+              {r.yaQuitados ? ` · ${fmt(t.yaEstaban, { n: r.yaQuitados })}` : ""}
             </p>
-            {r.porNivel.bloqueado > 0 && <p className="sub">{r.porNivel.bloqueado} apps del sistema son imprescindibles: Poda no las tocará nunca.</p>}
+            {r.porNivel.bloqueado > 0 && <p className="sub">{fmt(t.imprescindibles, { n: r.porNivel.bloqueado })}</p>}
           </>
         ) : (
-          <p className="sub">Contando las apps del móvil…</p>
+          <p className="sub">{t.contando}</p>
         )}
       </div>
       </div>
@@ -372,9 +361,9 @@ function Ficha_({ e, volver, podar }: { e: Extract<Estado, { t: "listo" }>; volv
 
       {f.avisos.length > 0 && (
         <div className="avisos" role="note">
-          <h2>Antes de seguir</h2>
+          <h2>{t.antesDeSeguir}</h2>
           <ul>
-            {f.avisos.map((a) => (
+            {avisosFicha(f, idioma).map((a) => (
               <li key={a}>{a}</li>
             ))}
           </ul>
@@ -383,23 +372,23 @@ function Ficha_({ e, volver, podar }: { e: Extract<Estado, { t: "listo" }>; volv
 
       <div className="acciones">
         <button type="button" className="boton primario" disabled={!r} onClick={() => podar("perfil")}>
-          Elegir perfil y limpiar
+          {t.elegirPerfil}
         </button>
         <button type="button" className="boton" onClick={() => podar("restaurar")}>
-          Restaurar una copia
+          {t.restaurar}
         </button>
         {e.demo && (
           <button type="button" className="boton" onClick={volver}>
-            Conectar el mío
+            {t.conectarMio}
           </button>
         )}
-        <Link href={`/marcas/`} className="boton">
-          Ver la lista por marca
+        <Link href={ruta(idioma, "/marcas/")} className="boton">
+          {t.verMarcas}
         </Link>
       </div>
 
       <details className="tecnico">
-        <summary>Detalles técnicos</summary>
+        <summary>{t.tecnicos}</summary>
         <pre>{tecnicos.join("\n")}</pre>
         <button
           type="button"
@@ -408,7 +397,7 @@ function Ficha_({ e, volver, podar }: { e: Extract<Estado, { t: "listo" }>; volv
             navigator.clipboard?.writeText(tecnicos.join("\n")).then(() => setCopiado(true), () => {});
           }}
         >
-          {copiado ? "Copiado" : "Copiar"}
+          {copiado ? t.copiado : t.copiar}
         </button>
       </details>
       </div>
@@ -422,25 +411,21 @@ function Reiniciando({ e }: { e: Extract<Estado, { t: "reiniciando" }> }) {
     const t = setInterval(() => setTic((n) => n + 1), 5000);
     return () => clearInterval(t);
   }, []);
+  const { idioma, t: textos } = useTextos();
+  const t = textos.conectar;
   const tarda = Date.now() - e.desde > 4 * 60_000;
   return (
     <section className="tarjeta" aria-live="polite">
       <div className="pulso" aria-hidden="true" />
-      <p className="etiqueta">{e.nombre} · no desconectes el cable</p>
-      <h1 className="titulo t-l">{e.arrancando ? "Arrancando…" : "Reiniciando el móvil…"}</h1>
-      <p className="lead">
-        {e.arrancando
-          ? "Ya responde. Esperando a que Android termine de arrancar."
-          : "Puede tardar uno o dos minutos. Poda lo reconocerá solo en cuanto vuelva."}
-      </p>
+      <p className="etiqueta">{fmt(t.noDesconectes, { nombre: e.nombre })}</p>
+      <h1 className="titulo t-l">{e.arrancando ? t.arrancando : t.reiniciando}</h1>
+      <p className="lead">{e.arrancando ? t.arrancandoTexto : t.reiniciandoTexto}</p>
       {tarda && (
         <div className="avisos" role="note">
-          <h2>¿Se ha quedado en el logo?</h2>
+          <h2>{t.logoTitulo}</h2>
           <ul>
-            <li>Tiene arreglo y no hace falta borrar nada.</li>
-            <li>
-              Sigue los pasos de <Link href="/rescate/">cómo recuperarlo</Link>: necesitarás el archivo de copia que se descargó al limpiar.
-            </li>
+            <li>{t.logoArreglo}</li>
+            <li>{rico(t.logoPasos, idioma)}</li>
           </ul>
         </div>
       )}
