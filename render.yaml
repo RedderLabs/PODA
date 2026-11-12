@@ -8,6 +8,7 @@ services:
     autoDeployTrigger: checksPass
     # Instala la versión de pnpm fijada en package.json (packageManager) sin tocar carpetas del sistema.
     buildCommand: >-
+      mkdir -p "$HOME/.local/bin" &&
       corepack enable --install-directory "$HOME/.local/bin" &&
       export PATH="$HOME/.local/bin:$PATH" &&
       pnpm install --frozen-lockfile &&
