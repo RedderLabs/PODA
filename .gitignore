@@ -16,3 +16,7 @@ Claude outputs/
 
 # Caché local del detector de diseño
 .impeccable/hook.cache.json
+
+# Notas locales de trabajo
+.claude/
+poda-github.zip
