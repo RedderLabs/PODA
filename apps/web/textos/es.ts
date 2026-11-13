@@ -194,6 +194,11 @@ export const es = {
     copiar: "Copiar prompt",
     copiado: "Copiado",
     copiarFallo: "Selecciónalo y cópialo",
+    videoEtiqueta: "Vídeo · 20 segundos",
+    videoTitulo: "Poda *en 20 segundos.*",
+    videoLead: "Conecta el móvil, marca lo que sobra y quítalo. Con copia y vuelta atrás.",
+    videoAviso: "Aviso: es una animación ilustrativa. Las apps, las pantallas y las cifras son inventadas y no corresponden a ningún móvil ni fabricante real. Poda **no libera almacenamiento** (el APK sigue en la partición del sistema) y el número de apps que se pueden quitar depende de cada modelo.",
+    videoNoSoportado: "Tu navegador no puede reproducir el vídeo.",
   },
 
   conectar: {

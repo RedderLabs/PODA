@@ -191,6 +191,11 @@ export const ca: Textos = {
     copiar: "Copiar el prompt",
     copiado: "Copiat",
     copiarFallo: "Selecciona'l i copia'l",
+    videoEtiqueta: "Vídeo · 20 segons",
+    videoTitulo: "Poda *en 20 segons.*",
+    videoLead: "Connecta el mòbil, marca el que sobra i treu-ho. Amb còpia i marxa enrere.",
+    videoAviso: "Avís: és una animació il·lustrativa. Les apps, les pantalles i les xifres són inventades i no corresponen a cap mòbil ni fabricant real. Poda **no allibera emmagatzematge** (l’APK continua a la partició del sistema) i el nombre d’apps que es poden treure depèn de cada model.",
+    videoNoSoportado: "El teu navegador no pot reproduir el vídeo.",
   },
 
   conectar: {

@@ -191,6 +191,11 @@ export const en: Textos = {
     copiar: "Copy prompt",
     copiado: "Copied",
     copiarFallo: "Select it and copy it",
+    videoEtiqueta: "Video · 20 seconds",
+    videoTitulo: "Poda *in 20 seconds.*",
+    videoLead: "Plug in the phone, tick what you don't need and remove it. With a backup and a way back.",
+    videoAviso: "Note: this is an illustrative animation. The apps, screens and figures are made up and don't match any real phone or manufacturer. Poda **does not free up storage** (the APK stays on the system partition) and how many apps can be removed depends on each model.",
+    videoNoSoportado: "Your browser can't play this video.",
   },
 
   conectar: {

@@ -191,6 +191,11 @@ export const pt: Textos = {
     copiar: "Copiar prompt",
     copiado: "Copiado",
     copiarFallo: "Selecione e copie",
+    videoEtiqueta: "Vídeo · 20 segundos",
+    videoTitulo: "Poda *em 20 segundos.*",
+    videoLead: "Conecte o celular, marque o que sobra e remova. Com backup e volta atrás.",
+    videoAviso: "Aviso: é uma animação ilustrativa. Os apps, as telas e os números são inventados e não correspondem a nenhum celular ou fabricante real. O Poda **não libera armazenamento** (o APK continua na partição do sistema) e a quantidade de apps que podem ser removidos depende de cada modelo.",
+    videoNoSoportado: "Seu navegador não consegue reproduzir o vídeo.",
   },
 
   conectar: {
