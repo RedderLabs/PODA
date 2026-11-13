@@ -70,6 +70,32 @@ export function Inicio({ idioma }: { idioma: Idioma }) {
           </div>
         </section>
 
+        <section id="video" className="contenedor seccion borde">
+          <div className="video">
+            <div className="video-texto">
+              <p className="etiqueta">{t.videoEtiqueta}</p>
+              <h2 className="titulo t-l">{r(t.videoTitulo)}</h2>
+              <p className="lead">{t.videoLead}</p>
+              <p className="video-aviso" id="video-aviso">
+                {r(t.videoAviso)}
+              </p>
+            </div>
+            <video
+              className="video-marco"
+              src="/poda.mp4"
+              poster="/poda-video.jpg"
+              width={1080}
+              height={1920}
+              controls
+              playsInline
+              preload="none"
+              aria-describedby="video-aviso"
+            >
+              {t.videoNoSoportado}
+            </video>
+          </div>
+        </section>
+
         <section id="perfiles" className="oscura">
           <div className="contenedor seccion">
             <p className="etiqueta" style={{ marginBottom: 14 }}>

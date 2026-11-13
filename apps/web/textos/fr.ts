@@ -191,6 +191,11 @@ export const fr: Textos = {
     copiar: "Copier le prompt",
     copiado: "Copié",
     copiarFallo: "Sélectionnez-le et copiez-le",
+    videoEtiqueta: "Vidéo · 20 secondes",
+    videoTitulo: "Poda *en 20 secondes.*",
+    videoLead: "Branchez le téléphone, cochez ce qui est en trop et retirez-le. Avec sauvegarde et retour en arrière.",
+    videoAviso: "Avertissement : il s’agit d’une animation illustrative. Les applis, les écrans et les chiffres sont inventés et ne correspondent à aucun téléphone ni fabricant réel. Poda **ne libère pas d’espace de stockage** (l’APK reste sur la partition système) et le nombre d’applis que l’on peut retirer dépend de chaque modèle.",
+    videoNoSoportado: "Votre navigateur ne peut pas lire cette vidéo.",
   },
 
   conectar: {
