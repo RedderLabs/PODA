@@ -3,6 +3,7 @@
 import type { Viewport } from "next";
 import "@/app/globals.css";
 import { textosDe, type Idioma } from "@/lib/i18n";
+import { Estadisticas } from "./Estadisticas";
 import { ProveedorTextos } from "./Textos";
 
 export const VIEWPORT: Viewport = {
@@ -24,6 +25,7 @@ export function Raiz({ idioma, children }: { idioma: Idioma; children: React.Rea
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
         />
+        <Estadisticas />
       </head>
       <body>
         <ProveedorTextos idioma={idioma} t={textosDe(idioma)}>

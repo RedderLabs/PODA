@@ -17,7 +17,7 @@ PODA (Programa para Ocultar y Desactivar Apps) quita las apps de serie de un And
 - **Nada cambia sin copia y sin confirmación.** No elimines la copia previa, la confirmación explícita, el rechazo de paquetes `bloqueado` ni la validación de nombres (`esPaqueteValido`). Los nombres de paquete van a una línea de shell en el móvil: sin validar serían inyección de comandos.
 - **Restaurar nunca quita nada.** `pasosParaRestaurar` solo reinstala o reactiva.
 - **Una sola fuente de verdad.** Las reglas viven en `packages/nucleo`. La web y el MCP no duplican niveles, perfiles ni protecciones.
-- **Nada sale del ordenador del usuario.** Ni la lista de apps de su móvil ni sus propiedades. Sin analíticas que la envíen, sin servidores.
+- **Nada sale del ordenador del usuario.** Ni la lista de apps de su móvil ni sus propiedades. Sin analíticas que la envíen, sin servidores. Lo único permitido es contar visitas a páginas con Umami (`components/Estadisticas.tsx`): nada de eventos con datos del móvil.
 - **Honestidad en los textos.** No prometas en la web o en los README nada que el código no haga.
 
 ## Estilo

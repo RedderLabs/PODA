@@ -172,7 +172,7 @@ export const fr: Textos = {
       },
       {
         pregunta: "Mes données sont-elles envoyées quelque part ",
-        respuesta: "La connexion va du navigateur au téléphone par le câble. La liste des paquets de votre téléphone ne quitte pas votre ordinateur.",
+        respuesta: "La connexion va du navigateur au téléphone par le câble. La liste des paquets de votre téléphone ne quitte pas votre ordinateur. Le site ne fait que compter les visites de façon anonyme, sans cookies.",
       },
       {
         pregunta: "Peut-on le faire sans ordinateur ",

@@ -175,7 +175,7 @@ export const es = {
       },
       {
         pregunta: "¿Se envían mis datos a algún sitio?",
-        respuesta: "La conexión va del navegador al móvil por el cable. La lista de paquetes de tu móvil no sale de tu ordenador.",
+        respuesta: "La conexión va del navegador al móvil por el cable. La lista de paquetes de tu móvil no sale de tu ordenador. La web solo cuenta visitas de forma anónima, sin cookies.",
       },
       {
         pregunta: "¿Se puede hacer sin ordenador?",

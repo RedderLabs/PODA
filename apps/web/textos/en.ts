@@ -172,7 +172,7 @@ export const en: Textos = {
       },
       {
         pregunta: "Is my data sent anywhere?",
-        respuesta: "The connection goes from the browser to the phone over the cable. Your phone's package list never leaves your computer.",
+        respuesta: "The connection goes from the browser to the phone over the cable. Your phone's package list never leaves your computer. The site only counts visits anonymously, without cookies.",
       },
       {
         pregunta: "Can I do it without a computer?",

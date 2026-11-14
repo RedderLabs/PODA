@@ -172,7 +172,7 @@ export const pt: Textos = {
       },
       {
         pregunta: "Meus dados são enviados para algum lugar?",
-        respuesta: "A conexão vai do navegador ao celular pelo cabo. A lista de pacotes do seu celular não sai do seu computador.",
+        respuesta: "A conexão vai do navegador ao celular pelo cabo. A lista de pacotes do seu celular não sai do seu computador. O site só conta visitas de forma anônima, sem cookies.",
       },
       {
         pregunta: "Dá para fazer sem computador?",

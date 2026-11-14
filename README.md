@@ -141,7 +141,7 @@ $c.paquetes.PSObject.Properties | Where-Object { $_.Value -eq "instalado" -and $
 
 **¿Libera espacio?** No. Las apps siguen en la partición del sistema; lo que ganas es menos procesos en segundo plano, menos anuncios y menos rastreo.
 
-**¿Se envían mis datos a algún sitio?** No. La conexión va del navegador al móvil por el cable y la lista de apps de tu móvil no sale de tu ordenador. La web no tiene cuentas ni cookies de seguimiento.
+**¿Se envían mis datos a algún sitio?** No. La conexión va del navegador al móvil por el cable y la lista de apps de tu móvil no sale de tu ordenador. La web no tiene cuentas ni cookies de seguimiento; solo cuenta visitas de forma anónima con [Umami](https://umami.is), sin cookies.
 
 **¿Qué navegador necesito?** Chrome, Edge, Brave u Opera de escritorio. Firefox y Safari no tienen WebUSB.
 

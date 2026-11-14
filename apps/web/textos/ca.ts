@@ -172,7 +172,7 @@ export const ca: Textos = {
       },
       {
         pregunta: "S'envien les meves dades a algun lloc?",
-        respuesta: "La connexió va del navegador al mòbil pel cable. La llista de paquets del teu mòbil no surt del teu ordinador.",
+        respuesta: "La connexió va del navegador al mòbil pel cable. La llista de paquets del teu mòbil no surt del teu ordinador. La web només compta visites de manera anònima, sense galetes.",
       },
       {
         pregunta: "Es pot fer sense ordinador?",
