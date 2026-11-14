@@ -466,6 +466,14 @@ export const fr: Textos = {
     conCable: "Utiliser Poda avec câble",
   },
 
+  estadisticas: {
+    metaTitulo: "Visites du site de Poda",
+    metaDescripcion: "Combien de personnes visitent le site de Poda, comptées de façon anonyme et sans cookies.",
+    etiqueta: "Statistiques",
+    titulo: "Visites du site",
+    lead: "Combien de personnes ouvrent chaque page de Poda. Le comptage est anonyme et sans cookies, avec Umami. Rien de votre téléphone n’arrive ici : la liste des applis ne quitte pas votre ordinateur.",
+    abrir: "Ouvrir le tableau de bord dans un nouvel onglet",
+  },
   rescate: {
     metaTitulo: "Mon téléphone reste bloqué sur le logo après avoir retiré des applis  comment le récupérer",
     metaDescripcion:

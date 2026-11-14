@@ -466,6 +466,14 @@ export const ca: Textos = {
     conCable: "Fer servir Poda amb cable",
   },
 
+  estadisticas: {
+    metaTitulo: "Visites al web de Poda",
+    metaDescripcion: "Quantes persones visiten el web de Poda, comptades de manera anònima i sense galetes.",
+    etiqueta: "Estadístiques",
+    titulo: "Visites al web",
+    lead: "Quantes persones obren cada pàgina de Poda. Es compta de manera anònima i sense galetes amb Umami. Res del teu mòbil arriba aquí: la llista d’apps no surt del teu ordinador.",
+    abrir: "Obrir el tauler en una pestanya nova",
+  },
   rescate: {
     metaTitulo: "El meu mòbil es queda al logotip després de treure apps: com recuperar-lo",
     metaDescripcion:

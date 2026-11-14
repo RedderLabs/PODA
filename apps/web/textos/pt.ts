@@ -466,6 +466,14 @@ export const pt: Textos = {
     conCable: "Usar o Poda com cabo",
   },
 
+  estadisticas: {
+    metaTitulo: "Visitas ao site do Poda",
+    metaDescripcion: "Quantas pessoas visitam o site do Poda, contadas de forma anônima e sem cookies.",
+    etiqueta: "Estatísticas",
+    titulo: "Visitas ao site",
+    lead: "Quantas pessoas abrem cada página do Poda. A contagem é anônima e sem cookies, com o Umami. Nada do seu celular chega aqui: a lista de apps não sai do seu computador.",
+    abrir: "Abrir o painel em uma nova aba",
+  },
   rescate: {
     metaTitulo: "Meu celular travou no logo depois de remover apps: como recuperar",
     metaDescripcion:

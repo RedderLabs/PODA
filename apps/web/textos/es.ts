@@ -469,6 +469,14 @@ export const es = {
     conCable: "Usar Poda con cable",
   },
 
+  estadisticas: {
+    metaTitulo: "Visitas a la web de Poda",
+    metaDescripcion: "Cuántas personas visitan la web de Poda, contado de forma anónima y sin cookies.",
+    etiqueta: "Estadísticas",
+    titulo: "Visitas a la web",
+    lead: "Cuántas personas abren cada página de Poda. Se cuenta de forma anónima y sin cookies con Umami. Nada de tu móvil llega aquí: la lista de apps no sale de tu ordenador.",
+    abrir: "Abrir el panel en una pestaña nueva",
+  },
   rescate: {
     metaTitulo: "Mi móvil se queda en el logo después de quitar apps: cómo recuperarlo",
     metaDescripcion:

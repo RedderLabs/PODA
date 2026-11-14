@@ -466,6 +466,14 @@ export const en: Textos = {
     conCable: "Use Poda with a cable",
   },
 
+  estadisticas: {
+    metaTitulo: "Visits to the Poda website",
+    metaDescripcion: "How many people visit the Poda website, counted anonymously and without cookies.",
+    etiqueta: "Statistics",
+    titulo: "Website visits",
+    lead: "How many people open each Poda page. Counted anonymously and without cookies using Umami. Nothing from your phone ends up here: your app list never leaves your computer.",
+    abrir: "Open the dashboard in a new tab",
+  },
   rescate: {
     metaTitulo: "My phone is stuck on the logo after removing apps: how to recover it",
     metaDescripcion:
