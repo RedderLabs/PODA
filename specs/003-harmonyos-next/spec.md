@@ -76,7 +76,7 @@ Por eso no se propone construir ya «quitar» en HarmonyOS NEXT, sino ir por fas
 | Requisito | Cómo se comprobó |
 |---|---|
 | R-001 | Pruebas «003 R-001» de `apps/web/test/textos.test.mjs` (fallaban antes). `pnpm build` genera `/harmonyos-next/` en los cinco idiomas y la añade al sitemap |
-| R-002 | Prueba «003 R-002»: los cinco idiomas enlazan la guía. La nota se pinta en las pantallas de inicio y de error de `Conectar.tsx`. **Falta verla en un navegador** |
+| R-002 | Prueba «003 R-002»: los cinco idiomas enlazan la guía. La nota se pinta en las pantallas de inicio y de error de `Conectar.tsx`. Vista en el navegador en la pantalla de error (local, 15 de noviembre de 2026) |
 | R-003 | Revisión: README.md, README.en.md, COMPATIBILIDAD.md y PROMPT.md enlazan la guía y siguen diciendo que Poda no se conecta |
 
 Nada de la guía se ha comprobado en un HarmonyOS NEXT real: se basa en la página de soporte de Huawei, que no indica versión.
