@@ -12,6 +12,21 @@ export const cargarDetalles = () =>
     .then((r) => r.json() as Promise<Detalles>)
     .catch(() => ({}) as Detalles));
 
+/** paquete → descripción traducida (specs/007). En inglés no hay archivo: se usan las de detalles.json. */
+export type Descripciones = Record<string, string>;
+const descripcionesPromesa = new Map<string, Promise<Descripciones>>();
+export function cargarDescripciones(idioma: string): Promise<Descripciones> {
+  if (idioma === "en") return Promise.resolve({});
+  let p = descripcionesPromesa.get(idioma);
+  if (!p) {
+    p = fetch(`/descripciones-${idioma}.json`)
+      .then((r) => (r.ok ? (r.json() as Promise<Descripciones>) : {}))
+      .catch(() => ({}));
+    descripcionesPromesa.set(idioma, p);
+  }
+  return p;
+}
+
 // ------------------------------------------------------------- copias en el navegador
 const clave = (serie: string) => `poda:copias:${serie}`;
 const MAX_COPIAS = 5;

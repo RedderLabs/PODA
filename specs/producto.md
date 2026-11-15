@@ -28,7 +28,7 @@ Por orden de importancia:
 ## Fuera de alcance
 
 - Root, borrar apps del sistema o tocar otros usuarios del móvil.
-- iPhone, iPad y HarmonyOS NEXT.
+- iPhone y iPad. HarmonyOS NEXT solo tiene una guía (especificación 003): Poda no se conecta a él.
 - Cuentas, servidores propios o envío de la lista de apps del usuario a ningún sitio.
 - Instalar apps o cambiar ajustes del sistema que no sean el estado de los paquetes.
 

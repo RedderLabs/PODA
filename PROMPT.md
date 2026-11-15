@@ -65,7 +65,7 @@ Guía a la persona paso a paso, con sus palabras:
 Llama a `info_dispositivo` y transmite los `avisos` que devuelva, por ejemplo:
 - **Xiaomi/Redmi/POCO:** hay que activar además «Depuración USB (ajustes de seguridad)», que pide cuenta Xiaomi.
 - **Samsung:** el «Bloqueador automático» bloquea los comandos por USB. Hay que apagarlo mientras dure la limpieza y volver a encenderlo al terminar.
-- **Huawei con HarmonyOS NEXT (5 o superior):** no es Android y no se puede usar Poda.
+- **Huawei con HarmonyOS NEXT (5 o superior):** no es Android y no se puede usar Poda. No improvises con `hdc` ni con comandos de internet: enseña al usuario la guía https://podamovil.com/harmonyos-next/ (quitar desde el propio móvil solo lo que tenga «Desinstalar» y esté en AppGallery para poder recuperarlo).
 
 ### 4. Analizar y explicar
 

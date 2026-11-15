@@ -30,6 +30,7 @@ The website and the docs are in Spanish for now. The tool itself works with any 
 | Claude Code (or another assistant that runs commands) | **[The prompt](#with-claude-or-another-assistant)** |
 | Android 11+ and no computer | **[Without a computer](https://podamovil.com/sin-pc/)**: Shizuku + Canta, plus Poda's do-not-touch list |
 | An iPhone | iOS doesn't allow this. What you *can* delete by hand is in [COMPATIBILIDAD.md](COMPATIBILIDAD.md#apple-iphone-y-ipad) |
+| A Huawei with HarmonyOS NEXT | Poda can't connect to it yet. What you can remove from the phone itself is in **[the guide](https://podamovil.com/en/harmonyos-next/)** |
 
 ## How it works
 
@@ -57,7 +58,7 @@ The assistant uses Poda's MCP server, which refuses to apply anything without a 
 
 ## What Poda never touches
 
-The starting list is [Universal Android Debloater Next Generation](https://github.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation). Poda hardens it for non-technical users: system boot and settings, home screen launchers, setup wizards, calls/data/carrier and Google services are **never** touched; keyboard, phone, SMS, contacts, clock, browser, camera and gallery are **expert-only, with a warning**; apps with a launcher icon are **unchecked by default**.
+The starting list is [Universal Android Debloater Next Generation](https://github.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation). Poda hardens it for non-technical users: system boot and settings, home screen launchers, setup wizards, data/carrier, Google services and, from any brand, **the apps for calls, SMS and MMS, contacts, the SIM menu and location (GPS)** are **never** touched, on any phone or profile, so the phone can always make calls; keyboard, clock, browser, camera and gallery are **expert-only, with a warning**; choosing a profile ticks the safe apps and the advanced manufacturer, carrier and third-party apps; you tick the base Android, Google and expert ones yourself, and the ones you can see on your phone are tagged "has icon".
 
 The list lives in [`packages/nucleo/src/protecciones.ts`](packages/nucleo/src/protecciones.ts) and is published as open data at [podamovil.com/protegidas.json](https://podamovil.com/protegidas.json) for any other tool to use.
 

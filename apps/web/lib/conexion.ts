@@ -2,6 +2,7 @@
 import { Adb, AdbDaemonTransport } from "@yume-chan/adb";
 import { AdbDaemonWebUsbDevice, AdbDaemonWebUsbDeviceManager } from "@yume-chan/adb-daemon-webusb";
 import AdbWebCredentialStore from "@yume-chan/adb-credential-web";
+import { estadosDe, paquetesDe } from "@poda/nucleo";
 
 /** Lo mínimo que necesita la web del móvil. Así el modo demo puede imitarlo. */
 export interface Movil {
@@ -13,6 +14,16 @@ export interface Movil {
   /** Reinicia el móvil (como `adb reboot`). La conexión se corta y vuelve cuando el móvil arranca. */
   reiniciar(): Promise<void>;
   desconectado: Promise<void>;
+}
+
+/** Estado de cada paquete para el usuario 0: instalado, desactivado o quitado. */
+export async function leerEstados(movil: Movil) {
+  const [todos, presentes, desactivados] = await Promise.all([
+    movil.shell(["pm", "list", "packages", "-u", "--user", "0"]),
+    movil.shell(["pm", "list", "packages", "--user", "0"]),
+    movil.shell(["pm", "list", "packages", "-d", "--user", "0"]),
+  ]);
+  return estadosDe(paquetesDe(todos), paquetesDe(presentes), paquetesDe(desactivados));
 }
 
 /** Espera a que Android termine de arrancar (después de un reinicio, adb responde antes que el sistema). */
@@ -118,6 +129,7 @@ const DEMO_PAQUETES = [
   "com.netflix.partner.activation", "com.google.android.apps.youtube.music", "com.google.android.videos",
   "com.miui.bugreport", "com.miui.hybrid", "com.miui.miservice", "com.xiaomi.joyose", "com.miui.notes",
   "com.android.chrome", "com.android.settings", "com.android.systemui", "com.miui.home", "com.android.phone",
+  "com.google.android.inputmethod.latin",
 ];
 
 /** Móvil de ejemplo: responde como uno de verdad y recuerda lo que se quita, se desactiva o se restaura. */
@@ -125,6 +137,7 @@ export function movilDemo(): Movil {
   const presentes = new Set(DEMO_PAQUETES);
   const desactivados = new Set<string>();
   const todos = new Set([...DEMO_PAQUETES, "com.miui.compass"]);
+  const VUELVE_SOLA = "com.facebook.appmanager";
   const NO_SE_DEJA = "com.miui.daemon"; // como en algunos Xiaomi: no se deja quitar, pero sí desactivar
   const lista = (s: Set<string>) => [...s].map((p) => "package:" + p).join("\n");
   return {
@@ -136,6 +149,8 @@ export function movilDemo(): Movil {
       const p = args.at(-1) ?? "";
       const c = args.slice(0, -1).join(" ");
       if (args[0] === "getprop" && args[1] === "sys.boot_completed") return "1";
+      if (args[2] === "resolve-activity") return presentes.has("com.miui.home") ? "priority=0 preferredOrder=0 match=0x108000\ncom.miui.home/.launcher.Launcher" : "No activity found";
+      if (args[0] === "settings" && args.at(-1) === "default_input_method") return "com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME";
       if (args[2] === "query-activities") {
         const conIcono = ["com.android.chrome", "com.facebook.katana", "com.mi.globalbrowser", "com.miui.notes", "com.miui.player", "com.miui.videoplayer", "com.miui.weather2", "com.netflix.partner.activation", "com.google.android.apps.youtube.music", "com.android.settings"];
         return `${conIcono.length} activities found:\n` + conIcono.filter((p) => presentes.has(p)).map((p, i) => `  Activity #${i}:\n    ${p}/.Main`).join("\n");
@@ -171,7 +186,10 @@ export function movilDemo(): Movil {
       return "";
     },
     cerrar: async () => {},
-    reiniciar: async () => {},
+    // Como hacen algunos móviles al arrancar: esta app vuelve sola si se quitó (specs/008 R-007).
+    reiniciar: async () => {
+      if (!presentes.has(VUELVE_SOLA)) presentes.add(VUELVE_SOLA);
+    },
     desconectado: new Promise(() => {}),
   };
 }

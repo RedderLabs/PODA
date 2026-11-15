@@ -3,7 +3,7 @@
 Resumen rápido:
 
 - **Android:** compatible prácticamente cualquier móvil. Poda no depende del modelo, sino de que el móvil acepte adb. La lista sabe qué hacer con unos 5.400 paquetes.
-- **Huawei con HarmonyOS NEXT:** no compatible, porque ya no es Android.
+- **Huawei con HarmonyOS NEXT:** no compatible, porque ya no es Android. Lo que se puede quitar desde el propio móvil está en [la guía](https://podamovil.com/harmonyos-next/).
 - **iPhone y iPad:** no se puede hacer lo mismo. Apple solo deja borrar algunas apps a mano (detalles al final).
 
 ## Requisitos
@@ -23,22 +23,22 @@ Todos los móviles Android pasan por el mismo proceso. Lo que cambia es cuántos
 
 | Fabricante | Paquetes conocidos | Seguro | Avanzado | Experto | Bloqueado | Nota |
 |---|---:|---:|---:|---:|---:|---|
-| Samsung (One UI) | 808 | 480 | 220 | 73 | 35 | Desactivar «Bloqueador automático» mientras se usa (One UI 6+). |
-| OPPO, realme y OnePlus (ColorOS / OxygenOS / realme UI) | 456 | 216 | 91 | 135 | 14 | |
-| Huawei (EMUI / HarmonyOS 4 o anterior) | 239 | 162 | 48 | 22 | 7 | HarmonyOS NEXT (5+) no es Android: no compatible. |
-| Xiaomi, Redmi y POCO (HyperOS / MIUI) | 229 | 154 | 41 | 24 | 10 | Activar también «Depuración USB (ajustes de seguridad)»; pide cuenta Xiaomi. |
-| LG | 182 | 101 | 45 | 30 | 6 | |
+| Samsung (One UI) | 808 | 479 | 214 | 71 | 44 | Desactivar «Bloqueador automático» mientras se usa (One UI 6+). |
+| OPPO, realme y OnePlus (ColorOS / OxygenOS / realme UI) | 456 | 216 | 86 | 137 | 17 | |
+| Huawei (EMUI / HarmonyOS 4 o anterior) | 239 | 162 | 46 | 21 | 10 | HarmonyOS NEXT (5+) no es Android: no compatible. |
+| Xiaomi, Redmi y POCO (HyperOS / MIUI) | 229 | 153 | 40 | 24 | 12 | Activar también «Depuración USB (ajustes de seguridad)»; pide cuenta Xiaomi. |
+| LG | 182 | 101 | 44 | 31 | 6 | |
 | Motorola | 175 | 94 | 52 | 17 | 12 | |
-| Google Pixel | 150 | 43 | 44 | 42 | 21 | Poco bloatware; casi todo son servicios de Google. |
-| vivo e iQOO (Funtouch / OriginOS) | 149 | 100 | 16 | 24 | 9 | |
-| Sony Xperia | 140 | 68 | 30 | 36 | 6 | |
+| Google Pixel | 150 | 43 | 44 | 41 | 22 | Poco bloatware; casi todo son servicios de Google. |
+| vivo e iQOO (Funtouch / OriginOS) | 149 | 100 | 16 | 22 | 11 | |
+| Sony Xperia | 140 | 68 | 29 | 35 | 8 | |
 | Nokia / HMD | 122 | 25 | 9 | 88 | 0 | La mayoría de su lista está en nivel experto. |
-| TCL y Alcatel | 113 | 42 | 20 | 51 | 0 | |
-| ZTE y nubia | 111 | 62 | 22 | 23 | 4 | |
-| Tecno, Infinix e itel (Transsion) | 101 | 64 | 27 | 9 | 1 | |
-| ASUS (ZenUI / ROG) | 86 | 52 | 10 | 19 | 5 | |
-| Honor (MagicOS) | 85 | 47 | 21 | 11 | 6 | |
-| Lenovo (ZUI) | 73 | 43 | 22 | 6 | 2 | |
+| TCL y Alcatel | 113 | 42 | 19 | 51 | 1 | |
+| ZTE y nubia | 111 | 62 | 20 | 23 | 6 | |
+| Tecno, Infinix e itel (Transsion) | 101 | 64 | 25 | 10 | 2 | |
+| ASUS (ZenUI / ROG) | 86 | 52 | 7 | 20 | 7 | |
+| Honor (MagicOS) | 85 | 46 | 20 | 11 | 8 | |
+| Lenovo (ZUI) | 73 | 43 | 19 | 7 | 4 | |
 | Meizu (Flyme) | 39 | 26 | 5 | 7 | 1 | |
 | Nothing (Nothing OS) | 24 | 10 | 7 | 5 | 2 | |
 | Blackview | 23 | 18 | 4 | 1 | 0 | |
@@ -62,7 +62,7 @@ Los niveles vienen de la lista de Universal Android Debloater Next Generation (e
 
 - **Samsung:** desde One UI 6, el «Bloqueador automático» (Ajustes → Seguridad y privacidad) bloquea los comandos que llegan por USB. Hay que apagarlo mientras dure la limpieza y volver a encenderlo al terminar. En los Galaxy que salen de fábrica con One UI 6.1.1 viene activado por defecto.
 - **Xiaomi, Redmi y POCO:** además de «Depuración USB» hay que activar «Depuración USB (ajustes de seguridad)», que pide iniciar sesión con cuenta Xiaomi. Las actualizaciones del sistema suelen volver a apagarlo.
-- **Huawei:** los modelos con EMUI o HarmonyOS 4.x o anterior son Android y funcionan. HarmonyOS NEXT (5 o superior, por ejemplo la serie Mate 70 en China) ya no lleva Android y usa su propia herramienta en lugar de adb, así que **no es compatible**. Los Huawei que se venden en España siguen con EMUI.
+- **Huawei:** los modelos con EMUI o HarmonyOS 4.x o anterior son Android y funcionan. HarmonyOS NEXT (5 o superior, por ejemplo la serie Mate 70 en China) ya no lleva Android y usa su propia herramienta en lugar de adb, así que **no es compatible**: no deja desactivar apps ni tiene un comando para volver a poner una app de serie, y Poda no quita nada sin vuelta atrás. Lo que se puede hacer desde el propio móvil está en [la guía](https://podamovil.com/harmonyos-next/). Los Huawei que se venden en España siguen con EMUI.
 - **Cualquier marca:** algunos paquetes no se dejan quitar pero sí desactivar. Poda lo intenta en ese orden de forma automática.
 
 ## Apple (iPhone y iPad)

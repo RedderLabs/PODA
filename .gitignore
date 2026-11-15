@@ -9,6 +9,10 @@ apps/mcp/data/
 apps/web/public/lista.json
 apps/web/public/detalles.json
 apps/web/public/protegidas.json
+apps/web/public/descripciones-*.json
+# Lotes de trabajo de las traducciones (scripts/descripciones.mjs); lo que vale es data/descripciones/<idioma>.json
+data/descripciones/lotes/
+data/descripciones/partes/
 .poda/
 
 # Archivos de trabajo que no van al repositorio
