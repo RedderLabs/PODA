@@ -11,9 +11,9 @@
 
 | Requisito | Solución | Prueba |
 |---|---|---|
-| R-001 | Textos con formas + `Intl.PluralRules` | `nucleo.test.mjs` «002 R-001 CA-1…CA-4», con los textos reales de la web |
+| R-001 | Textos con formas + `Intl.PluralRules` | `nucleo.test.mjs` «002 R-001» (reglas de cada idioma) y `apps/web/test/textos.test.mjs` «002 R-001» (textos reales) |
 | R-002 | `formatear` | `nucleo.test.mjs` «002 R-002 CA-1…CA-3» |
-| R-003 | Prueba de coherencia de los textos | `apps/web/test/textos.test.mjs` «002 R-003» |
+| R-003 | Prueba de coherencia de los textos | `apps/web/test/textos.test.mjs` «002 R-003» y «002 R-001» |
 
 ## Riesgos y decisiones
 
