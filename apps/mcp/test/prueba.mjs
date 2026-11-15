@@ -1,7 +1,7 @@
 // Prueba de extremo a extremo: arranca el servidor MCP con un adb simulado y recorre el flujo completo.
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, mkdirSync, writeFileSync, existsSync, readFileSync } from "node:fs";
 import { crearCopiaEstado } from "@poda/nucleo";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
@@ -26,8 +26,8 @@ let ok = 0;
 const paso = (n) => { ok++; console.log("✓", n); };
 
 const herramientas = (await c.listTools()).tools.map((t) => t.name).sort();
-assert.deepEqual(herramientas, ["analizar", "aplicar", "conectar_wifi", "crear_copia", "dispositivos", "emparejar_wifi", "explicar_paquete", "info_dispositivo", "listar_copias", "restaurar"]);
-paso("10 herramientas registradas");
+assert.deepEqual(herramientas, ["analizar", "aplicar", "conectar_wifi", "crear_copia", "dejar_fondo", "dispositivos", "emparejar_wifi", "explicar_paquete", "info_dispositivo", "listar_copias", "restaurar"]);
+paso("11 herramientas registradas");
 assert.equal((await c.listPrompts()).prompts[0].name, "limpiar_movil"); paso("prompt limpiar_movil");
 
 let r = await llamar("dispositivos"); assert.equal(r.j[0].serie, "ABC123"); paso("dispositivos");
@@ -107,6 +107,23 @@ r = await llamar("restaurar", { copia: archivo });
 assert.equal(r.j.hechos.length, 0); assert.equal(r.j.fallidos.length, 0); assert.ok(r.j.sin_cambios > 0);
 paso("R-002 CA-3 y CA-4: no quita lo que en la copia estaba quitado y cuenta lo que no cambia");
 
+// Especificación 010: fondo de recuerdo.
+const archivosFalsos = () => (existsSync(join(tmp, "estado.json.archivos.json")) ? JSON.parse(readFileSync(join(tmp, "estado.json.archivos.json"), "utf8")) : { copiados: {}, ordenes: [] });
+r = await llamar("dejar_fondo");
+assert.equal(r.j.modo, "simulacion"); assert.deepEqual(archivosFalsos().copiados, {});
+paso("010 R-001 CA-2: sin confirmar no copia nada");
+r = await llamar("dejar_fondo", { confirmar: true });
+assert.equal(r.j.copiado, true); assert.equal(r.j.ruta, "/sdcard/Pictures/Poda/poda-fondo.png");
+assert.match(r.j.pasos[0], /Galería/); assert.match(r.j.aviso, /no cambia/);
+r = await llamar("dejar_fondo", { confirmar: true });
+const af = archivosFalsos();
+assert.deepEqual(Object.keys(af.copiados), ["/sdcard/Pictures/Poda/poda-fondo.png"]);
+assert.ok(af.copiados["/sdcard/Pictures/Poda/poda-fondo.png"] > 10_000);
+assert.ok(af.ordenes.every((o) => o === "mkdir -p /sdcard/Pictures/Poda" || o === "am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file:///sdcard/Pictures/Poda/poda-fondo.png"), af.ordenes.join(" | "));
+paso("010 R-002: ruta fija, se sustituye (una sola copia) y no se ejecuta nada más; pasos de Xiaomi (R-003)");
+r = await llamar("analizar", { perfil: "experto" }); assert.equal(r.j.resumen.fuera_de_la_lista, 3);
+paso("010 R-002 CA-1: el fondo no toca ninguna app");
+
 await c.close();
 rmSync(tmp, { recursive: true, force: true });
 console.log(`\n${ok} comprobaciones superadas`);
@@ -123,5 +140,10 @@ assert.throws(() => cli("aplicar", "com.miui.msa.global", "--confirmar"));
 cli("copia");
 assert.equal(JSON.parse(cli("aplicar", "com.miui.msa.global", "--confirmar")).hechos[0].resultado, "quitado");
 assert.equal(JSON.parse(cli("restaurar", "com.miui.msa.global")).hechos[0].accion, "reinstalado");
+assert.equal(JSON.parse(cli("fondo")).modo, "simulacion");
+const fallo010 = JSON.parse(execFileSync(process.execPath, [join(aqui, "..", "dist", "cli.js"), "fondo", "--confirmar"], { env: { ...env, ADB_FALSO_PUSH_FALLA: "1" }, encoding: "utf8" }));
+assert.equal(fallo010.copiado, false); assert.match(fallo010.motivo, /^No se pudo copiar/);
+assert.equal(JSON.parse(cli("fondo", "--confirmar")).copiado, true);
 rmSync(tmp2, { recursive: true, force: true });
 console.log("✓ CLI: ayuda, analizar, simulación, exige copia, aplicar y restaurar");
+console.log("✓ 010 R-002 CA-3: poda fondo; si no se puede copiar lo dice en una frase");

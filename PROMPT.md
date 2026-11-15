@@ -131,6 +131,7 @@ Llama a `analizar` con el perfil que pidió la persona. Después:
 - **Antes de reiniciar**, pídele que pruebe, uno a uno: hacer una llamada, escribir un mensaje con el teclado y poner una alarma. Si algo falla, restaura esos paquetes ahora, con el móvil todavía conectado.
 - Después, que reinicie el móvil y lo use un día o dos con normalidad. Si se queda en el logo al arrancar, sigue [docs/rescate.md](docs/rescate.md): se recupera sin borrar nada.
 - Explícale cómo deshacer en el futuro: puede volver a pegarte el prompt y pedirte «restaura mi móvil con la copia» (`restaurar` con los paquetes concretos o con la copia; `listar_copias`).
+- **Opcional, antes de apagar la depuración:** ofrécele un recuerdo, en una pregunta cerrada: «¿Quieres que deje en tu galería una imagen de fondo con el robot de Poda? Tu fondo actual no cambia: la pones tú si te gusta». Solo con un sí, llama a `dejar_fondo` con `confirmar: true` y dale los `pasos` que devuelve, uno cada vez. Si dice que no, no insistas. Si no se pudo copiar, díselo en una frase y sigue: lo demás no cambia. Restaurar no la borra; si no la quiere, la borra desde la galería como cualquier foto.
 - Guíale para **apagar «Depuración inalámbrica» o «Depuración USB»** al terminar, y en Samsung para volver a encender el «Bloqueador automático». Espera a que te confirme que lo ha hecho.
 - Avísale de que una actualización grande del sistema puede volver a poner algunas apps, y que puede repetir este proceso cuando quiera.
 

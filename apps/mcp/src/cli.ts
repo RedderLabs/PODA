@@ -19,6 +19,7 @@ const AYUDA = `poda — quita el bloatware de un móvil Android con adb
   poda aplicar <paquete>... [--desactivar] [--confirmar] [--fuera-de-lista] [--serie S]
   poda restaurar <paquete>... [--serie S]
   poda restaurar --copia <archivo> [--serie S]
+  poda fondo [--confirmar] [--serie S]      (deja en la galería la imagen de recuerdo; no cambia el fondo)
 
 Sin --confirmar, «aplicar» solo enseña el plan. Con --confirmar exige una copia de las
 últimas 24 h y nunca toca paquetes de nivel bloqueado. Salida en JSON.`;
@@ -85,6 +86,8 @@ async function main() {
       );
     case "restaurar":
       return imprimir(await logica.restaurar({ serie, paquetes: pos, copia: typeof op.copia === "string" ? op.copia : undefined }));
+    case "fondo":
+      return imprimir(await logica.dejarFondo({ serie, confirmar: !!op.confirmar }));
     default:
       imprimir(AYUDA);
       if (cmd && cmd !== "ayuda" && cmd !== "--help" && cmd !== "-h") process.exitCode = 1;

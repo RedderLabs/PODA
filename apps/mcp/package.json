@@ -13,7 +13,7 @@
     "data"
   ],
   "scripts": {
-    "copiar-datos": "node -e \"require('fs').mkdirSync('data',{recursive:true});require('fs').copyFileSync('../../data/uad_lists.json','data/uad_lists.json')\"",
+    "copiar-datos": "node -e \"require('fs').mkdirSync('data',{recursive:true});require('fs').copyFileSync('../../data/uad_lists.json','data/uad_lists.json');require('fs').copyFileSync('../../data/poda-fondo.png','data/poda-fondo.png')\"",
     "build": "npm run copiar-datos && tsc && node -e \"for (const f of ['dist/index.js','dist/cli.js']) require('fs').chmodSync(f,0o755)\"",
     "test": "node test/prueba.mjs",
     "typecheck": "tsc --noEmit"

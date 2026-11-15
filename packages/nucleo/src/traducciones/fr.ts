@@ -105,4 +105,30 @@ export const fr: TextosNucleo = {
     soloCable: "Avec cette version d'Android, la connexion doit se faire par câble (le débogage sans fil arrive avec Android 11).",
   },
   capaPixel: "Android de Google (Pixel)",
+  fondo: {
+    pasos: {
+      xiaomi: [
+        "Ouvrez « Galerie » et allez dans l'album « Poda ».",
+        "Ouvrez l'image et touchez « Plus » (les trois points).",
+        "Touchez « Définir comme fond d'écran » et choisissez l'écran de verrouillage, l'écran d'accueil ou les deux.",
+      ],
+      samsung: [
+        "Ouvrez « Galerie » et allez dans l'album « Poda ».",
+        "Ouvrez l'image et touchez les trois points en bas à droite.",
+        "Touchez « Définir comme fond d'écran » et choisissez l'écran de verrouillage, l'écran d'accueil ou les deux.",
+      ],
+      oppo: [
+        "Ouvrez « Photos » et allez dans l'album « Poda ».",
+        "Ouvrez l'image et touchez « Plus ».",
+        "Touchez « Définir comme fond d'écran » et choisissez l'écran de verrouillage, l'écran d'accueil ou les deux.",
+      ],
+      general: [
+        "Ouvrez la galerie de photos (Galerie, Photos ou Google Photos) et cherchez le dossier « Poda ».",
+        "Ouvrez l'image et touchez le menu (les trois points).",
+        "Cherchez « Utiliser comme » ou « Définir comme fond d'écran » et choisissez l'écran.",
+      ],
+    },
+    noAparece: "Si vous ne la voyez pas, attendez quelques minutes ou cherchez-la dans l'app « Fichiers », dans Images › Poda.",
+    borrar: "Si vous n'en voulez pas, supprimez-la depuis la galerie comme n'importe quelle photo. Restaurer les apps ne la supprime pas.",
+  },
 };

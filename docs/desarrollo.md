@@ -33,6 +33,8 @@ data/
   uad_lists.json    lista de apps (de UAD-ng, GPL-3.0)
   fabricantes.json  prefijos de paquete por fabricante
   resumen.json      recuento por fabricante y nivel (generado)
+  poda-fondo.png    fondo de recuerdo para el MCP (specs/010). Es copia de apps/web/out/poda-fondo.png:
+                    si cambias el robot, compila y vuelve a copiarla
 docs/               guías (restaurar, rescate, problemas, sin ordenador…) e imágenes del README
 PROMPT.md           prompt para Claude e instrucciones que sigue el asistente
 COMPATIBILIDAD.md   requisitos, fabricantes, avisos por marca y Apple

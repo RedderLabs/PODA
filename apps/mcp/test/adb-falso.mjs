@@ -24,6 +24,16 @@ const out = (s) => { process.stdout.write(s.replace(/\n/g, "\r\n") + "\r\n"); gu
 if (a[0] === "devices") out("List of devices attached\nABC123 device usb:1-1 product:garnet model:Redmi_Note_13_Pro_5G device:garnet transport_id:1");
 if (a[0] === "pair") out(`Successfully paired to ${a[1]} [guid=adb-ABC123]`);
 if (a[0] === "connect") out(`connected to ${a[1]}`);
+// Archivos copiados al móvil (ruta → tamaño) y órdenes de shell que no son de paquetes, para comprobar el fondo (specs/010).
+const FA = F + ".archivos.json";
+const archivos = existsSync(FA) ? JSON.parse(readFileSync(FA, "utf8")) : { copiados: {}, ordenes: [] };
+const guardarArchivos = () => writeFileSync(FA, JSON.stringify(archivos));
+if (a[0] === "-s" && a[2] === "push") {
+  if (process.env.ADB_FALSO_PUSH_FALLA) { process.stderr.write("adb: error: failed to copy: remote couldn't create file: Permission denied\n"); process.exit(1); }
+  archivos.copiados[a[4]] = readFileSync(a[3]).length; guardarArchivos();
+  out(`${a[3]}: 1 file pushed, 0 skipped.`);
+}
+if (a[0] === "-s" && a[2] === "shell" && (a[3] === "mkdir" || a[3] === "am")) { archivos.ordenes.push(a.slice(3).join(" ")); guardarArchivos(); out(""); }
 if (a[0] !== "-s" || a[2] !== "shell") { process.stderr.write("uso no soportado\n"); process.exit(1); }
 const c = a.slice(3).join(" ");
 if (c === "getprop") out("[ro.product.manufacturer]: [Xiaomi]\n[ro.product.brand]: [Redmi]\n[ro.product.model]: [23117RA68G]\n[ro.build.version.release]: [14]\n[ro.build.version.sdk]: [34]\n[ro.mi.os.version.name]: [OS1.0]");

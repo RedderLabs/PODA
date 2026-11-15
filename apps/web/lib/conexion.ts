@@ -2,7 +2,8 @@
 import { Adb, AdbDaemonTransport } from "@yume-chan/adb";
 import { AdbDaemonWebUsbDevice, AdbDaemonWebUsbDeviceManager } from "@yume-chan/adb-daemon-webusb";
 import AdbWebCredentialStore from "@yume-chan/adb-credential-web";
-import { estadosDe, paquetesDe } from "@poda/nucleo";
+import { ReadableStream } from "@yume-chan/stream-extra";
+import { COMANDO_AVISAR_GALERIA, COMANDO_CARPETA_FONDO, estadosDe, FONDO, paquetesDe } from "@poda/nucleo";
 
 /** Lo mínimo que necesita la web del móvil. Así el modo demo puede imitarlo. */
 export interface Movil {
@@ -13,7 +14,22 @@ export interface Movil {
   cerrar(): Promise<void>;
   /** Reinicia el móvil (como `adb reboot`). La conexión se corta y vuelve cuando el móvil arranca. */
   reiniciar(): Promise<void>;
+  /** Copia un archivo al móvil (como `adb push`). Si ya existe, lo sustituye. */
+  copiarArchivo(ruta: string, datos: Uint8Array): Promise<void>;
   desconectado: Promise<void>;
+}
+
+/**
+ * Deja el fondo de recuerdo en la galería del móvil (specs/010 R-002). Ruta fija del núcleo;
+ * no cambia el fondo actual. La imagen se descarga de la propia web, no de otro sitio.
+ */
+export async function dejarFondo(movil: Movil): Promise<void> {
+  const r = await fetch(`/${FONDO.archivo}`);
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const datos = new Uint8Array(await r.arrayBuffer());
+  await movil.shell([...COMANDO_CARPETA_FONDO]);
+  await movil.copiarArchivo(FONDO.ruta, datos);
+  await movil.shell([...COMANDO_AVISAR_GALERIA]).catch(() => ""); // si la marca lo ignora, la galería la verá más tarde
 }
 
 /** Estado de cada paquete para el usuario 0: instalado, desactivado o quitado. */
@@ -107,6 +123,20 @@ export async function conectar(dispositivo: AdbDaemonWebUsbDevice, alEsperarAuto
         /* la conexión se corta al reiniciar: es lo esperado */
       }
     },
+    copiarArchivo: async (ruta, datos) => {
+      const sync = await adb.sync();
+      try {
+        const file = new ReadableStream<Uint8Array>({
+          start(c) {
+            c.enqueue(datos);
+            c.close();
+          },
+        });
+        await sync.write({ filename: ruta, file, permission: 0o644 });
+      } finally {
+        await sync.dispose();
+      }
+    },
     desconectado: adb.disconnected,
   };
 }
@@ -189,6 +219,9 @@ export function movilDemo(): Movil {
     // Como hacen algunos móviles al arrancar: esta app vuelve sola si se quitó (specs/008 R-007).
     reiniciar: async () => {
       if (!presentes.has(VUELVE_SOLA)) presentes.add(VUELVE_SOLA);
+    },
+    copiarArchivo: async () => {
+      await new Promise((r) => setTimeout(r, 600)); // como si copiara por el cable
     },
     desconectado: new Promise(() => {}),
   };

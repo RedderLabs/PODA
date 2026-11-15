@@ -319,6 +319,17 @@ export const ca: Textos = {
     enRedes: "O comparteix-lo directament a:",
   },
 
+  fondo: {
+    etiqueta: "Un record, si vols",
+    titulo: "Un fons amb el robot de Poda",
+    texto: "Poda pot deixar aquesta imatge a la galeria del mòbil, a la carpeta «Poda». El teu fons actual no canvia: el poses tu, si t'agrada.",
+    alt: "El robot de Poda, content, sobre fons clar",
+    boton: "Desar el fons al mòbil",
+    copiando: "Copiant la imatge…",
+    listo: "Desada a la galeria, a la carpeta «Poda». Per posar-la de fons:",
+    fallo: "No s'ha pogut copiar la imatge al mòbil. La resta no ha canviat.",
+  },
+
   podar: {
     leyendo: "Llegint les apps de {nombre}…",
     errorEtiqueta: "Alguna cosa no ha anat bé",

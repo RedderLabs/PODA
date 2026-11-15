@@ -165,3 +165,13 @@ test("009 R-005: textos de «Antes y después» en los cinco idiomas", () => {
     assert.match(t.podar.compTexto, /\{fecha\}/, `${idioma}: la fecha de la copia`);
   }
 });
+
+test("010 R-007: el bloque del fondo de recuerdo está en los cinco idiomas y dice que el fondo actual no cambia", () => {
+  const claves = Object.keys(es.fondo);
+  for (const [idioma, d] of Object.entries({ es, ...OTROS })) {
+    assert.deepEqual(Object.keys(d.fondo ?? {}), claves, `${idioma}: claves de fondo`);
+    for (const k of claves) assert.ok(d.fondo[k].trim(), `${idioma}: fondo.${k} vacío`);
+  }
+  // R-001 CA-3: en español, el texto dice que el fondo actual no cambia
+  assert.match(es.fondo.texto, /no cambia/);
+});

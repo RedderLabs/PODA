@@ -1,6 +1,6 @@
 # Fondo de recuerdo con el robot
 
-Estado: borrador (pedida por el usuario el 15 de noviembre de 2026).
+Estado: implementada, falta la revisión en móviles reales (pedida por el usuario el 15 de noviembre de 2026; aprobada el mismo día con una imagen fija de 1440 × 3200).
 
 ## Problema
 

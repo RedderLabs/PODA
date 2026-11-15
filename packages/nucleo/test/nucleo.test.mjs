@@ -397,3 +397,32 @@ test("009 R-001: antes y después frente a la copia, leído del móvil", () => {
   // R-003: tras restaurar, sin diferencias
   assert.deepEqual(compararConCopia(copia, new Map(Object.entries(copia.paquetes))).cambios, []);
 });
+
+// Especificación 010: fondo de recuerdo.
+import { FONDO, COMANDO_CARPETA_FONDO, COMANDO_AVISAR_GALERIA, MARCAS_FONDO, marcaFondo } from "../dist/index.js";
+
+test("010 R-002: la ruta del fondo es fija, dentro de Pictures/Poda, y los comandos no llevan nada variable", () => {
+  assert.equal(FONDO.ruta, "/sdcard/Pictures/Poda/poda-fondo.png");
+  assert.equal(FONDO.ruta, `${FONDO.carpeta}/${FONDO.archivo}`);
+  assert.deepEqual([FONDO.ancho, FONDO.alto], [1440, 3200]);
+  for (const arg of [...COMANDO_CARPETA_FONDO, ...COMANDO_AVISAR_GALERIA]) assert.match(arg, /^[A-Za-z0-9_./:-]+$/, arg);
+});
+
+test("010 R-003: pasos propios para Xiaomi, Samsung y OPPO, y generales para el resto", () => {
+  assert.equal(marcaFondo("xiaomi"), "xiaomi");
+  assert.equal(marcaFondo("samsung"), "samsung");
+  assert.equal(marcaFondo("oplus"), "oppo");
+  assert.equal(marcaFondo("motorola"), "general");
+  assert.equal(marcaFondo("otra"), "general");
+});
+
+test("010 R-007: los textos del fondo están en todos los idiomas", () => {
+  for (const idioma of IDIOMAS) {
+    const f = TEXTOS_NUCLEO[idioma].fondo;
+    for (const m of MARCAS_FONDO) {
+      assert.equal(f?.pasos?.[m]?.length, TEXTOS_NUCLEO.es.fondo.pasos[m].length, `${idioma}: fondo.pasos.${m}`);
+      assert.ok(f.pasos[m].every((x) => x.trim()), `${idioma}: fondo.pasos.${m} vacío`);
+    }
+    assert.ok(f.noAparece?.trim() && f.borrar?.trim(), `${idioma}: fondo.noAparece / fondo.borrar`);
+  }
+});

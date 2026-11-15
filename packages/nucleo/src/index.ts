@@ -7,3 +7,4 @@ export * from "./operaciones.js";
 export * from "./protecciones.js";
 export * from "./comprobar.js";
 export * from "./idiomas.js";
+export * from "./fondo.js";

@@ -38,6 +38,7 @@ import { rico } from "./Rico";
 import { useTextos } from "./Textos";
 import { useTraduccion } from "./usarTraduccion";
 import { Comparativa } from "./Comparativa";
+import { FondoRecuerdo } from "./FondoRecuerdo";
 import { cargarDescripciones, cargarDetalles, cargarLista, copiasGuardadas, descargarCopia, guardarCopiaLocal, type Descripciones, type Detalles } from "@/lib/datos";
 
 type Modo = "quitar" | "desactivar";
@@ -455,6 +456,7 @@ export function Podar({
             <Comparativa copia={paso.copia} ahora={estados} />
             <Resultados resultados={paso.resultados} />
             {mal.length > 0 && <p className="sub">{fmt(t.noSePudieron, { n: mal.length }, idioma)}</p>}
+            {ok.length > 0 && <FondoRecuerdo movil={movil} familia={ficha.familia} />}
           </div>
         </section>
       );
