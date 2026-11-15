@@ -3,7 +3,7 @@
 Resumen rápido:
 
 - **Android:** compatible prácticamente cualquier móvil. Poda no depende del modelo, sino de que el móvil acepte adb. La lista sabe qué hacer con unos 5.400 paquetes.
-- **Huawei con HarmonyOS NEXT:** no compatible, porque ya no es Android.
+- **Huawei con HarmonyOS NEXT:** no compatible, porque ya no es Android. Lo que se puede quitar desde el propio móvil está en [la guía](https://podamovil.com/harmonyos-next/).
 - **iPhone y iPad:** no se puede hacer lo mismo. Apple solo deja borrar algunas apps a mano (detalles al final).
 
 ## Requisitos
@@ -62,7 +62,7 @@ Los niveles vienen de la lista de Universal Android Debloater Next Generation (e
 
 - **Samsung:** desde One UI 6, el «Bloqueador automático» (Ajustes → Seguridad y privacidad) bloquea los comandos que llegan por USB. Hay que apagarlo mientras dure la limpieza y volver a encenderlo al terminar. En los Galaxy que salen de fábrica con One UI 6.1.1 viene activado por defecto.
 - **Xiaomi, Redmi y POCO:** además de «Depuración USB» hay que activar «Depuración USB (ajustes de seguridad)», que pide iniciar sesión con cuenta Xiaomi. Las actualizaciones del sistema suelen volver a apagarlo.
-- **Huawei:** los modelos con EMUI o HarmonyOS 4.x o anterior son Android y funcionan. HarmonyOS NEXT (5 o superior, por ejemplo la serie Mate 70 en China) ya no lleva Android y usa su propia herramienta en lugar de adb, así que **no es compatible**. Los Huawei que se venden en España siguen con EMUI.
+- **Huawei:** los modelos con EMUI o HarmonyOS 4.x o anterior son Android y funcionan. HarmonyOS NEXT (5 o superior, por ejemplo la serie Mate 70 en China) ya no lleva Android y usa su propia herramienta en lugar de adb, así que **no es compatible**: no deja desactivar apps ni tiene un comando para volver a poner una app de serie, y Poda no quita nada sin vuelta atrás. Lo que se puede hacer desde el propio móvil está en [la guía](https://podamovil.com/harmonyos-next/). Los Huawei que se venden en España siguen con EMUI.
 - **Cualquier marca:** algunos paquetes no se dejan quitar pero sí desactivar. Poda lo intenta en ese orden de forma automática.
 
 ## Apple (iPhone y iPad)

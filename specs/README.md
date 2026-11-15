@@ -30,3 +30,4 @@ Estados de una especificación: `borrador` → `aprobada` → `implementada` (o 
 |---|---|---|
 | 001 | [Aplicar y restaurar con las mismas reglas en todas las vías](001-mismas-reglas-en-todas-las-vias/spec.md) | implementada |
 | 002 | [Singular y plural en los textos de la web](002-singular-y-plural/spec.md) | implementada |
+| 003 | [Apps de serie en HarmonyOS NEXT](003-harmonyos-next/spec.md) | fase A implementada |

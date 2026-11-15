@@ -233,6 +233,7 @@ export const pt: Textos = {
     errorEtiqueta: "Não foi possível conectar",
     errorTitulo: "Algo deu errado.",
     errorConsejo: "Confira também se o cabo é de dados e se você aceitou o aviso na tela do celular.",
+    harmonyNext: "**Huawei com HarmonyOS 5 ou superior?** É o HarmonyOS NEXT, que já não é Android, e não vai aparecer na lista. [Veja o que você pode fazer](/harmonyos-next/).",
     reintentar: "Tentar de novo",
     errores: {
       ocupado:
@@ -464,6 +465,36 @@ export const pt: Textos = {
     logoTitulo: "Travou *no logo?*",
     recuperar: "Como recuperar",
     conCable: "Usar o Poda com cabo",
+  },
+
+  harmonyNext: {
+    metaTitulo: "Remover apps de fábrica no HarmonyOS NEXT (Huawei)",
+    metaDescripcion: "Os Huawei com HarmonyOS NEXT já não são Android e o Poda ainda não consegue se conectar a eles. Quais apps de fábrica você pode remover pelo próprio celular, quais é melhor manter e como recuperá-los.",
+    etiqueta: "Huawei · HarmonyOS NEXT",
+    titulo: "HarmonyOS NEXT: *o que dá para fazer.*",
+    lead: "Os Huawei com HarmonyOS NEXT (HarmonyOS 5 ou superior) já não usam Android, então o Poda ainda não consegue se conectar a eles. Mesmo assim, o próprio celular deixa desinstalar muitos apps de fábrica. Este guia mostra como fazer isso sem sustos.",
+    nota: "**Qual é o seu?** Veja em Configurações → Sobre o telefone. Se aparecer HarmonyOS 5 ou superior, siga este guia. Se aparecer EMUI ou HarmonyOS 4 ou anterior, seu celular é Android: [use o Poda com cabo](/conectar/).",
+    pasos: [
+      { titulo: "Antes de remover qualquer coisa, procure o app na AppGallery", texto: "No HarmonyOS NEXT não se conhece nenhuma forma de recolocar um app de fábrica pelo próprio celular. Se o app estiver na **AppGallery**, você poderá reinstalá-lo de lá. Se não estiver, ele só volta restaurando o celular para as configurações de fábrica: nesse caso, é melhor deixá-lo." },
+      { titulo: "Mantenha o ícone pressionado", texto: "Se aparecer **Desinstalar**, o sistema deixa remover. Se só aparecer a opção de tirá-lo da tela inicial, só o ícone some: o app continua no celular." },
+      { titulo: "Se não aparecer, veja nas Configurações", texto: "Configurações → Apps → Apps → escolha o app → **Desinstalar**. Se também não aparecer, é um app do sistema e não pode ser removido: deixe-o. Os nomes dos menus podem mudar um pouco conforme a versão." },
+      { titulo: "Para recuperá-lo", texto: "Abra a AppGallery, procure o app pelo nome e instale de novo. Normalmente os dados dele não voltam: são apagados ao desinstalar." },
+    ],
+    noQuitarTitulo: "Melhor não remover, *mesmo que dê.*",
+    noQuitarLead: "A Huawei não deixa desinstalar os apps do sistema nem alguns importantes, como Mensagens ou Câmera. Dos que dá para remover, é melhor manter estes:",
+    noQuitar: [
+      { titulo: "AppGallery", texto: "É a única forma de recuperar os outros apps." },
+      { titulo: "Serviços da Huawei (como o HMS Core), se aparecerem", texto: "Outros apps dependem deles: contas, pagamentos, notificações e mapas." },
+      { titulo: "Telefone, Mensagens e Contatos", texto: "Se você não tiver outro app para ligar e escrever, fica sem poder fazer isso." },
+      { titulo: "Relógio", texto: "Sem ele os alarmes não tocam." },
+      { titulo: "Câmera e Galeria", texto: "Podem ser sua única forma de tirar e ver fotos." },
+    ],
+    limitesTitulo: "O que o Poda não faz aqui",
+    limitesTexto: "O Poda não se conecta ao HarmonyOS NEXT. Esse sistema usa uma ferramenta de depuração própria (hdc) em vez do adb, não deixa desativar apps e não tem nenhum comando para recolocar um app de fábrica. Sem como desfazer, o Poda não remove nada: é a sua regra principal. Se surgir uma forma segura de fazer isso, vamos adicioná-la.",
+    comandosTexto: "Desconfie dos comandos que circulam na internet para «limpar» um Huawei: muitos são de Android e não funcionam aqui, e os que apagam arquivos do sistema podem deixar o celular sem ligar.",
+    otrosTitulo: "Tem outro *celular?*",
+    android: "Conectar um Android",
+    marcas: "O que cada marca traz",
   },
 
   estadisticas: {

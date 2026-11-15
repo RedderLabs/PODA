@@ -199,6 +199,7 @@ export function Conectar() {
               <li key={p}>{r(p)}</li>
             ))}
           </ol>
+          <p className="sub">{r(t.harmonyNext)}</p>
           </div>
         </section>
       );
@@ -264,6 +265,7 @@ export function Conectar() {
           <h1 className="titulo t-l">{t.errorTitulo}</h1>
           <p className="lead">{estado.mensaje}</p>
           <p className="sub">{t.errorConsejo}</p>
+          <p className="sub">{rico(t.harmonyNext, idioma)}</p>
           <div className="acciones">
             <button type="button" className="boton primario" onClick={conectarNuevo}>
               {t.reintentar}

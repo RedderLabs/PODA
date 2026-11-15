@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { r: "/conectar/", priority: 0.9 },
     { r: "/sin-pc/", priority: 0.7 },
     { r: "/rescate/", priority: 0.5 },
+    { r: "/harmonyos-next/", priority: 0.5 },
     { r: "/marcas/", priority: 0.8 },
     ...MARCAS.map((m) => ({ r: `/marcas/${m.slug}/`, priority: 0.7 })),
   ];

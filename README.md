@@ -28,6 +28,7 @@
 | Claude Code (u otro asistente que ejecute comandos) | **[El prompt](#con-claude-u-otro-asistente)**: pégalo y el asistente hace el resto |
 | Android 11 o superior y ningún ordenador | **[Sin ordenador](https://podamovil.com/sin-pc/)**: Shizuku + Canta, con la lista de Poda de lo que no se toca |
 | Un iPhone | No se puede hacer lo mismo. Lo que sí se puede, en [COMPATIBILIDAD.md](COMPATIBILIDAD.md#apple-iphone-y-ipad) |
+| Un Huawei con HarmonyOS NEXT | Poda aún no se conecta a él. Lo que puedes quitar desde el propio móvil, en **[la guía](https://podamovil.com/harmonyos-next/)** |
 | Curiosidad | **[Bloatware por marca](https://podamovil.com/marcas/)**: qué trae cada fabricante y qué se puede quitar |
 
 ## Cómo funciona
@@ -93,7 +94,7 @@ Cualquier Android 5.0 o superior que acepte depuración USB. Poda no depende del
 
 Y además LG, vivo, Sony, Nokia, TCL, ZTE, Transsion, ASUS, Honor, Lenovo, Meizu, Nothing y Blackview. A todas se suman las apps de operadoras, Google y terceros (Facebook, Netflix…). Tabla completa, requisitos y avisos por marca en **[COMPATIBILIDAD.md](COMPATIBILIDAD.md)**.
 
-No es compatible: iPhone y iPad (iOS no lo permite) ni Huawei con HarmonyOS NEXT (ya no es Android).
+No es compatible: iPhone y iPad (iOS no lo permite) ni Huawei con HarmonyOS NEXT (ya no es Android; [qué puedes hacer](https://podamovil.com/harmonyos-next/)).
 
 ## Lo que Poda nunca toca
 

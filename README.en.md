@@ -30,6 +30,7 @@ The website and the docs are in Spanish for now. The tool itself works with any 
 | Claude Code (or another assistant that runs commands) | **[The prompt](#with-claude-or-another-assistant)** |
 | Android 11+ and no computer | **[Without a computer](https://podamovil.com/sin-pc/)**: Shizuku + Canta, plus Poda's do-not-touch list |
 | An iPhone | iOS doesn't allow this. What you *can* delete by hand is in [COMPATIBILIDAD.md](COMPATIBILIDAD.md#apple-iphone-y-ipad) |
+| A Huawei with HarmonyOS NEXT | Poda can't connect to it yet. What you can remove from the phone itself is in **[the guide](https://podamovil.com/en/harmonyos-next/)** |
 
 ## How it works
 

@@ -233,6 +233,7 @@ export const en: Textos = {
     errorEtiqueta: "Couldn't connect",
     errorTitulo: "Something went wrong.",
     errorConsejo: "Also check that the cable is a data cable and that you accepted the prompt on your phone's screen.",
+    harmonyNext: "**Huawei with HarmonyOS 5 or later?** That's HarmonyOS NEXT, which is no longer Android, and it won't show up in the list. [See what you can do](/harmonyos-next/).",
     reintentar: "Try again",
     errores: {
       ocupado:
@@ -464,6 +465,36 @@ export const en: Textos = {
     logoTitulo: "Stuck *on the logo?*",
     recuperar: "How to recover it",
     conCable: "Use Poda with a cable",
+  },
+
+  harmonyNext: {
+    metaTitulo: "Removing preinstalled apps on HarmonyOS NEXT (Huawei)",
+    metaDescripcion: "Huawei phones with HarmonyOS NEXT are no longer Android, and Poda can't connect to them yet. Which preinstalled apps you can remove from the phone itself, which ones to keep and how to get them back.",
+    etiqueta: "Huawei · HarmonyOS NEXT",
+    titulo: "HarmonyOS NEXT: *what you can do.*",
+    lead: "Huawei phones with HarmonyOS NEXT (HarmonyOS 5 or later) no longer run Android, so Poda can't connect to them yet. Even so, the phone itself lets you uninstall many preinstalled apps. This guide shows you how to do it without nasty surprises.",
+    nota: "**Which one do you have?** Check Settings → About phone. If it says HarmonyOS 5 or later, follow this guide. If it says EMUI or HarmonyOS 4 or earlier, your phone runs Android: [use Poda with a cable](/conectar/).",
+    pasos: [
+      { titulo: "Before removing anything, look for it in AppGallery", texto: "On HarmonyOS NEXT there's no known way to put a preinstalled app back from the phone itself. If the app is in **AppGallery**, you can reinstall it from there. If it isn't, the only way back is a factory reset: in that case, leave it alone." },
+      { titulo: "Press and hold its icon", texto: "If **Uninstall** appears, the system lets you remove it. If you only get the option to remove it from the home screen, only the icon goes away: the app stays on the phone." },
+      { titulo: "If it doesn't appear, check Settings", texto: "Settings → Apps → Apps → pick the app → **Uninstall**. If it isn't there either, it's a system app and can't be removed: leave it. Menu names may vary slightly between versions." },
+      { titulo: "To get it back", texto: "Open AppGallery, search for the app by name and install it again. Its data usually doesn't come back: it's deleted when you uninstall." },
+    ],
+    noQuitarTitulo: "Better not remove these, *even if you can.*",
+    noQuitarLead: "Huawei doesn't let you uninstall system apps or some important ones, such as Messaging or Camera. Of the ones you can remove, it's best to keep these:",
+    noQuitar: [
+      { titulo: "AppGallery", texto: "It's the only way to get the other apps back." },
+      { titulo: "Huawei services (such as HMS Core), if you see them", texto: "Other apps depend on them: accounts, payments, notifications and maps." },
+      { titulo: "Phone, Messaging and Contacts", texto: "If you have no other app to call and text, you'll be unable to." },
+      { titulo: "Clock", texto: "Without it, alarms don't go off." },
+      { titulo: "Camera and Gallery", texto: "They may be your only way to take and view photos." },
+    ],
+    limitesTitulo: "What Poda doesn't do here",
+    limitesTexto: "Poda doesn't connect to HarmonyOS NEXT. That system uses its own debugging tool (hdc) instead of adb, doesn't let you disable apps and has no command to put a preinstalled app back. Without a way back, Poda removes nothing: that's its main rule. If a safe way to do it turns up, we'll add it.",
+    comandosTexto: "Be wary of commands going around online to \"clean up\" a Huawei: many are for Android and don't work here, and the ones that delete system files can leave the phone unable to boot.",
+    otrosTitulo: "Got another *phone?*",
+    android: "Connect an Android",
+    marcas: "What each brand ships",
   },
 
   estadisticas: {

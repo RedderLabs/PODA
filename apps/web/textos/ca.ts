@@ -233,6 +233,7 @@ export const ca: Textos = {
     errorEtiqueta: "No s'ha pogut connectar",
     errorTitulo: "Alguna cosa no ha anat bé.",
     errorConsejo: "Comprova també que el cable és de dades i que has acceptat l'avís a la pantalla del mòbil.",
+    harmonyNext: "**Huawei amb HarmonyOS 5 o superior?** És HarmonyOS NEXT, que ja no és Android, i no apareixerà a la llista. [Mira què pots fer](/harmonyos-next/).",
     reintentar: "Tornar-ho a provar",
     errores: {
       ocupado:
@@ -464,6 +465,36 @@ export const ca: Textos = {
     logoTitulo: "S'ha quedat *al logotip?*",
     recuperar: "Com recuperar-lo",
     conCable: "Fer servir Poda amb cable",
+  },
+
+  harmonyNext: {
+    metaTitulo: "Treure apps de sèrie a HarmonyOS NEXT (Huawei)",
+    metaDescripcion: "Els Huawei amb HarmonyOS NEXT ja no són Android i Poda encara no s'hi pot connectar. Quines apps de sèrie pots treure des del mateix mòbil, quines és millor deixar i com recuperar-les.",
+    etiqueta: "Huawei · HarmonyOS NEXT",
+    titulo: "HarmonyOS NEXT: *el que sí que pots fer.*",
+    lead: "Els Huawei amb HarmonyOS NEXT (HarmonyOS 5 o superior) ja no porten Android, així que Poda encara no s'hi pot connectar. Tot i això, el mateix mòbil deixa desinstal·lar moltes apps de sèrie. Aquesta guia t'explica com fer-ho sense ensurts.",
+    nota: "**Quin tens?** Mira a Configuració → Quant al telèfon. Si hi diu HarmonyOS 5 o superior, segueix aquesta guia. Si hi diu EMUI o HarmonyOS 4 o anterior, el teu mòbil és Android: [fes servir Poda amb cable](/conectar/).",
+    pasos: [
+      { titulo: "Abans de treure res, busca-la a AppGallery", texto: "A HarmonyOS NEXT no es coneix cap manera de tornar a posar una app de sèrie des del mateix mòbil. Si l'app és a **AppGallery**, la podràs reinstal·lar des d'allà. Si no hi és, només tornaria restablint el mòbil de fàbrica: en aquest cas, millor deixa-la." },
+      { titulo: "Mantén premuda la seva icona", texto: "Si apareix **Desinstal·la**, el sistema deixa treure-la. Si només apareix l'opció de treure-la de la pantalla d'inici, només desapareix la icona: l'app continua al mòbil." },
+      { titulo: "Si no apareix, mira a Configuració", texto: "Configuració → Aplicacions → Aplicacions → tria l'app → **Desinstal·la**. Si tampoc no hi surt, és una app del sistema i no es pot treure: deixa-la. Els noms dels menús poden canviar una mica segons la versió." },
+      { titulo: "Per recuperar-la", texto: "Obre AppGallery, busca l'app pel nom i torna-la a instal·lar. El normal és que les seves dades no tornin: s'esborren en desinstal·lar." },
+    ],
+    noQuitarTitulo: "Millor no les treguis, *encara que et deixi.*",
+    noQuitarLead: "Huawei no deixa desinstal·lar les apps del sistema ni algunes d'importants, com Missatges o Càmera. De les que sí que es poden treure, és millor conservar aquestes:",
+    noQuitar: [
+      { titulo: "AppGallery", texto: "És l'única manera de recuperar les altres apps." },
+      { titulo: "Serveis de Huawei (com HMS Core), si et surten", texto: "Altres apps en depenen: comptes, pagaments, notificacions i mapes." },
+      { titulo: "Telèfon, Missatges i Contactes", texto: "Si no tens cap altra app per trucar i escriure, et quedes sense poder fer-ho." },
+      { titulo: "Rellotge", texto: "Sense ella no sonen les alarmes." },
+      { titulo: "Càmera i Galeria", texto: "Poden ser l'única manera que tens de fer i veure fotos." },
+    ],
+    limitesTitulo: "El que Poda no fa aquí",
+    limitesTexto: "Poda no es connecta a HarmonyOS NEXT. Aquest sistema fa servir la seva pròpia eina de depuració (hdc) en lloc d'adb, no deixa desactivar apps i no té cap ordre per tornar a posar una app de sèrie. Sense marxa enrere, Poda no treu res: és la seva norma principal. Si apareix una manera segura de fer-ho, l'afegirem.",
+    comandosTexto: "Desconfia de les ordres que circulen per internet per «netejar» un Huawei: moltes són d'Android i aquí no funcionen, i les que esborren fitxers del sistema poden deixar el mòbil sense arrencar.",
+    otrosTitulo: "Tens un altre *mòbil?*",
+    android: "Connectar un Android",
+    marcas: "Què porta cada marca",
   },
 
   estadisticas: {

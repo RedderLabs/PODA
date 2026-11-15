@@ -238,6 +238,7 @@ export const es = {
     errorEtiqueta: "No se pudo conectar",
     errorTitulo: "Algo no ha ido bien.",
     errorConsejo: "Comprueba también que el cable es de datos y que aceptaste el aviso en la pantalla del móvil.",
+    harmonyNext: "**¿Huawei con HarmonyOS 5 o superior?** Es HarmonyOS NEXT, que ya no es Android, y no aparecerá en la lista. [Mira qué puedes hacer](/harmonyos-next/).",
     reintentar: "Reintentar",
     errores: {
       ocupado:
@@ -469,6 +470,36 @@ export const es = {
     logoTitulo: "¿Se ha quedado *en el logo?*",
     recuperar: "Cómo recuperarlo",
     conCable: "Usar Poda con cable",
+  },
+
+  harmonyNext: {
+    metaTitulo: "Quitar apps de serie en HarmonyOS NEXT (Huawei)",
+    metaDescripcion: "Los Huawei con HarmonyOS NEXT ya no son Android y Poda todavía no puede conectarse a ellos. Qué apps de serie puedes quitar desde el propio móvil, cuáles conviene dejar y cómo recuperarlas.",
+    etiqueta: "Huawei · HarmonyOS NEXT",
+    titulo: "HarmonyOS NEXT: *lo que sí puedes hacer.*",
+    lead: "Los Huawei con HarmonyOS NEXT (HarmonyOS 5 o superior) ya no llevan Android, así que Poda todavía no puede conectarse a ellos. Aun así, el propio móvil deja desinstalar muchas apps de serie. Esta guía te dice cómo hacerlo sin llevarte sustos.",
+    nota: "**¿Cuál tienes?** Mira en Ajustes → Acerca del teléfono. Si pone HarmonyOS 5 o superior, sigue esta guía. Si pone EMUI o HarmonyOS 4 o anterior, tu móvil es Android: [usa Poda con cable](/conectar/).",
+    pasos: [
+      { titulo: "Antes de quitar nada, búscala en AppGallery", texto: "En HarmonyOS NEXT no se conoce ninguna forma de volver a poner una app de serie desde el propio móvil. Si la app está en **AppGallery**, podrás reinstalarla desde allí. Si no está, solo volvería restableciendo el móvil de fábrica: en ese caso, mejor déjala." },
+      { titulo: "Mantén pulsado su icono", texto: "Si aparece **Desinstalar**, el sistema deja quitarla. Si solo aparece la opción de quitarla de la pantalla de inicio, solo desaparece el icono: la app sigue en el móvil." },
+      { titulo: "Si no aparece, mira en Ajustes", texto: "Ajustes → Aplicaciones → Aplicaciones → elige la app → **Desinstalar**. Si tampoco sale, es una app del sistema y no se puede quitar: déjala. Los nombres de los menús pueden cambiar un poco según la versión." },
+      { titulo: "Para recuperarla", texto: "Abre AppGallery, busca la app por su nombre e instálala de nuevo. Lo normal es que sus datos no vuelvan: se borran al desinstalar." },
+    ],
+    noQuitarTitulo: "Mejor no las quites, *aunque te deje.*",
+    noQuitarLead: "Huawei no deja desinstalar las apps del sistema ni algunas importantes, como Mensajes o Cámara. De las que sí se dejan, conviene conservar estas:",
+    noQuitar: [
+      { titulo: "AppGallery", texto: "Es la única forma de recuperar las demás apps." },
+      { titulo: "Servicios de Huawei (como HMS Core), si te aparecen", texto: "Otras apps dependen de ellos: cuentas, pagos, notificaciones y mapas." },
+      { titulo: "Teléfono, Mensajes y Contactos", texto: "Si no tienes otra app para llamar y escribir, te quedas sin poder hacerlo." },
+      { titulo: "Reloj", texto: "Sin ella no suenan las alarmas." },
+      { titulo: "Cámara y Galería", texto: "Pueden ser tu única forma de hacer y ver fotos." },
+    ],
+    limitesTitulo: "Lo que Poda no hace aquí",
+    limitesTexto: "Poda no se conecta a HarmonyOS NEXT. Ese sistema usa su propia herramienta de depuración (hdc) en lugar de adb, no deja desactivar apps y no tiene ningún comando para volver a poner una app de serie. Sin vuelta atrás, Poda no quita nada: es su regla principal. Si aparece una forma segura de hacerlo, la añadiremos.",
+    comandosTexto: "Desconfía de los comandos que circulan por internet para «limpiar» un Huawei: muchos son de Android y aquí no funcionan, y los que borran archivos del sistema pueden dejar el móvil sin arrancar.",
+    otrosTitulo: "¿Tienes otro *móvil?*",
+    android: "Conectar un Android",
+    marcas: "Qué trae cada marca",
   },
 
   estadisticas: {

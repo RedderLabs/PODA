@@ -56,3 +56,34 @@ test("002 R-001 CA-2: con 0 o 2, en plural", () => {
   assert.equal(formatear(es.conectar.quitables, { n: 2 }, "es"), "**2** apps de serie que puedes quitar sin riesgo");
   assert.equal(formatear(es.conectar.quitables, { n: 0 }, "es"), "**0** apps de serie que puedes quitar sin riesgo");
 });
+
+// Especificación 003: guía de HarmonyOS NEXT (fase A).
+const TODOS = { es, ...OTROS };
+
+test("003 R-001 CA-3: la guía de HarmonyOS NEXT existe en los cinco idiomas con la misma estructura", () => {
+  for (const [idioma, t] of Object.entries(TODOS)) {
+    assert.ok(t.harmonyNext, `${idioma}: falta la sección harmonyNext`);
+    assert.equal(t.harmonyNext.pasos.length, es.harmonyNext.pasos.length, `${idioma}: pasos`);
+    assert.equal(t.harmonyNext.noQuitar.length, es.harmonyNext.noQuitar.length, `${idioma}: noQuitar`);
+  }
+});
+
+test("003 R-001 CA-2: la guía dice que Poda no se conecta a HarmonyOS NEXT y enlaza /conectar/ para Android", () => {
+  for (const [idioma, t] of Object.entries(TODOS)) {
+    assert.ok(t.harmonyNext.limitesTexto.length > 40, `${idioma}: limitesTexto`);
+    assert.match(t.harmonyNext.nota, /\]\(\/conectar\/\)/, `${idioma}: nota sin enlace a /conectar/`);
+  }
+});
+
+test("003 R-002 CA-1: /conectar enlaza la guía en todos los idiomas", () => {
+  for (const [idioma, t] of Object.entries(TODOS)) assert.match(t.conectar.harmonyNext, /\]\(\/harmonyos-next\/\)/, idioma);
+});
+
+// Error: el francés tenía \x01 en lugar de «:», «?», «!» o «;» (desde 37ab748).
+test("ningún texto tiene caracteres de control", () => {
+  const malos = [];
+  for (const [idioma, t] of Object.entries(TODOS)) {
+    for (const [ruta, s] of cadenas(t)) if (/[\x00-\x09\x0b-\x1f\x7f]/.test(s)) malos.push(`${idioma}: ${ruta}`);
+  }
+  assert.deepEqual(malos, []);
+});
