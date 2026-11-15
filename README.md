@@ -47,7 +47,7 @@
 2. En el móvil: Ajustes → Información del teléfono → pulsa 7 veces «Número de compilación». Luego, en Opciones de desarrollador, activa «Depuración USB».
 3. Conecta el cable, pulsa **Conectar móvil** y acepta el aviso en el móvil.
 
-¿Sin móvil a mano? Prueba el modo de ejemplo: [podamovil.com/conectar/?demo](https://podamovil.com/conectar/?demo).
+¿Sin móvil a mano? Abre [podamovil.com/conectar](https://podamovil.com/conectar/) y pulsa «Ver con un móvil de ejemplo».
 
 ### Con Claude (u otro asistente)
 

@@ -17,7 +17,7 @@ pnpm dev          # web en http://localhost:3000 (WebUSB funciona en localhost)
 | `pnpm typecheck` | Comprueba los tipos en todo el monorepo |
 | `pnpm resumen` | Regenera `data/resumen.json` (recuento por fabricante y nivel) |
 
-Sin móvil: `http://localhost:3000/conectar/?demo` usa un móvil de ejemplo que responde como uno real (quita, desactiva, restaura y reinicia; al reiniciar, `com.facebook.appmanager` vuelve sola para ver la comprobación de specs/008).
+Sin móvil: en `http://localhost:3000/conectar/`, el botón «Ver con un móvil de ejemplo» usa un móvil que responde como uno real (quita, desactiva, restaura y reinicia; al reiniciar, `com.facebook.appmanager` vuelve sola para ver la comprobación de specs/008).
 
 En **Windows**, antes de conectar por la web, cierra cualquier adb abierto (`adb kill-server`): solo un programa puede usar el USB del móvil a la vez.
 
