@@ -11,15 +11,16 @@ import {
   comandoVerificarBloqueo,
   crearCopiaEstado,
   esCredencialValida,
-  estadosDe,
   leerCopiaEstado,
   leerRespuestaBloqueo,
+  marcadaPorDefecto,
   origenEn,
   paquetesConIcono,
-  paquetesDe,
   pasosParaRestaurar,
   planDePerfil,
   RESPUESTA_OK,
+  enPerfil,
+  nivelesPorOrigen,
   TEXTOS_NUCLEO,
   tamanoPerfiles,
   type CopiaEstado,
@@ -29,12 +30,14 @@ import {
   type ListaCompacta,
   type Perfil,
   type PasoRestaurar,
+  type NivelesOrigen,
 } from "@poda/nucleo";
-import type { Movil } from "@/lib/conexion";
+import { leerEstados, type Movil } from "@/lib/conexion";
 import { fmt } from "@/lib/rutas";
 import { rico } from "./Rico";
 import { useTextos } from "./Textos";
-import { cargarDetalles, cargarLista, copiasGuardadas, descargarCopia, guardarCopiaLocal, type Detalles } from "@/lib/datos";
+import { useTraduccion } from "./usarTraduccion";
+import { cargarDescripciones, cargarDetalles, cargarLista, copiasGuardadas, descargarCopia, guardarCopiaLocal, type Descripciones, type Detalles } from "@/lib/datos";
 
 type Modo = "quitar" | "desactivar";
 /** Estado de cada app en los resultados. El texto sale del diccionario (podar.estado). */
@@ -57,15 +60,6 @@ type Paso =
 /** Respuesta del móvil cuando algo falla: se enseña tal cual, recortada. */
 const respuesta = (s: string) => s.trim().slice(0, 140) || undefined;
 
-async function leerEstados(movil: Movil) {
-  const [todos, presentes, desactivados] = await Promise.all([
-    movil.shell(["pm", "list", "packages", "-u", "--user", "0"]),
-    movil.shell(["pm", "list", "packages", "--user", "0"]),
-    movil.shell(["pm", "list", "packages", "-d", "--user", "0"]),
-  ]);
-  return estadosDe(paquetesDe(todos), paquetesDe(presentes), paquetesDe(desactivados));
-}
-
 /** Apps con icono en el cajón: se marcan igual, pero se señalan por si el usuario las usa. */
 async function leerConIcono(movil: Movil): Promise<Set<string>> {
   try {
@@ -73,6 +67,24 @@ async function leerConIcono(movil: Movil): Promise<Set<string>> {
   } catch {
     return new Set();
   }
+}
+
+/** Cómo dejó Poda cada app que cambió con éxito: es lo que se comprueba después de reiniciar (specs/008). */
+function comoQuedaron(resultados: Resultado[]): Record<string, EstadoPaquete> {
+  const QUEDA: Partial<Record<EstadoResultado, EstadoPaquete>> = {
+    quitada: "quitado",
+    desactivada: "desactivado",
+    desactivadaNoQuitar: "desactivado",
+    yaDesactivada: "desactivado",
+    reinstalada: "instalado",
+    reactivada: "instalado",
+  };
+  const out: Record<string, EstadoPaquete> = {};
+  for (const r of resultados) {
+    const q = r.ok ? QUEDA[r.estado] : undefined;
+    if (q) out[r.paquete] = q;
+  }
+  return out;
 }
 
 /** Máximo de intentos de PIN: cada fallo cuenta en el móvil y no queremos que se bloquee. */
@@ -90,7 +102,8 @@ export function Podar({
   ficha: Ficha;
   props: Record<string, string>;
   inicio: "perfil" | "restaurar";
-  reiniciar: () => void;
+  /** Reinicia el móvil; `esperado` dice cómo dejó Poda cada app, para comprobarlo al volver (specs/008). */
+  reiniciar: (esperado: Record<string, EstadoPaquete>) => void;
   alSalir: () => void;
 }) {
   const { idioma, t: textos } = useTextos();
@@ -103,7 +116,8 @@ export function Podar({
   const [perfil, setPerfil] = useState<Perfil>("recomendado");
   const [modo, setModo] = useState<Modo>("quitar");
   const [conIcono, setConIcono] = useState<Set<string>>(new Set());
-  const [desmarcadas, setDesmarcadas] = useState<Set<string>>(new Set()); // por defecto va marcado todo el perfil
+  // Apps que el usuario ha cambiado respecto a lo que viene marcado (marcadaPorDefecto, specs/006).
+  const [cambiadas, setCambiadas] = useState<Set<string>>(new Set());
   const [confirmado, setConfirmado] = useState(false); // PIN comprobado por el móvil, o casilla si no se puede
   const [fallosPin, setFallosPin] = useState(0);
   const [filtro, setFiltro] = useState("");
@@ -127,24 +141,25 @@ export function Podar({
 
   const plan = useMemo(() => (lista ? planDePerfil(estados, lista, perfil) : []), [estados, lista, perfil]);
   const tamanos = useMemo(() => (lista ? tamanoPerfiles(estados, lista) : null), [estados, lista]);
+  const porOrigen = useMemo(() => (lista ? nivelesPorOrigen(estados, lista) : []), [estados, lista]);
   const aplicables = useMemo(() => plan.filter((x) => !(modo === "desactivar" && x.estado === "desactivado")), [plan, modo]);
-  const marcada = useCallback((x: ItemPlan) => !desmarcadas.has(x.paquete), [desmarcadas]);
+  const marcada = useCallback((x: ItemPlan) => marcadaPorDefecto(x) !== cambiadas.has(x.paquete), [cambiadas]);
   const elegidos = useMemo(() => aplicables.filter(marcada), [aplicables, marcada]);
   const hayExperto = elegidos.some((x) => x.nivel === "experto");
 
   const alternar = (p: string) =>
-    setDesmarcadas((s) => {
+    setCambiadas((s) => {
       const n = new Set(s);
       if (n.has(p)) n.delete(p);
       else n.add(p);
       return n;
     });
   const marcarGrupo = (items: ItemPlan[], marcar: boolean) =>
-    setDesmarcadas((s) => {
+    setCambiadas((s) => {
       const n = new Set(s);
       for (const x of items) {
-        if (marcar) n.delete(x.paquete);
-        else n.add(x.paquete);
+        if (marcar !== marcadaPorDefecto(x)) n.add(x.paquete);
+        else n.delete(x.paquete);
       }
       return n;
     });
@@ -273,7 +288,7 @@ export function Podar({
                   className={`perfil ${perfil === p ? "activo" : ""}`}
                   onClick={() => {
                     setPerfil(p);
-                    setDesmarcadas(new Set());
+                    setCambiadas(new Set());
                     setEntiendo(false);
                   }}
                 >
@@ -285,6 +300,8 @@ export function Podar({
                 </button>
               ))}
             </div>
+
+            {porOrigen.length > 0 && <PorOrigen filas={porOrigen} perfil={perfil} />}
 
             <fieldset className="modo">
               <legend>{t.como}</legend>
@@ -400,6 +417,7 @@ export function Podar({
       const ok = paso.resultados.filter((x) => x.ok);
       const mal = paso.resultados.filter((x) => !x.ok && x.estado !== "saltada");
       const pasos = pasosParaRestaurar(paso.copia, estados);
+      const esperado = comoQuedaron(paso.resultados);
       return (
         <section className="tarjeta dos">
           <div className="col">
@@ -416,7 +434,7 @@ export function Podar({
             <p className="sub">{r(t.enElLogo)}</p>
             {!paso.copiaLocal && <p className="sub">{t.sinCopiaLocal}</p>}
             <div className="acciones">
-              <button type="button" className="boton primario" onClick={reiniciar}>
+              <button type="button" className="boton primario" onClick={() => reiniciar(esperado)}>
                 {t.yaProbado}
               </button>
               <button type="button" className="boton" onClick={alSalir}>
@@ -454,7 +472,7 @@ export function Podar({
             <h1 className="titulo t-l">{r(fmt(t.deVuelta, { n: paso.resultados.filter((x) => x.ok).length }, idioma))}</h1>
             <p className="lead">{t.reiniciaTexto}</p>
             <div className="acciones">
-              <button type="button" className="boton primario" onClick={reiniciar}>
+              <button type="button" className="boton primario" onClick={() => reiniciar(comoQuedaron(paso.resultados))}>
                 {t.reiniciar}
               </button>
               <button type="button" className="boton" onClick={alSalir}>
@@ -468,6 +486,55 @@ export function Podar({
         </section>
       );
   }
+}
+
+/** Qué parte de cada origen quita el perfil elegido en este móvil: lo que sale en la lista (specs/005). */
+function PorOrigen({ filas, perfil }: { filas: NivelesOrigen[]; perfil: Perfil }) {
+  const { idioma, t: textos } = useTextos();
+  const t = textos.podar;
+  const conPct = filas
+    .map((o) => {
+      const n = enPerfil(o, perfil);
+      // Hacia abajo: 253 de 254 no es «100 %».
+      return { o, n, pct: Math.floor((n / o.total) * 100) };
+    })
+    .sort((a, b) => b.pct - a.pct || b.o.total - a.o.total);
+  return (
+    <section className="origenes" aria-labelledby="origenes-titulo" aria-live="polite">
+      <h2 id="origenes-titulo">{rico(fmt(t.origenTitulo, { perfil: t.perfil[perfil].nombre }, idioma), idioma)}</h2>
+      <ul>
+        {conPct.map(({ o, n, pct }) => (
+          <li key={o.origen}>
+            <span className="origen-nombre">{origenEn(o.origen, idioma)}</span>
+            <span className="origen-barra" aria-hidden="true">
+              <span style={{ width: `${pct}%` }} />
+            </span>
+            <strong className="mono">{pct} %</strong>
+            <span className="origen-n mono">{fmt(t.origenFila, { n, total: o.total }, idioma)}</span>
+          </li>
+        ))}
+      </ul>
+      <p className="sub">{t.origenNota}</p>
+    </section>
+  );
+}
+
+/** Aviso sobre el idioma de las descripciones (specs/007). Con la web en inglés no se muestra. */
+function AvisoTraduccion({ estado, activar }: { estado: ReturnType<typeof useTraduccion>["estado"] | "publicadas"; activar: () => void }) {
+  const { t: textos } = useTextos();
+  const t = textos.podar;
+  if (estado === "no-hace-falta") return null;
+  if (estado === "publicadas") return <p className="sub traduccion">{t.traducidasPoda}</p>;
+  if (estado === "sin-traductor") return <p className="sub traduccion">{t.sinTraductor}</p>;
+  if (estado === "lista") return <p className="sub traduccion">{t.traducidas}</p>;
+  return (
+    <div className="traduccion">
+      <button type="button" className="boton" onClick={activar} disabled={estado === "descargando"}>
+        {estado === "descargando" ? t.traduciendo : t.traducirBoton}
+      </button>
+      <p className="sub">{t.traducirNota}</p>
+    </div>
+  );
 }
 
 function Lista({
@@ -492,12 +559,35 @@ function Lista({
   const { idioma, t: textos } = useTextos();
   const t = textos.podar;
   const avisos = TEXTOS_NUCLEO[idioma].avisoPoda;
+  // Primero la traducción publicada con la web; si falta, la del navegador; si no, el inglés (specs/007).
+  const [publicadas, setPublicadas] = useState<Descripciones>({});
+  useEffect(() => {
+    let vivo = true;
+    cargarDescripciones(idioma).then((d) => vivo && setPublicadas(d));
+    return () => {
+      vivo = false;
+    };
+  }, [idioma]);
+  const sinTraducir = useMemo(
+    () => items.filter((x) => !publicadas[x.paquete]).map((x) => detalles[x.paquete]?.[0] ?? "").filter(Boolean),
+    [items, detalles, publicadas],
+  );
+  const traduccion = useTraduccion(idioma, sinTraducir);
+  const descripcion = (p: string) => {
+    const original = detalles[p]?.[0] ?? "";
+    return { original, traducida: original ? publicadas[p] ?? traduccion.traducida(original) : undefined };
+  };
   const f = filtro.trim().toLowerCase();
-  const visibles = f ? items.filter((x) => x.paquete.toLowerCase().includes(f) || (detalles[x.paquete]?.[0] ?? "").toLowerCase().includes(f)) : items;
+  const coincide = (x: ItemPlan) => {
+    const d = descripcion(x.paquete);
+    return [x.paquete, d.original, d.traducida ?? ""].some((s) => s.toLowerCase().includes(f));
+  };
+  const visibles = f ? items.filter(coincide) : items;
   if (!items.length) return <p className="sub">{t.vacio}</p>;
   return (
     <div className="podar-lista">
       <input className="buscar" type="search" placeholder={t.buscar} value={filtro} onChange={(e) => setFiltro(e.target.value)} aria-label={t.buscarAria} />
+      <AvisoTraduccion estado={sinTraducir.length ? traduccion.estado : idioma === "en" ? "no-hace-falta" : "publicadas"} activar={traduccion.activar} />
       {(["seguro", "avanzado", "experto"] as const).map((n) => {
         const grupo = visibles.filter((x) => x.nivel === n);
         if (!grupo.length) return null;
@@ -513,9 +603,11 @@ function Lista({
               </button>
             </header>
             <p className="sub">{TEXTOS_NUCLEO[idioma].nivel[n]}</p>
+            {n !== "seguro" && <p className="sub fuerte">{n === "avanzado" ? t.sinMarcarAvanzadas : t.sinMarcar}</p>}
             <ul className="apps">
               {grupo.map((x) => {
                 const d = detalles[x.paquete];
+                const desc = descripcion(x.paquete);
                 const aviso = AVISO_PODA[x.paquete] && avisos[x.paquete];
                 return (
                   <li key={x.paquete}>
@@ -524,7 +616,11 @@ function Lista({
                       <span className="app-texto">
                         <code>{x.paquete}</code>
                         {aviso && <span className="app-aviso fuerte">{aviso}</span>}
-                        {d?.[0] && <span className="app-desc">{d[0]}</span>}
+                        {desc.original && (
+                          <span className="app-desc" lang={desc.traducida ? idioma : "en"}>
+                            {desc.traducida ?? desc.original}
+                          </span>
+                        )}
                         {d?.[1]?.length ? <span className="app-aviso">{fmt(t.loUsan, { lista: d[1].join(", ") }, idioma)}</span> : null}
                       </span>
                       <span className="app-chips">

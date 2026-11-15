@@ -8,53 +8,53 @@
     "Google": 184
   },
   "por_nivel": {
-    "seguro": 2971,
-    "avanzado": 1067,
-    "experto": 877,
-    "bloqueado": 484
+    "seguro": 2966,
+    "avanzado": 1033,
+    "experto": 862,
+    "bloqueado": 538
   },
   "por_fabricante": {
     "Samsung (One UI)": {
       "total": 808,
-      "seguro": 480,
-      "avanzado": 220,
-      "experto": 73,
-      "bloqueado": 35
+      "seguro": 479,
+      "avanzado": 214,
+      "experto": 71,
+      "bloqueado": 44
     },
     "Xiaomi, Redmi y POCO (HyperOS / MIUI)": {
       "total": 229,
-      "seguro": 154,
-      "avanzado": 41,
+      "seguro": 153,
+      "avanzado": 40,
       "experto": 24,
-      "bloqueado": 10
+      "bloqueado": 12
     },
     "OPPO, realme y OnePlus (ColorOS / OxygenOS / realme UI)": {
       "total": 456,
       "seguro": 216,
-      "avanzado": 91,
-      "experto": 135,
-      "bloqueado": 14
+      "avanzado": 86,
+      "experto": 137,
+      "bloqueado": 17
     },
     "vivo e iQOO (Funtouch / OriginOS)": {
       "total": 149,
       "seguro": 100,
       "avanzado": 16,
-      "experto": 24,
-      "bloqueado": 9
+      "experto": 22,
+      "bloqueado": 11
     },
     "Huawei (EMUI / HarmonyOS 4 o anterior)": {
       "total": 239,
       "seguro": 162,
-      "avanzado": 48,
-      "experto": 22,
-      "bloqueado": 7
+      "avanzado": 46,
+      "experto": 21,
+      "bloqueado": 10
     },
     "Honor (MagicOS)": {
       "total": 85,
-      "seguro": 47,
-      "avanzado": 21,
+      "seguro": 46,
+      "avanzado": 20,
       "experto": 11,
-      "bloqueado": 6
+      "bloqueado": 8
     },
     "Motorola": {
       "total": 175,
@@ -66,8 +66,8 @@
     "LG": {
       "total": 182,
       "seguro": 101,
-      "avanzado": 45,
-      "experto": 30,
+      "avanzado": 44,
+      "experto": 31,
       "bloqueado": 6
     },
     "Nokia / HMD": {
@@ -80,44 +80,44 @@
     "Sony Xperia": {
       "total": 140,
       "seguro": 68,
-      "avanzado": 30,
-      "experto": 36,
-      "bloqueado": 6
+      "avanzado": 29,
+      "experto": 35,
+      "bloqueado": 8
     },
     "ASUS (ZenUI / ROG)": {
       "total": 86,
       "seguro": 52,
-      "avanzado": 10,
-      "experto": 19,
-      "bloqueado": 5
+      "avanzado": 7,
+      "experto": 20,
+      "bloqueado": 7
     },
     "Tecno, Infinix e itel (Transsion)": {
       "total": 101,
       "seguro": 64,
-      "avanzado": 27,
-      "experto": 9,
-      "bloqueado": 1
+      "avanzado": 25,
+      "experto": 10,
+      "bloqueado": 2
     },
     "ZTE y nubia": {
       "total": 111,
       "seguro": 62,
-      "avanzado": 22,
+      "avanzado": 20,
       "experto": 23,
-      "bloqueado": 4
+      "bloqueado": 6
     },
     "TCL y Alcatel": {
       "total": 113,
       "seguro": 42,
-      "avanzado": 20,
+      "avanzado": 19,
       "experto": 51,
-      "bloqueado": 0
+      "bloqueado": 1
     },
     "Lenovo (ZUI)": {
       "total": 73,
       "seguro": 43,
-      "avanzado": 22,
-      "experto": 6,
-      "bloqueado": 2
+      "avanzado": 19,
+      "experto": 7,
+      "bloqueado": 4
     },
     "Meizu (Flyme)": {
       "total": 39,
@@ -144,8 +144,8 @@
       "total": 150,
       "seguro": 43,
       "avanzado": 44,
-      "experto": 42,
-      "bloqueado": 21
+      "experto": 41,
+      "bloqueado": 22
     }
   }
 }

@@ -23,22 +23,22 @@ Todos los móviles Android pasan por el mismo proceso. Lo que cambia es cuántos
 
 | Fabricante | Paquetes conocidos | Seguro | Avanzado | Experto | Bloqueado | Nota |
 |---|---:|---:|---:|---:|---:|---|
-| Samsung (One UI) | 808 | 480 | 220 | 73 | 35 | Desactivar «Bloqueador automático» mientras se usa (One UI 6+). |
-| OPPO, realme y OnePlus (ColorOS / OxygenOS / realme UI) | 456 | 216 | 91 | 135 | 14 | |
-| Huawei (EMUI / HarmonyOS 4 o anterior) | 239 | 162 | 48 | 22 | 7 | HarmonyOS NEXT (5+) no es Android: no compatible. |
-| Xiaomi, Redmi y POCO (HyperOS / MIUI) | 229 | 154 | 41 | 24 | 10 | Activar también «Depuración USB (ajustes de seguridad)»; pide cuenta Xiaomi. |
-| LG | 182 | 101 | 45 | 30 | 6 | |
+| Samsung (One UI) | 808 | 479 | 214 | 71 | 44 | Desactivar «Bloqueador automático» mientras se usa (One UI 6+). |
+| OPPO, realme y OnePlus (ColorOS / OxygenOS / realme UI) | 456 | 216 | 86 | 137 | 17 | |
+| Huawei (EMUI / HarmonyOS 4 o anterior) | 239 | 162 | 46 | 21 | 10 | HarmonyOS NEXT (5+) no es Android: no compatible. |
+| Xiaomi, Redmi y POCO (HyperOS / MIUI) | 229 | 153 | 40 | 24 | 12 | Activar también «Depuración USB (ajustes de seguridad)»; pide cuenta Xiaomi. |
+| LG | 182 | 101 | 44 | 31 | 6 | |
 | Motorola | 175 | 94 | 52 | 17 | 12 | |
-| Google Pixel | 150 | 43 | 44 | 42 | 21 | Poco bloatware; casi todo son servicios de Google. |
-| vivo e iQOO (Funtouch / OriginOS) | 149 | 100 | 16 | 24 | 9 | |
-| Sony Xperia | 140 | 68 | 30 | 36 | 6 | |
+| Google Pixel | 150 | 43 | 44 | 41 | 22 | Poco bloatware; casi todo son servicios de Google. |
+| vivo e iQOO (Funtouch / OriginOS) | 149 | 100 | 16 | 22 | 11 | |
+| Sony Xperia | 140 | 68 | 29 | 35 | 8 | |
 | Nokia / HMD | 122 | 25 | 9 | 88 | 0 | La mayoría de su lista está en nivel experto. |
-| TCL y Alcatel | 113 | 42 | 20 | 51 | 0 | |
-| ZTE y nubia | 111 | 62 | 22 | 23 | 4 | |
-| Tecno, Infinix e itel (Transsion) | 101 | 64 | 27 | 9 | 1 | |
-| ASUS (ZenUI / ROG) | 86 | 52 | 10 | 19 | 5 | |
-| Honor (MagicOS) | 85 | 47 | 21 | 11 | 6 | |
-| Lenovo (ZUI) | 73 | 43 | 22 | 6 | 2 | |
+| TCL y Alcatel | 113 | 42 | 19 | 51 | 1 | |
+| ZTE y nubia | 111 | 62 | 20 | 23 | 6 | |
+| Tecno, Infinix e itel (Transsion) | 101 | 64 | 25 | 10 | 2 | |
+| ASUS (ZenUI / ROG) | 86 | 52 | 7 | 20 | 7 | |
+| Honor (MagicOS) | 85 | 46 | 20 | 11 | 8 | |
+| Lenovo (ZUI) | 73 | 43 | 19 | 7 | 4 | |
 | Meizu (Flyme) | 39 | 26 | 5 | 7 | 1 | |
 | Nothing (Nothing OS) | 24 | 10 | 7 | 5 | 2 | |
 | Blackview | 23 | 18 | 4 | 1 | 0 | |

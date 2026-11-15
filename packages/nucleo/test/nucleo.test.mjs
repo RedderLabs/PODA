@@ -214,3 +214,168 @@ test("002 R-002: una forma puede llevar la cifra dentro", () => {
   assert.equal(formatear("quitar {n|esta app|estas {n} apps}.", { n: 1 }, "es"), "quitar esta app.");
   assert.equal(formatear("quitar {n|esta app|estas {n} apps}.", { n: 4 }, "es"), "quitar estas 4 apps.");
 });
+
+// Especificación 004: llamadas, mensajes, contactos y ubicación protegidos en cualquier móvil.
+import { estaProtegido as protegido, AVISO_PODA as AVISOS, nivelDe as nivel } from "../dist/index.js";
+
+const COMUNICACIONES = [
+  "com.android.dialer", "com.google.android.dialer", "com.android.incallui", "com.samsung.android.dialer",
+  "com.samsung.android.app.telephonyui", "com.samsung.android.incall.contentprovider", "com.oneplus.dialer",
+  "com.asus.dialer", "com.tct.dialer", "com.qti.phone", "com.google.android.telephony",
+  "com.android.mms", "com.android.messaging", "com.google.android.apps.messaging", "com.samsung.android.messaging",
+  "com.oneplus.mms", "com.zui.mms", "com.sonyericsson.android.conversations", "com.transsion.smartmessage",
+  "com.miui.smsextra", "com.mediatek.mms.appservice", "com.android.basicsmsreceiver", "com.android.smspush",
+  "com.huawei.omacp", "com.hihonor.omacp", "com.vivo.omacp", "com.zte.zdm.omacp",
+  "com.android.contacts", "com.google.android.contacts", "com.google.android.syncadapters.contacts",
+  "com.samsung.android.app.contacts", "com.samsung.android.contacts", "com.samsung.android.providers.contacts",
+  "com.huawei.contacts", "com.hihonor.contacts", "com.oneplus.contacts", "com.asus.contacts",
+  "com.sonymobile.android.contacts", "com.zui.contacts", "cn.nubia.contacts",
+  "com.android.stk", "com.android.stk2", "com.android.emergency",
+];
+const UBICACION = [
+  "com.android.location.fused", "com.google.android.gms", "com.google.android.location", "com.qualcomm.location",
+  "com.qualcomm.location.XT", "com.mediatek.location.lppe.main", "com.mediatek.location.mtknlp",
+  "com.mediatek.nlpservice", "com.huawei.lbs", "com.samsung.android.location", "com.sec.location.nsflp2",
+  "com.xiaomi.bsp.gps.nps", "com.vivo.multinlp",
+];
+const RELOJES = [
+  "com.sec.android.app.clockpackage", "com.huawei.deskclock", "com.hihonor.deskclock", "com.coloros.alarmclock",
+  "com.oneplus.deskclock", "com.android.BBKClock", "com.lge.clock", "com.asus.deskclock", "com.transsion.deskclock",
+  "com.zui.deskclock", "cn.nubia.deskclock.preset", "zte.com.cn.alarmclock",
+];
+const uad004 = JSON.parse(readFileSync(new URL("../../../data/uad_lists.json", import.meta.url), "utf8"));
+const listaCompacta004 = compactar(uad004);
+
+function fueraDeTodosLosPerfiles(paquetes) {
+  const estados = new Map(paquetes.map((p) => [p, "instalado"]));
+  const enAlguno = [];
+  for (const perfil of ["seguro", "recomendado", "experto"]) {
+    for (const x of planDePerfil(estados, listaCompacta004, perfil)) enAlguno.push(`${perfil}: ${x.paquete}`);
+  }
+  return enAlguno;
+}
+
+test("004 R-001 CA-1: llamadas, SMS/MMS, contactos, SIM y emergencia: protegidos y fuera de todos los perfiles", () => {
+  assert.deepEqual(COMUNICACIONES.filter((p) => !protegido(p)), []);
+  assert.deepEqual(fueraDeTodosLosPerfiles(COMUNICACIONES), []);
+});
+
+test("004 R-002 CA-1: ubicación y GPS: protegidos y fuera de todos los perfiles", () => {
+  assert.deepEqual(UBICACION.filter((p) => !protegido(p)), []);
+  assert.deepEqual(fueraDeTodosLosPerfiles(UBICACION), []);
+});
+
+test("004 R-003 CA-1: relojes de fabricante solo en experto y con aviso", () => {
+  for (const p of RELOJES) {
+    assert.ok(uad004[p], `${p} no está en la lista de UAD-ng`);
+    assert.equal(nivel(uad004[p], p), "experto", p);
+    assert.ok(AVISOS[p], `${p} sin aviso`);
+  }
+});
+
+test("004: lo protegido no queda también en AVISO_PODA (la web lo listaría dos veces)", () => {
+  assert.deepEqual(Object.keys(AVISOS).filter((p) => protegido(p)), []);
+});
+
+// Especificación 005: qué parte de cada origen quita cada perfil.
+import { nivelesPorOrigen, enPerfil } from "../dist/index.js";
+
+test("005 R-001 CA-1 y CA-2: niveles por origen, sin las quitadas, con las protegidas en el total", () => {
+  const lista = {
+    origenes: ["fabricante", "operadora", "Android base"],
+    p: {
+      "com.fab.a": [0, 0], "com.fab.b": [1, 0], "com.fab.c": [2, 0], "com.fab.d": [3, 0], "com.fab.quitada": [0, 0],
+      "com.ope.a": [0, 1], "com.ope.b": [0, 1],
+      "com.aosp.a": [3, 2],
+    },
+  };
+  const estados = new Map([
+    ["com.fab.a", "instalado"], ["com.fab.b", "desactivado"], ["com.fab.c", "instalado"], ["com.fab.d", "instalado"],
+    ["com.fab.quitada", "quitado"], ["com.ope.a", "instalado"], ["com.ope.b", "instalado"], ["com.aosp.a", "instalado"],
+    ["com.desconocida", "instalado"],
+  ]);
+  const r = Object.fromEntries(nivelesPorOrigen(estados, lista).map((o) => [o.origen, o]));
+  assert.deepEqual(r.fabricante, { origen: "fabricante", total: 4, porNivel: { seguro: 1, avanzado: 1, experto: 1, bloqueado: 1 } });
+  assert.deepEqual([enPerfil(r.fabricante, "seguro"), enPerfil(r.fabricante, "recomendado"), enPerfil(r.fabricante, "experto")], [1, 2, 3]);
+  assert.equal(enPerfil(r["Android base"], "experto"), 0);
+
+  // CA-3: la suma por origen es lo que muestra la lista del perfil.
+  for (const perfil of ["seguro", "recomendado", "experto"]) {
+    const suma = nivelesPorOrigen(estados, lista).reduce((n, o) => n + enPerfil(o, perfil), 0);
+    assert.equal(suma, planDePerfil(estados, lista, perfil).length, perfil);
+  }
+});
+
+// Especificación 006: al elegir perfil, solo vienen marcadas las seguras.
+import { marcadaPorDefecto } from "../dist/index.js";
+
+test("006 R-001: vienen marcadas las seguras y las avanzadas de fabricante, operadora y terceros", () => {
+  const estados = new Map(Object.keys(uad004).map((p) => [p, "instalado"]));
+  const rec = planDePerfil(estados, listaCompacta004, "recomendado");
+  const esperada = (x) => x.nivel === "seguro" || (x.nivel === "avanzado" && ["fabricante", "operadora", "terceros"].includes(x.origen));
+  for (const origen of ["fabricante", "Android base", "Google"]) assert.ok(rec.some((x) => x.nivel === "avanzado" && x.origen === origen), origen);
+  assert.deepEqual(rec.filter((x) => marcadaPorDefecto(x) !== esperada(x)).map((x) => x.paquete), []);
+  assert.equal(marcadaPorDefecto({ nivel: "avanzado", origen: "Android base" }), false);
+  assert.equal(marcadaPorDefecto({ nivel: "avanzado", origen: "Google" }), false);
+  assert.equal(marcadaPorDefecto({ nivel: "seguro", origen: "Google" }), true);
+  // CA-2: experto marca lo mismo que recomendado
+  const exp = planDePerfil(estados, listaCompacta004, "experto");
+  assert.deepEqual(exp.filter(marcadaPorDefecto).map((x) => x.paquete), rec.filter(marcadaPorDefecto).map((x) => x.paquete));
+});
+
+// ------------------------------------------------------------------ 008: comprobar tras reiniciar
+import { comprobarTrasReinicio, todoEnOrden, paqueteDeSalida, COMANDOS_COMPROBAR } from "../dist/index.js";
+
+const m008 = (o) => new Map(Object.entries(o));
+const base008 = {
+  arranco: true,
+  inicio: "priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true\ncom.miui.home/.launcher.Launcher",
+  teclado: "com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME",
+};
+const ahora008 = { "com.miui.home": "instalado", "com.google.android.inputmethod.latin": "instalado", "com.android.phone": "instalado", "com.miui.weather2": "quitado", "com.miui.player": "desactivado" };
+
+test("008 R-002: pantalla de inicio, teclado y protegidas", () => {
+  const c = comprobarTrasReinicio({ ...base008, esperado: {}, antes: m008(ahora008), ahora: m008(ahora008) });
+  assert.equal(c.inicio, true);
+  assert.equal(c.teclado, true);
+  assert.deepEqual(c.protegidasAfectadas, []);
+  assert.equal(todoEnOrden(c), true);
+  // CA-3: una protegida instalada antes que ya no lo está
+  const c2 = comprobarTrasReinicio({ ...base008, esperado: {}, antes: m008(ahora008), ahora: m008({ ...ahora008, "com.android.phone": "desactivado" }) });
+  assert.deepEqual(c2.protegidasAfectadas, ["com.android.phone"]);
+  assert.equal(todoEnOrden(c2), false);
+  // Sin teclado o sin pantalla de inicio
+  const c3 = comprobarTrasReinicio({ ...base008, teclado: "null", inicio: "No activity found", esperado: {}, antes: m008(ahora008), ahora: m008(ahora008) });
+  assert.equal(c3.teclado, false);
+  assert.equal(c3.inicio, false);
+  // CA-4: si el móvil no lo admite, no se sabe: null, nunca true
+  const c4 = comprobarTrasReinicio({ ...base008, teclado: "", inicio: "Unknown command: resolve-activity", esperado: {}, antes: m008(ahora008), ahora: m008(ahora008) });
+  assert.equal(c4.teclado, null);
+  assert.equal(c4.inicio, null);
+  assert.equal(todoEnOrden(c4), true);
+  // R-001: si no arrancó, no está en orden
+  assert.equal(todoEnOrden(comprobarTrasReinicio({ ...base008, arranco: false, esperado: {}, antes: m008(ahora008), ahora: m008(ahora008) })), false);
+  assert.equal(paqueteDeSalida("android/com.android.internal.app.ResolverActivity"), "android");
+});
+
+test("008 R-003: las apps siguen como se dejaron", () => {
+  const esperado = { "com.miui.weather2": "quitado", "com.miui.player": "desactivado", "com.facebook.appmanager": "quitado", "com.miui.notes": "quitado" };
+  const ahora = m008({ ...ahora008, "com.facebook.appmanager": "instalado" }); // notes: ni aparece (también quitada)
+  const c = comprobarTrasReinicio({ ...base008, esperado, antes: m008(ahora008), ahora });
+  assert.deepEqual(c.siguen.sort(), ["com.miui.notes", "com.miui.player", "com.miui.weather2"]);
+  assert.deepEqual(c.cambiaron, [{ paquete: "com.facebook.appmanager", esperado: "quitado", ahora: "instalado" }]);
+  assert.equal(todoEnOrden(c), false);
+  // CA-1: desactivada que aparece quitada también vale
+  assert.deepEqual(comprobarTrasReinicio({ ...base008, esperado: { "com.miui.weather2": "desactivado" }, antes: m008(ahora008), ahora: m008(ahora008) }).cambiaron, []);
+  // CA-2: tras restaurar, las reinstaladas siguen en el móvil (desactivadas si así estaban en la copia)
+  const r = comprobarTrasReinicio({ ...base008, esperado: { "com.miui.home": "instalado", "com.miui.player": "instalado", "com.miui.weather2": "instalado" }, antes: m008(ahora008), ahora: m008(ahora008) });
+  assert.deepEqual(r.siguen, ["com.miui.home", "com.miui.player"]);
+  assert.deepEqual(r.cambiaron, [{ paquete: "com.miui.weather2", esperado: "instalado", ahora: "quitado" }]);
+});
+
+test("008 R-005: las comprobaciones solo leen", () => {
+  for (const c of Object.values(COMANDOS_COMPROBAR)) {
+    assert.ok(["cmd", "settings"].includes(c[0]));
+    assert.ok(c.includes("resolve-activity") || c.includes("get"), c.join(" "));
+  }
+});

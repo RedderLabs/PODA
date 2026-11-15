@@ -7,6 +7,9 @@
 //
 // Origen: un Redmi Note 4 con LineageOS 18.1 dejó de arrancar tras aplicar el perfil «recomendado»
 // de la primera versión (noviembre de 2026). Ante la duda, un paquete va aquí.
+//
+// Llamar, mandar SMS y MMS, encontrar contactos y la ubicación tienen que funcionar siempre, en
+// cualquier móvil y con cualquier perfil, aunque se quite todo lo demás (specs/004).
 import type { Nivel } from "./niveles.js";
 
 export interface GrupoProtegido {
@@ -35,7 +38,6 @@ export const PROTEGIDOS: readonly GrupoProtegido[] = [
       "com.android.companiondevicemanager",
       "com.android.bookmarkprovider",
       "com.android.bluetooth",
-      "com.android.location.fused",
       "com.android.inputdevices",
       "com.android.ons",
       "com.android.proxyhandler",
@@ -135,6 +137,78 @@ export const PROTEGIDOS: readonly GrupoProtegido[] = [
     ],
   },
   {
+    titulo: "Teléfono, mensajes y contactos",
+    motivo: "Sin ellas no puedes llamar, mandar SMS o MMS ni ver tus contactos, sea cual sea la marca.",
+    paquetes: [
+      // Teléfono y pantalla de llamada
+      "com.android.dialer",
+      "com.google.android.dialer",
+      "com.android.incallui", // la app de Teléfono de Xiaomi
+      "com.samsung.android.dialer",
+      "com.samsung.android.app.telephonyui",
+      "com.samsung.android.incall.contentprovider",
+      "com.oneplus.dialer",
+      "com.asus.dialer",
+      "com.tct.dialer",
+      "com.qti.phone",
+      "com.google.android.telephony",
+      // SMS y MMS
+      "com.android.mms", // la app de Mensajes de Xiaomi, Huawei, vivo y OPPO
+      "com.android.messaging",
+      "com.google.android.apps.messaging",
+      "com.samsung.android.messaging",
+      "com.oneplus.mms",
+      "com.zui.mms",
+      "com.sonyericsson.android.conversations",
+      "com.transsion.smartmessage",
+      "com.miui.smsextra",
+      "com.mediatek.mms.appservice",
+      "com.android.basicsmsreceiver",
+      "com.android.smspush",
+      // Configuración de la operadora por SMS (APN para datos y MMS)
+      "com.huawei.omacp",
+      "com.hihonor.omacp",
+      "com.vivo.omacp",
+      "com.zte.zdm.omacp",
+      // Contactos
+      "com.android.contacts",
+      "com.google.android.contacts",
+      "com.google.android.syncadapters.contacts",
+      "com.samsung.android.app.contacts",
+      "com.samsung.android.contacts",
+      "com.samsung.android.providers.contacts",
+      "com.huawei.contacts",
+      "com.hihonor.contacts",
+      "com.oneplus.contacts",
+      "com.asus.contacts",
+      "com.sonymobile.android.contacts",
+      "com.zui.contacts",
+      "cn.nubia.contacts",
+      // SIM y emergencia
+      "com.android.stk",
+      "com.android.stk2",
+      "com.android.emergency",
+    ],
+  },
+  {
+    titulo: "Ubicación y GPS",
+    motivo: "Sin ellas el GPS, los mapas y la ubicación en emergencias dejan de funcionar.",
+    paquetes: [
+      "com.android.location.fused",
+      "com.google.android.location",
+      "com.qualcomm.location",
+      "com.qualcomm.location.XT",
+      "com.mediatek.location.lppe.main",
+      "com.mediatek.location.mtknlp",
+      "com.mediatek.nlpservice",
+      "com.huawei.lbs",
+      "com.samsung.android.location",
+      "com.sec.location.nsflp2",
+      "com.xiaomi.bsp.gps.nps",
+      "com.vivo.multinlp",
+    ],
+  },
+  {
     titulo: "Servicios de Google",
     motivo: "Muchas apps (bancos, mensajería, notificaciones) dejan de funcionar sin ellos.",
     paquetes: [
@@ -158,25 +232,27 @@ export const estaProtegido = (paquete: string) => NUNCA.has(paquete) || NUNCA_PA
 export const AVISO_PODA: Readonly<Record<string, string>> = {
   "com.android.inputmethod.latin": "Es el teclado. Si no tienes otro instalado, te quedas sin poder escribir.",
   "com.google.android.inputmethod.latin": "Es el teclado (Gboard). Si no tienes otro instalado, te quedas sin poder escribir.",
-  "com.android.dialer": "Es la app de llamadas.",
-  "com.google.android.dialer": "Es la app de llamadas.",
-  "com.android.messaging": "Es la app de SMS.",
-  "com.google.android.apps.messaging": "Es la app de SMS.",
-  "com.android.contacts": "Es la app de contactos.",
-  "com.google.android.contacts": "Es la app de contactos.",
   "com.android.deskclock": "Es el reloj: sin ella no suenan las alarmas.",
   "com.google.android.deskclock": "Es el reloj: sin ella no suenan las alarmas.",
+  "com.sec.android.app.clockpackage": "Es el reloj: sin ella no suenan las alarmas.",
+  "com.huawei.deskclock": "Es el reloj: sin ella no suenan las alarmas.",
+  "com.hihonor.deskclock": "Es el reloj: sin ella no suenan las alarmas.",
+  "com.coloros.alarmclock": "Es el reloj: sin ella no suenan las alarmas.",
+  "com.oneplus.deskclock": "Es el reloj: sin ella no suenan las alarmas.",
+  "com.android.BBKClock": "Es el reloj: sin ella no suenan las alarmas.",
+  "com.lge.clock": "Es el reloj: sin ella no suenan las alarmas.",
+  "com.asus.deskclock": "Es el reloj: sin ella no suenan las alarmas.",
+  "com.transsion.deskclock": "Es el reloj: sin ella no suenan las alarmas.",
+  "com.zui.deskclock": "Es el reloj: sin ella no suenan las alarmas.",
+  "cn.nubia.deskclock.preset": "Es el reloj: sin ella no suenan las alarmas.",
+  "zte.com.cn.alarmclock": "Es el reloj: sin ella no suenan las alarmas.",
   "com.android.captiveportallogin": "Sin ella no puedes entrar en los Wi‑Fi con página de acceso (hoteles, aeropuertos, trenes).",
   "com.android.hotspot2.osulogin": "Necesaria para algunos Wi‑Fi públicos.",
   "com.google.android.tts": "Es la voz del móvil: el navegador GPS y la accesibilidad la usan.",
-  "com.google.android.syncadapters.contacts": "Sincroniza tus contactos con tu cuenta de Google.",
   "com.google.android.syncadapters.calendar": "Sincroniza tu calendario con tu cuenta de Google.",
   "com.google.android.backuptransport": "Hace las copias de seguridad en tu cuenta de Google.",
   "com.android.calendar": "Es la app de calendario.",
   "org.lineageos.etar": "Es la app de calendario.",
-  "com.android.stk": "Menú de la SIM: algunas operadoras lo usan para servicios y para activar la línea.",
-  "com.android.smspush": "Recibe mensajes de configuración de la operadora.",
-  "com.android.emergency": "Muestra tu información de emergencia en la pantalla de bloqueo.",
   "com.android.storagemanager": "Es el apartado de almacenamiento de los ajustes.",
   "com.android.providers.downloads.ui": "Es la lista de descargas.",
   "com.android.chrome": "Si es tu único navegador, te quedas sin navegador.",

@@ -5,4 +5,5 @@ export * from "./ficha.js";
 export * from "./recuento.js";
 export * from "./operaciones.js";
 export * from "./protecciones.js";
+export * from "./comprobar.js";
 export * from "./idiomas.js";

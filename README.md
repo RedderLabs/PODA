@@ -75,8 +75,8 @@ node apps/mcp/dist/cli.js ayuda
 
 | | |
 |---|---|
-| <img src="docs/img/ficha.png" alt="Ficha del móvil reconocido"><br>**Tu móvil, reconocido.** Modelo, Android, capa y cuántas apps sobran. | <img src="docs/img/perfil.png" alt="Elegir perfil"><br>**Tú decides hasta dónde.** Por defecto solo van marcadas las seguras sin icono. |
-| <img src="docs/img/confirmar.png" alt="Confirmar"><br>**Copia antes de nada.** Se guarda en el navegador y se descarga como archivo. | <img src="docs/img/hecho.png" alt="Resultado"><br>**Prueba y reinicia.** Si algo no va, se deshace desde aquí. |
+| <img src="docs/img/ficha.png" alt="Ficha del móvil reconocido"><br>**Tu móvil, reconocido.** Modelo, Android, capa y cuántas apps sobran. | <img src="docs/img/perfil.png" alt="Elegir perfil"><br>**Tú decides hasta dónde.** Lo de Android base, Google y experto viene sin marcar: lo eliges tú. |
+| <img src="docs/img/confirmar.png" alt="Confirmar"><br>**Copia antes de nada.** Se guarda en el navegador y se descarga como archivo. | <img src="docs/img/hecho.png" alt="Resultado"><br>**Prueba y reinicia.** Al volver, Poda comprueba que arrancó, que hay pantalla de inicio y teclado, y que las apps siguen quitadas. Si algo no va, se deshace desde aquí. |
 | <img src="docs/img/restaurar.png" alt="Restaurar"><br>**Vuelta atrás, app a app.** Restaurar solo devuelve: nunca quita nada. | <img src="docs/img/marcas.png" alt="Bloatware por marca"><br>**Bloatware por marca.** Qué trae cada fabricante y su nivel de riesgo. |
 
 ## Móviles compatibles
@@ -85,12 +85,12 @@ Cualquier Android 5.0 o superior que acepte depuración USB. Poda no depende del
 
 | Fabricante | Apps propias conocidas | Seguras | Avanzadas | Expertas | Nunca se tocan |
 |---|---:|---:|---:|---:|---:|
-| Samsung (One UI) | 808 | 480 | 220 | 73 | 35 |
-| OPPO, realme y OnePlus | 456 | 216 | 91 | 135 | 14 |
-| Huawei (EMUI / HarmonyOS 4 o anterior) | 239 | 162 | 48 | 22 | 7 |
-| Xiaomi, Redmi y POCO (HyperOS / MIUI) | 229 | 154 | 41 | 24 | 10 |
+| Samsung (One UI) | 808 | 479 | 214 | 71 | 44 |
+| OPPO, realme y OnePlus | 456 | 216 | 86 | 137 | 17 |
+| Huawei (EMUI / HarmonyOS 4 o anterior) | 239 | 162 | 46 | 21 | 10 |
+| Xiaomi, Redmi y POCO (HyperOS / MIUI) | 229 | 153 | 40 | 24 | 12 |
 | Motorola | 175 | 94 | 52 | 17 | 12 |
-| Google Pixel | 150 | 43 | 44 | 42 | 21 |
+| Google Pixel | 150 | 43 | 44 | 41 | 22 |
 
 Y además LG, vivo, Sony, Nokia, TCL, ZTE, Transsion, ASUS, Honor, Lenovo, Meizu, Nothing y Blackview. A todas se suman las apps de operadoras, Google y terceros (Facebook, Netflix…). Tabla completa, requisitos y avisos por marca en **[COMPATIBILIDAD.md](COMPATIBILIDAD.md)**.
 
@@ -100,9 +100,9 @@ No es compatible: iPhone y iPad (iOS no lo permite) ni Huawei con HarmonyOS NEXT
 
 La lista de partida es la de [Universal Android Debloater Next Generation](https://github.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation). Poda la endurece porque la usa gente que no es técnica:
 
-- **Nunca se tocan:** arranque y ajustes del sistema, pantalla de inicio, asistente de configuración, llamadas, datos y operadora, y los servicios de Google de los que dependen otras apps.
-- **Solo en el perfil experto, con aviso:** teclado, llamadas, SMS, contactos, reloj, navegador, cámara y galería.
-- **Por defecto, desmarcadas:** las apps con icono en tu móvil, porque puede que las uses.
+- **Nunca se tocan, en ningún móvil ni perfil:** arranque y ajustes del sistema, pantalla de inicio, asistente de configuración, datos y operadora, los servicios de Google de los que dependen otras apps y, de cualquier marca, **las apps para llamar, los SMS y MMS, los contactos, el menú de la SIM y la ubicación (GPS)**. Así el móvil siempre sirve para llamar, pase lo que pase.
+- **Solo en el perfil experto, con aviso:** teclado, reloj, navegador, cámara y galería de Android y de Google, y el reloj de cada fabricante.
+- **Al elegir un perfil vienen marcadas las seguras y las avanzadas del fabricante, la operadora y terceros.** Las avanzadas de Android base y Google y las de experto salen sin marcar: las marcas tú. Las que ves en tu móvil llevan la etiqueta «tiene icono».
 
 La lista está en [`packages/nucleo/src/protecciones.ts`](packages/nucleo/src/protecciones.ts) y se publica abierta en [podamovil.com/protegidas.json](https://podamovil.com/protegidas.json) para que cualquier otra herramienta pueda usarla.
 

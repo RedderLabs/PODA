@@ -5,6 +5,8 @@ import Link from "next/link";
 import {
   avisosFicha,
   capaEn,
+  COMANDOS_COMPROBAR,
+  comprobarTrasReinicio,
   CLAVES_TECNICAS,
   contar,
   fichaDesdeProps,
@@ -12,6 +14,8 @@ import {
   origenEn,
   paquetesDe,
   parsearGetprop,
+  type ComprobacionReinicio,
+  type EstadoPaquete,
   type Ficha,
   type Recuento,
 } from "@poda/nucleo";
@@ -20,8 +24,9 @@ import { rico } from "./Rico";
 import { useTextos } from "./Textos";
 import { fmt, ruta } from "@/lib/rutas";
 import { Podar } from "./Podar";
+import { TrasReinicio } from "./TrasReinicio";
 import { cargarLista } from "@/lib/datos";
-import { conectar, dispositivosConPermiso, elegirDispositivo, ErrorConexion, esperarArranque, movilDemo, webUsbDisponible, type Movil } from "@/lib/conexion";
+import { conectar, dispositivosConPermiso, elegirDispositivo, ErrorConexion, esperarArranque, leerEstados, movilDemo, webUsbDisponible, type Movil } from "@/lib/conexion";
 
 type Estado =
   | { t: "cargando" }
@@ -30,7 +35,7 @@ type Estado =
   | { t: "eligiendo" }
   | { t: "autorizando"; nombre: string }
   | { t: "leyendo"; nombre: string }
-  | { t: "listo"; ficha: Ficha; props: Record<string, string>; recuento: Recuento | null; demo: boolean; reiniciado?: boolean }
+  | { t: "listo"; ficha: Ficha; props: Record<string, string>; recuento: Recuento | null; demo: boolean; comprobacion?: ComprobacionReinicio | "comprobando" }
   | { t: "reiniciando"; nombre: string; desde: number; arrancando: boolean }
   | { t: "podar"; inicio: "perfil" | "restaurar"; ficha: Ficha; props: Record<string, string>; recuento: Recuento | null; demo: boolean }
   | { t: "desconectado"; nombre: string }
@@ -45,6 +50,25 @@ export function Conectar() {
   const movilRef = useRef<Movil | null>(null);
   const ocupado = useRef(false);
   const reiniciando = useRef(false); // durante un reinicio, la desconexión es lo esperado
+  // Lo que hay que comprobar al volver del reinicio (specs/008): cómo dejó Poda cada app y el estado de antes.
+  const pendiente = useRef<{ esperado: Record<string, EstadoPaquete>; antes: Map<string, EstadoPaquete> } | null>(null);
+
+  /** Solo lee el móvil. Si un comando falla, esa comprobación queda «sin comprobar». */
+  const comprobar = async (movil: Movil, arranco: boolean) => {
+    const p = pendiente.current;
+    pendiente.current = null;
+    if (!p) return;
+    const leer = (c: readonly string[]) => movil.shell([...c]).catch(() => null);
+    try {
+      const [inicio, teclado, ahora] = await Promise.all([leer(COMANDOS_COMPROBAR.inicio), leer(COMANDOS_COMPROBAR.teclado), leerEstados(movil)]);
+      const comprobacion = comprobarTrasReinicio({ arranco, inicio, teclado, esperado: p.esperado, antes: p.antes, ahora });
+      if (movilRef.current === movil) setEstado((e) => (e.t === "listo" ? { ...e, comprobacion } : e));
+    } catch {
+      // Sin la lista de apps no hay comprobación que enseñar; al menos se dice si arrancó.
+      const comprobacion = comprobarTrasReinicio({ arranco, inicio: null, teclado: null, esperado: {}, antes: new Map(), ahora: new Map() });
+      if (movilRef.current === movil) setEstado((e) => (e.t === "listo" ? { ...e, comprobacion } : e));
+    }
+  };
 
   const recontar = async (movil: Movil) => {
     try {
@@ -63,22 +87,24 @@ export function Conectar() {
   const leerMovil = useCallback(async (movil: Movil, demo: boolean) => {
     movilRef.current = movil;
     const trasReinicio = reiniciando.current;
+    let arranco = true;
     if (trasReinicio) {
       setEstado((e) => (e.t === "reiniciando" ? { ...e, arrancando: true } : e));
-      await esperarArranque(movil);
+      arranco = await esperarArranque(movil);
       reiniciando.current = false;
     } else {
       setEstado({ t: "leyendo", nombre: movil.nombreUsb });
     }
     const props = parsearGetprop(await movil.getprop());
     const ficha = fichaDesdeProps(props);
-    setEstado({ t: "listo", ficha, props, recuento: null, demo, reiniciado: trasReinicio });
+    setEstado({ t: "listo", ficha, props, recuento: null, demo, comprobacion: trasReinicio ? "comprobando" : undefined });
     movil.desconectado.then(() => {
       if (movilRef.current === movil) {
         movilRef.current = null;
         setEstado({ t: "desconectado", nombre: ficha.nombre });
       }
     });
+    if (trasReinicio) await comprobar(movil, arranco);
     await recontar(movil);
   }, []);
 
@@ -104,9 +130,12 @@ export function Conectar() {
     [leerMovil, t],
   );
 
-  const reiniciar = async (nombre: string) => {
+  const reiniciar = async (nombre: string, esperado: Record<string, EstadoPaquete>) => {
     const movil = movilRef.current;
     if (!movil) return;
+    // Estado justo antes de reiniciar: así se ve si algo imprescindible cambia al arrancar.
+    const antes = await leerEstados(movil).catch(() => new Map<string, EstadoPaquete>());
+    pendiente.current = { esperado, antes };
     reiniciando.current = true;
     movilRef.current = null; // la desconexión que viene no es un error
     setEstado({ t: "reiniciando", nombre, desde: Date.now(), arrancando: false });
@@ -221,7 +250,7 @@ export function Conectar() {
           e={estado}
           volver={volverAlInicio}
           podar={(inicio) => {
-            const { t: _t, ...resto } = estado;
+            const { t: _t, comprobacion: _c, ...resto } = estado;
             setEstado({ t: "podar", inicio, ...resto });
             window.scrollTo({ top: 0 });
           }}
@@ -234,7 +263,7 @@ export function Conectar() {
           ficha={estado.ficha}
           props={estado.props}
           inicio={estado.inicio}
-          reiniciar={() => reiniciar(estado.ficha.nombre)}
+          reiniciar={(esperado) => reiniciar(estado.ficha.nombre, esperado)}
           alSalir={() => {
             const { t: _t, inicio: _i, ...resto } = estado;
             setEstado({ t: "listo", ...resto, recuento: null });
@@ -303,11 +332,7 @@ function Ficha_({ e, volver, podar }: { e: Extract<Estado, { t: "listo" }>; volv
   return (
     <section className="tarjeta dos">
       <div className="col">
-      {e.reiniciado && (
-        <p className="arranco" role="status">
-          {t.arranco}
-        </p>
-      )}
+      {e.comprobacion && <TrasReinicio c={e.comprobacion} podar={podar} />}
       <p className="etiqueta">{e.demo ? t.demo : t.reconocido}</p>
       <h1 className="titulo t-l">
         <em>{f.nombre}</em>

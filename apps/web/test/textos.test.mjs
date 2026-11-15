@@ -87,3 +87,73 @@ test("ningún texto tiene caracteres de control", () => {
   }
   assert.deepEqual(malos, []);
 });
+
+test("004 R-005: /conectar explica en cada idioma lo que no se quita nunca, ni en experto, y que se puede restaurar", async () => {
+  const { readFileSync } = await import("node:fs");
+  const pagina = readFileSync(new URL("../paginas/PaginaConectar.tsx", import.meta.url), "utf8");
+  assert.match(pagina, /<GruposProtegidos idioma=\{idioma\} \/>/, "PaginaConectar no muestra los grupos protegidos");
+  const experto = { es: /experto/, en: /expert/, pt: /experto/, fr: /expert/, ca: /expert/ };
+  const restaurar = { es: /restaurar/, en: /restore/, pt: /restaur/, fr: /restaurer/, ca: /restaurar/ };
+  for (const [idioma, t] of Object.entries(TODOS)) {
+    assert.ok(t.conectar.protegidasTitulo?.trim(), `${idioma}: protegidasTitulo`);
+    assert.match(t.conectar.protegidasTexto, experto[idioma], `${idioma}: no dice que tampoco en experto`);
+    assert.match(t.conectar.protegidasTexto, restaurar[idioma], `${idioma}: no dice que se puede restaurar`);
+  }
+});
+
+test("005 R-002: textos de lo que quita cada perfil por origen, en los cinco idiomas y con sus variables", () => {
+  for (const [idioma, t] of Object.entries(TODOS)) {
+    const p = t.podar;
+    assert.match(p.origenTitulo, /\{perfil\}/, `${idioma}: origenTitulo sin {perfil}`);
+    assert.match(p.origenFila, /\{n\}/, `${idioma}: origenFila sin {n}`);
+    assert.match(p.origenFila, /\{total\}/, `${idioma}: origenFila sin {total}`);
+    assert.ok(p.origenNota?.trim(), `${idioma}: origenNota`);
+  }
+});
+
+test("006 R-002: los textos ya no dicen que vienen marcadas todas y avisan de las de experto", () => {
+  const viejo = /marcadas todas|all its apps come ticked|All the apps in the profile come ticked|todos os apps dele vêm marcados|Todos os apps do perfil vêm marcados|toutes ses applis sont cochées|Toutes les applis du profil sont cochées|totes les seves apps vénen marcades|Totes les apps del perfil vénen marcades/;
+  for (const [idioma, t] of Object.entries(TODOS)) {
+    assert.ok(t.podar.sinMarcar?.trim(), `${idioma}: podar.sinMarcar`);
+    assert.ok(t.podar.sinMarcarAvanzadas?.trim(), `${idioma}: podar.sinMarcarAvanzadas`);
+    for (const [ruta, s] of cadenas(t)) assert.doesNotMatch(s, viejo, `${idioma}: ${ruta}`);
+  }
+});
+
+test("007 R-005: textos de la traducción en los cinco idiomas; la nota ya no dice que siempre van en inglés", () => {
+  for (const [idioma, t] of Object.entries(TODOS)) {
+    for (const k of ["traducirBoton", "traduciendo", "traducirNota", "traducidas", "sinTraductor"]) assert.ok(t.podar[k]?.trim(), `${idioma}: podar.${k}`);
+  }
+  for (const [idioma, re] of Object.entries({ es: /descripciones en inglés de la lista/, pt: /descrições em inglês, da lista/, fr: /descriptions en anglais issues/, ca: /descripcions en anglès de la llista/ })) {
+    assert.doesNotMatch(TODOS[idioma].podar.listaNota, re, idioma);
+  }
+});
+
+test("007 R-006: hay traducción de casi todas las descripciones y conservan paquetes, enlaces y código", async () => {
+  const { readFileSync, existsSync } = await import("node:fs");
+  const { createHash } = await import("node:crypto");
+  const clave = (t) => createHash("sha1").update(t).digest("hex").slice(0, 10);
+  const detalles = new URL("../public/detalles.json", import.meta.url);
+  if (!existsSync(detalles)) return; // sin compilar todavía (pnpm lista)
+  const originales = new Map(Object.values(JSON.parse(readFileSync(detalles, "utf8"))).filter((v) => v[0]).map((v) => [clave(v[0]), v[0]]));
+  const intocables = (s) => [...(s.match(/https?:\/\/[^\s)\]]+/g) ?? []), ...(s.match(/`[^`]+`/g) ?? []), ...(s.match(/\b[a-zA-Z][\w-]*(?:\.[a-zA-Z_][\w-]*){2,}\b/g) ?? [])];
+  for (const idioma of ["es", "pt", "fr", "ca"]) {
+    const t = JSON.parse(readFileSync(new URL(`../../../data/descripciones/${idioma}.json`, import.meta.url), "utf8"));
+    const hechas = [...originales.keys()].filter((k) => t[k]).length;
+    assert.ok(hechas / originales.size >= 0.99, `${idioma}: solo ${hechas} de ${originales.size}`);
+    const rotas = [];
+    for (const [k, en] of originales) if (t[k]) for (const x of intocables(en)) if (!t[k].includes(x)) rotas.push(`${k}: ${x}`);
+    assert.deepEqual(rotas, [], idioma);
+  }
+});
+
+test("008 R-006: textos de la comprobación tras reiniciar en los cinco idiomas", () => {
+  const claves = ["comprobando", "trasTitulo", "todoBien", "todoBienSinApps", "arrancoBien", "noArranco", "inicioBien", "inicioMal", "tecladoBien", "tecladoMal", "sinComprobar", "queInicio", "queTeclado", "protegidasBien", "protegidasMal", "appsBien", "appsMal", "appCambio", "volvieron", "volverAElegir", "restaurarCopia", "llamada"];
+  for (const [idioma, t] of Object.entries(TODOS)) {
+    for (const k of claves) assert.ok(t.conectar[k]?.trim(), `${idioma}: conectar.${k}`);
+    for (const e of ["instalado", "desactivado", "quitado"]) assert.ok(t.conectar.estadoApp?.[e]?.trim(), `${idioma}: estadoApp.${e}`);
+    assert.match(t.conectar.noArranco, /\(\/rescate\/\)/, `${idioma}: enlace a rescate`);
+    // Poda no comprueba las llamadas: no se puede prometer (AGENTS.md, honestidad en los textos)
+    assert.equal(t.conectar.arranco, undefined, `${idioma}: el antiguo «arrancó bien» ya no existe`);
+  }
+});

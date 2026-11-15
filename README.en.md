@@ -58,7 +58,7 @@ The assistant uses Poda's MCP server, which refuses to apply anything without a 
 
 ## What Poda never touches
 
-The starting list is [Universal Android Debloater Next Generation](https://github.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation). Poda hardens it for non-technical users: system boot and settings, home screen launchers, setup wizards, calls/data/carrier and Google services are **never** touched; keyboard, phone, SMS, contacts, clock, browser, camera and gallery are **expert-only, with a warning**; apps with a launcher icon are **unchecked by default**.
+The starting list is [Universal Android Debloater Next Generation](https://github.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation). Poda hardens it for non-technical users: system boot and settings, home screen launchers, setup wizards, data/carrier, Google services and, from any brand, **the apps for calls, SMS and MMS, contacts, the SIM menu and location (GPS)** are **never** touched, on any phone or profile, so the phone can always make calls; keyboard, clock, browser, camera and gallery are **expert-only, with a warning**; choosing a profile ticks the safe apps and the advanced manufacturer, carrier and third-party apps; you tick the base Android, Google and expert ones yourself, and the ones you can see on your phone are tagged "has icon".
 
 The list lives in [`packages/nucleo/src/protecciones.ts`](packages/nucleo/src/protecciones.ts) and is published as open data at [podamovil.com/protegidas.json](https://podamovil.com/protegidas.json) for any other tool to use.
 

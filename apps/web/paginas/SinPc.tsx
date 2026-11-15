@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { AVISO_PODA, PROTEGIDOS, TEXTOS_NUCLEO } from "@poda/nucleo";
+import { AVISO_PODA, TEXTOS_NUCLEO } from "@poda/nucleo";
 import { Cabecera, Pie } from "@/components/Logo";
+import { GruposProtegidos } from "@/components/Protegidas";
 import { rico } from "@/components/Rico";
 import { ruta, textosDe, type Idioma } from "@/lib/i18n";
 import { metaPagina } from "@/lib/seo";
@@ -48,29 +49,7 @@ export function SinPc({ idioma }: { idioma: Idioma }) {
           </div>
 
           <div className="rejilla r2">
-            {PROTEGIDOS.map((g, i) => (
-              <details key={g.titulo} className="caja protegidos">
-                <summary>
-                  <span>
-                    <strong>{n.protegidos[i].titulo}</strong>
-                    <span className="sub">{n.protegidos[i].motivo}</span>
-                  </span>
-                  <span className="mono protegidos-n">{g.paquetes.length + (g.familias?.length ?? 0)}</span>
-                </summary>
-                <ul>
-                  {g.paquetes.map((p) => (
-                    <li key={p}>
-                      <code>{p}</code>
-                    </li>
-                  ))}
-                  {g.familias?.map((f, j) => (
-                    <li key={f.texto} className="familia">
-                      {n.protegidos[i].familias?.[j] ?? f.texto}
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            ))}
+            <GruposProtegidos idioma={idioma} />
             <details className="caja protegidos con-cuidado">
               <summary>
                 <span>

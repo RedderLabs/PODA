@@ -40,6 +40,45 @@ export function planDePerfil(estados: Map<string, EstadoPaquete>, lista: ListaCo
   return out.sort((a, b) => NIVELES.indexOf(a.nivel) - NIVELES.indexOf(b.nivel) || a.paquete.localeCompare(b.paquete));
 }
 
+/** Apps de un origen que siguen en el móvil, por nivel (specs/005). `bloqueado` son las que Poda no toca nunca. */
+export interface NivelesOrigen {
+  origen: string;
+  total: number;
+  porNivel: Record<Nivel, number>;
+}
+
+/** Por origen, cuántas apps conocidas del móvil (sin las ya quitadas) hay de cada nivel. */
+export function nivelesPorOrigen(estados: Map<string, EstadoPaquete>, lista: ListaCompacta): NivelesOrigen[] {
+  const porOrigen = new Map<string, NivelesOrigen>();
+  for (const [paquete, estado] of estados) {
+    if (estado === "quitado" || !esPaqueteValido(paquete)) continue;
+    const e = lista.p[paquete];
+    if (!e) continue;
+    const origen = lista.origenes[e[1]] ?? "otro";
+    let o = porOrigen.get(origen);
+    if (!o) porOrigen.set(origen, (o = { origen, total: 0, porNivel: { seguro: 0, avanzado: 0, experto: 0, bloqueado: 0 } }));
+    o.total++;
+    o.porNivel[NIVELES[e[0]] ?? "bloqueado"]++;
+  }
+  return [...porOrigen.values()];
+}
+
+/** Cuántas apps de un origen quita un perfil: las que salen en su lista. */
+export function enPerfil(o: NivelesOrigen, perfil: Perfil): number {
+  return NIVELES_DE_PERFIL[perfil].reduce((n, nivel) => n + o.porNivel[nivel], 0);
+}
+
+/** Orígenes cuyas apps avanzadas vienen marcadas: lo que promete «Recomendado» (specs/006). */
+export const ORIGENES_AVANZADAS_MARCADAS: readonly string[] = ["fabricante", "operadora", "terceros"];
+
+/**
+ * Qué viene marcado al elegir un perfil: las seguras, y las avanzadas del fabricante, la operadora y
+ * terceros. Las avanzadas de Android base y Google y las de experto salen sin marcar (specs/006).
+ */
+export function marcadaPorDefecto(x: Pick<ItemPlan, "nivel" | "origen">): boolean {
+  return x.nivel === "seguro" || (x.nivel === "avanzado" && ORIGENES_AVANZADAS_MARCADAS.includes(x.origen));
+}
+
 /** Cuántos paquetes de este móvil entran en cada perfil. */
 export function tamanoPerfiles(estados: Map<string, EstadoPaquete>, lista: ListaCompacta): Record<Perfil, number> {
   return {
