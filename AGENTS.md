@@ -20,6 +20,10 @@ PODA (Programa para Ocultar y Desactivar Apps) quita las apps de serie de un And
 - **Nada sale del ordenador del usuario.** Ni la lista de apps de su móvil ni sus propiedades. Sin analíticas que la envíen, sin servidores. Lo único permitido es contar visitas a páginas con Umami (`components/Estadisticas.tsx`): nada de eventos con datos del móvil.
 - **Honestidad en los textos.** No prometas en la web o en los README nada que el código no haga.
 
+## Especificaciones (SDD)
+
+Los cambios de comportamiento se especifican antes de programarlos, en [specs/](specs/README.md): especificación → plan → tareas → pruebas y código → verificación. Una funcionalidad nueva no se programa hasta que su `spec.md` está aprobada. Un error empieza por una prueba que lo reproduce. Las pruebas citan el requisito (`R-001 CA-1`).
+
 ## Estilo
 
 - Textos para el usuario en **español de España**, claros y sin jerga. Identificadores y comentarios también en español, como el resto del código.

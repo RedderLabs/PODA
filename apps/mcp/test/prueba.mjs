@@ -37,7 +37,7 @@ r = await llamar("emparejar_wifi", { direccion: "192.168.1.40:37099; rm -rf /", 
 r = await llamar("analizar", { perfil: "seguro" });
 const segs = r.j.propuesta.map((x) => x.paquete);
 assert.ok(segs.includes("com.miui.msa.global") && !segs.includes("com.xiaomi.aiservice") && !segs.includes("com.xiaomi.micloud.sdk"));
-assert.equal(r.j.resumen.fuera_de_la_lista, 1); assert.equal(r.j.resumen.ya_quitados_antes, 1);
+assert.equal(r.j.resumen.fuera_de_la_lista, 3); // com.ejemplo.desconocido y dos protegidos que UAD-ng no conoce assert.equal(r.j.resumen.ya_quitados_antes, 1);
 paso(`analizar perfil seguro (${segs.length} propuestos)`);
 r = await llamar("analizar", { perfil: "recomendado" });
 const recs = r.j.propuesta.map((x) => x.paquete);
@@ -54,12 +54,24 @@ assert.deepEqual(r.j.se_aplicaria_a.map((x) => x.paquete).sort(), ["com.miui.ana
 assert.equal(r.j.rechazados.length, 4);
 paso("aplicar en simulación: rechaza bloqueado, desconocido, ya quitado e inyección");
 
+// R-001 (specs/001): un protegido nunca se toca, aunque no esté en la lista y se pida «incluir_fuera_de_lista».
+const protegidos = ["com.android.networkstack", "com.android.carrierconfig.oppo"];
+r = await llamar("aplicar", { paquetes: [...protegidos, "com.ejemplo.desconocido"], incluir_fuera_de_lista: true });
+assert.deepEqual(r.j.se_aplicaria_a.map((x) => x.paquete), ["com.ejemplo.desconocido"]);
+assert.deepEqual(r.j.rechazados.map((x) => x.paquete).sort(), [...protegidos].sort());
+assert.ok(r.j.rechazados.every((x) => /protegido/.test(x.motivo)));
+paso("R-001 CA-1, CA-2, CA-3 y CA-4: simulación rechaza protegidos fuera de lista (exacto y por patrón)");
+
 r = await llamar("aplicar", { paquetes: lote, confirmar: true }); assert.ok(r.error && /copia/.test(r.t)); paso("aplicar sin copia se niega");
 r = await llamar("crear_copia"); assert.ok(r.j.ruta); const archivo = r.j.ruta.split("/").pop(); paso("crear_copia");
 r = await llamar("aplicar", { paquetes: lote, confirmar: true });
 assert.equal(r.j.hechos.length, 3);
 assert.match(r.j.hechos.find((x) => x.paquete === "com.xiaomi.phone").resultado, /desactivado/);
 paso("aplicar confirmado (y desactiva si no se puede quitar)");
+r = await llamar("aplicar", { paquetes: protegidos, incluir_fuera_de_lista: true, confirmar: true });
+assert.equal(r.j.hechos.length, 0); assert.equal(r.j.rechazados.length, 2);
+r = await llamar("analizar", { perfil: "experto" }); assert.equal(r.j.resumen.fuera_de_la_lista, 3);
+paso("R-001 CA-1: confirmado tampoco toca los protegidos (siguen en el móvil)");
 
 r = await llamar("analizar", { perfil: "seguro" }); assert.ok(!r.j.propuesta.some((x) => x.paquete === "com.miui.msa.global")); paso("el análisis refleja los cambios");
 

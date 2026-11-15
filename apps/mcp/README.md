@@ -56,7 +56,7 @@ También expone un prompt, `limpiar_movil`, con el flujo completo.
 - `aplicar` sin `confirmar: true` es una simulación.
 - Con `confirmar: true` exige una copia del mismo móvil de las últimas 24 h.
 - Los paquetes de nivel **bloqueado** se rechazan siempre.
-- Los paquetes que no están en la lista se rechazan salvo `incluir_fuera_de_lista: true`.
+- Los paquetes que no están en la lista se rechazan salvo `incluir_fuera_de_lista: true`. Los protegidos de Poda se rechazan siempre, estén o no en la lista.
 - Los nombres de paquete se validan antes de llegar a `adb shell` (evita inyección de comandos).
 - Si un paquete no se deja quitar, se intenta desactivar.
 - Cada cambio queda registrado en `~/.poda/registro.jsonl`.

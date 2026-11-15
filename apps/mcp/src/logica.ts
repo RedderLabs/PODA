@@ -1,6 +1,6 @@
 // Lógica común del servidor MCP y de la línea de comandos.
 import * as adb from "./adb.js";
-import { fichaDesdeProps } from "@poda/nucleo";
+import { estaProtegido, fichaDesdeProps } from "@poda/nucleo";
 import { lista, nivelDe, origenDe, NIVELES_DE_PERFIL, resumenDescripcion, type Nivel, type Perfil } from "./datos.js";
 import { guardarCopia, leerCopia, hayCopiaReciente, registrar } from "./copias.js";
 
@@ -111,6 +111,11 @@ export async function aplicar(opts: {
   for (const p of [...new Set(opts.paquetes)]) {
     if (!adb.esPaqueteValido(p)) {
       rechazados.push({ paquete: p, motivo: "nombre no válido" });
+      continue;
+    }
+    // Antes que nada: un protegido no se toca nunca, esté o no en la lista de UAD-ng (specs/001, R-001).
+    if (estaProtegido(p)) {
+      rechazados.push({ paquete: p, motivo: "protegido: Poda no lo toca nunca porque el móvil lo necesita" });
       continue;
     }
     const est = estados.get(p);

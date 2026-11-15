@@ -4,6 +4,8 @@
 import { execFile } from "node:child_process";
 
 const ADB = process.env.PODA_ADB || "adb";
+// Un adb escrito en JavaScript (el falso de las pruebas) se lanza con Node: Windows no ejecuta un .mjs por su `#!`.
+const [ADB_EJECUTABLE, ADB_PREVIOS] = /\.m?js$/i.test(ADB) ? [process.execPath, [ADB]] : [ADB, []];
 
 const RE_SERIE = /^[A-Za-z0-9._:\-\[\]]+$/;
 const RE_DIRECCION = /^[A-Za-z0-9.\-\[\]:]+:\d{1,5}$/;
@@ -13,7 +15,7 @@ export { esPaqueteValido };
 
 function ejecutar(args: string[], timeoutMs = 60_000): Promise<{ salida: string; error: string; codigo: number }> {
   return new Promise((resolve) => {
-    execFile(ADB, args, { timeout: timeoutMs, maxBuffer: 32 * 1024 * 1024 }, (err, stdout, stderr) => {
+    execFile(ADB_EJECUTABLE, [...ADB_PREVIOS, ...args], { timeout: timeoutMs, maxBuffer: 32 * 1024 * 1024 }, (err, stdout, stderr) => {
       const codigo = err ? (typeof (err as NodeJS.ErrnoException).code === "number" ? Number((err as NodeJS.ErrnoException).code) : 1) : 0;
       if (err && (err as NodeJS.ErrnoException).code === "ENOENT") {
         resolve({ salida: "", error: `No encuentro adb ("${ADB}"). Instala Android Platform Tools o indica la ruta en PODA_ADB.`, codigo: 127 });
