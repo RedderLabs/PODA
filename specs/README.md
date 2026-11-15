@@ -37,3 +37,4 @@ Estados de una especificación: `borrador` → `aprobada` → `implementada` (o 
 | 007 | [Descripciones de las apps en el idioma de la web](007-descripciones-traducidas/spec.md) | implementada (falta revisión nativa de las traducciones) |
 | 008 | [Comprobar el móvil después del reinicio](008-comprobar-tras-reiniciar/spec.md) | implementada (revisada en la demo) |
 | 009 | [Antes y después: comparar con la copia](009-comparar-con-la-copia/spec.md) | implementada |
+| 010 | [Fondo de recuerdo con el robot](010-fondo-de-recuerdo/spec.md) | implementada (falta revisar en móviles reales, T7) |

@@ -208,6 +208,23 @@ server.registerTool(
   },
 );
 
+server.registerTool(
+  "dejar_fondo",
+  {
+    title: "Dejar el fondo de recuerdo",
+    description:
+      "Opcional, solo al final, después de aplicar y de comprobar el móvil: copia a la galería del móvil (Pictures/Poda/poda-fondo.png) una imagen de recuerdo con el robot de Poda y devuelve los pasos para ponerla de fondo según la marca. NO cambia el fondo actual. Sin confirmar=true no copia nada. Llama con confirmar=true SOLO si el usuario ha dicho que sí la quiere. Si se pide otra vez, sustituye la imagen. Restaurar no la borra.",
+    inputSchema: { serie: serieOpcional, confirmar: z.boolean().default(false) },
+  },
+  async ({ serie, confirmar }) => {
+    try {
+      return json(await logica.dejarFondo({ serie, confirmar }));
+    } catch (e) {
+      return fallo(e);
+    }
+  },
+);
+
 // ---------------------------------------------------------------- prompt guiado
 server.registerPrompt(
   "limpiar_movil",
@@ -230,6 +247,7 @@ server.registerPrompt(
             "4. Deja que quite o añada cosas. Enséñame el plan con `aplicar` sin confirmar.",
             "5. Crea una copia con `crear_copia` y, solo cuando yo diga que sí, aplica con confirmar=true.",
             "6. Dime qué se hizo, qué falló y cómo deshacerlo con `restaurar`. Recuérdame desactivar la depuración al terminar.",
+            "7. Si quieres, ofréceme el fondo de recuerdo con el robot (`dejar_fondo`): mi fondo actual no cambia. Solo si digo que sí, confirmar=true, y dame los pasos para ponerlo.",
           ].join("\n"),
         },
       },

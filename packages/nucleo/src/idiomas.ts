@@ -4,6 +4,7 @@
 import { DESCRIPCION_NIVEL, ORIGENES, type Nivel, type Origen } from "./niveles.js";
 import { AVISO_PODA, PROTEGIDOS } from "./protecciones.js";
 import { CAPA_PIXEL, clavesAviso, TEXTO_AVISO, type ClaveAviso, type Ficha } from "./ficha.js";
+import { TEXTOS_FONDO, type TextosFondo } from "./fondo.js";
 import { en } from "./traducciones/en.js";
 import { pt } from "./traducciones/pt.js";
 import { fr } from "./traducciones/fr.js";
@@ -27,6 +28,8 @@ export interface TextosNucleo {
   aviso: Record<ClaveAviso, string>;
   /** Capa que se muestra en los Pixel. */
   capaPixel: string;
+  /** Fondo de recuerdo (specs/010): pasos por marca y avisos. */
+  fondo: TextosFondo;
 }
 
 const ORIGEN_ES = Object.fromEntries(ORIGENES.map((o) => [o, o])) as Record<Origen, string>;
@@ -38,6 +41,7 @@ export const es: TextosNucleo = {
   protegidos: PROTEGIDOS.map((g) => ({ titulo: g.titulo, motivo: g.motivo, familias: g.familias?.map((f) => f.texto) })),
   aviso: { ...TEXTO_AVISO },
   capaPixel: CAPA_PIXEL,
+  fondo: TEXTOS_FONDO,
 };
 
 export const TEXTOS_NUCLEO: Readonly<Record<Idioma, TextosNucleo>> = { es, en, pt, fr, ca };

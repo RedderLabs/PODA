@@ -456,3 +456,12 @@ a:hover { color: var(--acento-texto); }
 .comparativa-apps { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; max-height: 320px; overflow-y: auto; font-size: 14px; }
 .comparativa-apps li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 12px; overflow-wrap: anywhere; }
 .tras-reinicio .comparativa { color: var(--tinta); margin-bottom: 0; }
+
+/* --- fondo de recuerdo (specs/010) --- */
+.fondo-recuerdo { display: flex; gap: 16px; align-items: flex-start; padding: 16px 20px; border: 1px solid var(--linea); border-radius: 12px; background: var(--fondo-2); margin-top: 16px; }
+.fondo-recuerdo-img { flex: none; width: 72px; height: auto; border-radius: 12px; border: 1px solid var(--linea); }
+.fondo-recuerdo-texto { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.fondo-recuerdo h2 { margin: 0; font-size: 16px; font-weight: 600; }
+.fondo-recuerdo p { margin: 0; }
+.fondo-recuerdo .acciones { margin-top: 4px; }
+.fondo-recuerdo-pasos { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; font-size: 15px; }

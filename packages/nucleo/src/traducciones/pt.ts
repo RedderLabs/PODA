@@ -103,4 +103,30 @@ export const pt: TextosNucleo = {
     soloCable: "Com esta versão do Android a conexão tem que ser por cabo (a depuração por Wi-Fi chegou no Android 11).",
   },
   capaPixel: "Android do Google (Pixel)",
+  fondo: {
+    pasos: {
+      xiaomi: [
+        "Abra a “Galeria” e entre no álbum “Poda”.",
+        "Abra a imagem e toque em “Mais” (os três pontos).",
+        "Toque em “Definir como papel de parede” e escolha a tela de bloqueio, a tela inicial ou as duas.",
+      ],
+      samsung: [
+        "Abra a “Galeria” e entre no álbum “Poda”.",
+        "Abra a imagem e toque nos três pontos no canto inferior direito.",
+        "Toque em “Definir como papel de parede” e escolha a tela de bloqueio, a tela inicial ou as duas.",
+      ],
+      oppo: [
+        "Abra “Fotos” e entre no álbum “Poda”.",
+        "Abra a imagem e toque em “Mais”.",
+        "Toque em “Definir como papel de parede” e escolha a tela de bloqueio, a tela inicial ou as duas.",
+      ],
+      general: [
+        "Abra a galeria de fotos (Galeria, Fotos ou Google Fotos) e procure a pasta “Poda”.",
+        "Abra a imagem e toque no menu (os três pontos).",
+        "Procure “Usar como” ou “Definir como papel de parede” e escolha a tela.",
+      ],
+    },
+    noAparece: "Se não aparecer, espere alguns minutos ou procure no app “Arquivos”, em Imagens › Poda.",
+    borrar: "Se não quiser, apague pela galeria como qualquer foto. Restaurar os apps não a apaga.",
+  },
 };

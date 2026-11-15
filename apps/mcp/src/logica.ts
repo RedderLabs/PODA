@@ -1,6 +1,9 @@
 // Lógica común del servidor MCP y de la línea de comandos.
 import * as adb from "./adb.js";
-import { estaProtegido, fichaDesdeProps, pasosParaRestaurar, RESPUESTA_OK } from "@poda/nucleo";
+import { estaProtegido, fichaDesdeProps, FONDO, marcaFondo, pasosParaRestaurar, RESPUESTA_OK, TEXTOS_FONDO } from "@poda/nucleo";
+import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { lista, nivelDe, origenDe, NIVELES_DE_PERFIL, resumenDescripcion, type Nivel, type Perfil } from "./datos.js";
 import { guardarCopia, leerCopia, hayCopiaReciente, registrar } from "./copias.js";
 
@@ -235,4 +238,33 @@ export async function restaurar(opts: { serie?: string; paquetes?: string[]; cop
   }
   registrar({ accion: "restaurar", serie: s, copia: opts.copia, hechos, fallidos });
   return { serie: s, hechos, fallidos, sin_cambios: sinCambios };
+}
+
+// ---------------------------------------------------------------- fondo de recuerdo (specs/010)
+function rutaImagenFondo(): string {
+  const aqui = dirname(fileURLToPath(import.meta.url));
+  const candidatas = [join(aqui, "..", "data", FONDO.archivo), join(aqui, "..", "..", "..", "data", FONDO.archivo)];
+  const r = candidatas.find((c) => existsSync(c));
+  if (!r) throw new Error(`No encuentro ${FONDO.archivo}. Ejecuta \`pnpm build\`.`);
+  return r;
+}
+
+/**
+ * Deja en la galería del móvil la imagen de recuerdo con el robot. No cambia el fondo actual.
+ * Sin confirmar=true no copia nada: solo explica qué haría (R-001 CA-2).
+ */
+export async function dejarFondo(opts: { serie?: string; confirmar?: boolean }) {
+  const s = await adb.resolverSerie(opts.serie);
+  const marca = marcaFondo(fichaDesdeProps(await adb.propiedades(s)).familia);
+  const comun = {
+    ruta: FONDO.ruta,
+    aviso: "Tu fondo actual no cambia: la imagen solo queda guardada en la galería, en la carpeta «Poda».",
+    pasos: TEXTOS_FONDO.pasos[marca],
+    si_no_aparece: TEXTOS_FONDO.noAparece,
+    para_borrarla: TEXTOS_FONDO.borrar,
+  };
+  if (!opts.confirmar) return { modo: "simulacion", ...comun };
+  const r = await adb.copiarFondo(s, rutaImagenFondo());
+  if (!r.ok) return { modo: "hecho", copiado: false, motivo: `No se pudo copiar la imagen al móvil (${r.error || "adb no dio motivo"}). Lo demás no ha cambiado.` };
+  return { modo: "hecho", copiado: true, ...comun };
 }

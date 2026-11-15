@@ -1,5 +1,7 @@
 // Imágenes para compartir (Open Graph / X): mismo estilo que la web. Se generan al compilar.
 import { ImageResponse } from "next/og";
+import { FONDO } from "@poda/nucleo";
+import { DibujoRobot } from "@/components/DibujoRobot";
 
 export const TAMANO_OG = { width: 1200, height: 630 };
 
@@ -79,4 +81,26 @@ export function ogMarca(idioma: Idioma, archivo: string) {
     resaltado: fmt(textos.og.marcaResaltado, { n: r.seguro }, idioma),
     pie: fmt(textos.og.marcaPie, { total: r.total }, idioma),
   });
+}
+
+/**
+ * Fondo de recuerdo (specs/010 R-004): el robot con la cara contenta sobre el papel de Poda, en vertical.
+ * Arriba queda sitio para el reloj y abajo para los iconos. Mismo dibujo que el robot de la web.
+ */
+export function fondoPng() {
+  const alto = FONDO.alto * 0.45; // del 30 % al 75 % del alto
+  const ancho = (alto * 400) / 600;
+  return new ImageResponse(
+    (
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", background: "#efede7" }}>
+        <div style={{ display: "flex", marginTop: FONDO.alto * 0.3 }}>
+          <svg width={ancho} height={alto} viewBox="0 0 400 600">
+            {DibujoRobot({ id: "fondo", expresion: "feliz", pedestal: true })}
+          </svg>
+        </div>
+        <div style={{ display: "flex", marginTop: 64, fontSize: 44, letterSpacing: 6, color: "rgba(20, 20, 20, 0.4)" }}>Poda</div>
+      </div>
+    ),
+    { width: FONDO.ancho, height: FONDO.alto },
+  );
 }

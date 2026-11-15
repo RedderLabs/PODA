@@ -103,4 +103,30 @@ export const ca: TextosNucleo = {
     soloCable: "Amb aquesta versió d'Android la connexió ha de ser per cable (la depuració sense fil arriba amb Android 11).",
   },
   capaPixel: "Android de Google (Pixel)",
+  fondo: {
+    pasos: {
+      xiaomi: [
+        "Obre «Galeria» i entra a l'àlbum «Poda».",
+        "Obre la imatge i toca «Més» (els tres punts).",
+        "Toca «Defineix com a fons de pantalla» i tria la pantalla de bloqueig, la d'inici o totes dues.",
+      ],
+      samsung: [
+        "Obre «Galeria» i entra a l'àlbum «Poda».",
+        "Obre la imatge i toca els tres punts de baix a la dreta.",
+        "Toca «Defineix com a fons» i tria la pantalla de bloqueig, la d'inici o totes dues.",
+      ],
+      oppo: [
+        "Obre «Fotos» i entra a l'àlbum «Poda».",
+        "Obre la imatge i toca «Més».",
+        "Toca «Defineix com a fons de pantalla» i tria la pantalla de bloqueig, la d'inici o totes dues.",
+      ],
+      general: [
+        "Obre la galeria de fotos (Galeria, Fotos o Google Fotos) i busca la carpeta «Poda».",
+        "Obre la imatge i toca el menú (els tres punts).",
+        "Busca «Utilitza com a» o «Defineix com a fons» i tria la pantalla.",
+      ],
+    },
+    noAparece: "Si no la veus, espera uns minuts o busca-la a l'app «Fitxers», a Imatges › Poda.",
+    borrar: "Si no la vols, esborra-la des de la galeria com qualsevol foto. Restaurar les apps no l'esborra.",
+  },
 };

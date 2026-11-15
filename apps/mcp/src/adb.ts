@@ -10,7 +10,7 @@ const [ADB_EJECUTABLE, ADB_PREVIOS] = /\.m?js$/i.test(ADB) ? [process.execPath, 
 const RE_SERIE = /^[A-Za-z0-9._:\-\[\]]+$/;
 const RE_DIRECCION = /^[A-Za-z0-9.\-\[\]:]+:\d{1,5}$/;
 
-import { esPaqueteValido, parsearGetprop, RESPUESTA_OK, type EstadoPaquete } from "@poda/nucleo";
+import { COMANDO_AVISAR_GALERIA, COMANDO_CARPETA_FONDO, esPaqueteValido, FONDO, parsearGetprop, RESPUESTA_OK, type EstadoPaquete } from "@poda/nucleo";
 export { esPaqueteValido };
 
 function ejecutar(args: string[], timeoutMs = 60_000): Promise<{ salida: string; error: string; codigo: number }> {
@@ -155,4 +155,16 @@ export async function reinstalar(serie: string, p: string) {
 export async function activar(serie: string, p: string) {
   comprobarPaquete(p);
   return shell(serie, ["pm", "enable", "--user", "0", p]);
+}
+
+/**
+ * Copia el fondo de recuerdo (specs/010) a su ruta fija del móvil. Si ya estaba, lo sustituye.
+ * `origen` es la imagen que trae Poda, no algo que indique el usuario. No cambia el fondo del móvil.
+ */
+export async function copiarFondo(serie: string, origen: string): Promise<{ ok: boolean; error: string }> {
+  await shell(serie, [...COMANDO_CARPETA_FONDO]);
+  const r = await ejecutar(["-s", serie, "push", origen, FONDO.ruta], 120_000);
+  if (r.codigo !== 0) return { ok: false, error: (r.error || r.salida).trim() };
+  await shell(serie, [...COMANDO_AVISAR_GALERIA]); // si la marca lo ignora, la galería la verá igualmente más tarde
+  return { ok: true, error: "" };
 }

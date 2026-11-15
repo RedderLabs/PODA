@@ -324,6 +324,17 @@ export const es = {
     enRedes: "O compártelo directamente en:",
   },
 
+  fondo: {
+    etiqueta: "Un recuerdo, si quieres",
+    titulo: "Un fondo con el robot de Poda",
+    texto: "Poda puede dejar esta imagen en la galería del móvil, en la carpeta «Poda». Tu fondo actual no cambia: lo pones tú, si te gusta.",
+    alt: "El robot de Poda, contento, sobre fondo claro",
+    boton: "Guardar el fondo en el móvil",
+    copiando: "Copiando la imagen…",
+    listo: "Guardada en la galería, en la carpeta «Poda». Para ponerla de fondo:",
+    fallo: "No se pudo copiar la imagen al móvil. Lo demás no ha cambiado.",
+  },
+
   podar: {
     leyendo: "Leyendo las apps de {nombre}…",
     errorEtiqueta: "Algo no ha ido bien",

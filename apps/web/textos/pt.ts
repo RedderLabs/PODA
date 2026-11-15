@@ -319,6 +319,17 @@ export const pt: Textos = {
     enRedes: "Ou compartilhe direto no:",
   },
 
+  fondo: {
+    etiqueta: "Uma lembrança, se quiser",
+    titulo: "Um papel de parede com o robô do Poda",
+    texto: "O Poda pode deixar esta imagem na galeria do celular, na pasta “Poda”. Seu papel de parede atual não muda: você coloca, se gostar.",
+    alt: "O robô do Poda, contente, sobre fundo claro",
+    boton: "Salvar o papel de parede no celular",
+    copiando: "Copiando a imagem…",
+    listo: "Salva na galeria, na pasta “Poda”. Para usá-la como papel de parede:",
+    fallo: "Não foi possível copiar a imagem para o celular. O resto não mudou.",
+  },
+
   podar: {
     leyendo: "Lendo os apps de {nombre}…",
     errorEtiqueta: "Algo deu errado",

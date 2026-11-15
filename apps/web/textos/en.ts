@@ -319,6 +319,17 @@ export const en: Textos = {
     enRedes: "Or share it directly on:",
   },
 
+  fondo: {
+    etiqueta: "A keepsake, if you like",
+    titulo: "A wallpaper with the Poda robot",
+    texto: "Poda can leave this picture in your phone's gallery, in the “Poda” folder. Your current wallpaper doesn't change: you set it yourself, if you like it.",
+    alt: "The Poda robot, smiling, on a light background",
+    boton: "Save the wallpaper to the phone",
+    copiando: "Copying the picture…",
+    listo: "Saved in the gallery, in the “Poda” folder. To set it as your wallpaper:",
+    fallo: "The picture couldn't be copied to the phone. Nothing else has changed.",
+  },
+
   podar: {
     leyendo: "Reading the apps on {nombre}…",
     errorEtiqueta: "Something went wrong",

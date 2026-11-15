@@ -319,6 +319,17 @@ export const fr: Textos = {
     enRedes: "Ou partagez-le directement sur :",
   },
 
+  fondo: {
+    etiqueta: "Un souvenir, si vous voulez",
+    titulo: "Un fond d'écran avec le robot de Poda",
+    texto: "Poda peut laisser cette image dans la galerie du téléphone, dans le dossier « Poda ». Votre fond d'écran actuel ne change pas : c'est vous qui le mettez, s'il vous plaît.",
+    alt: "Le robot de Poda, content, sur fond clair",
+    boton: "Enregistrer le fond d'écran sur le téléphone",
+    copiando: "Copie de l'image…",
+    listo: "Enregistrée dans la galerie, dans le dossier « Poda ». Pour la mettre en fond d'écran :",
+    fallo: "Impossible de copier l'image sur le téléphone. Rien d'autre n'a changé.",
+  },
+
   podar: {
     leyendo: "Lecture des applis de {nombre}…",
     errorEtiqueta: "Quelque chose s'est mal passé",

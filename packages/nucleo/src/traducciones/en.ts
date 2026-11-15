@@ -103,4 +103,30 @@ export const en: TextosNucleo = {
     soloCable: "With this Android version the connection has to be by cable (wireless debugging arrived in Android 11).",
   },
   capaPixel: "Google's Android (Pixel)",
+  fondo: {
+    pasos: {
+      xiaomi: [
+        "Open “Gallery” and go to the “Poda” album.",
+        "Open the picture and tap “More” (the three dots).",
+        "Tap “Set as wallpaper” and choose the lock screen, the home screen or both.",
+      ],
+      samsung: [
+        "Open “Gallery” and go to the “Poda” album.",
+        "Open the picture and tap the three dots at the bottom right.",
+        "Tap “Set as wallpaper” and choose the lock screen, the home screen or both.",
+      ],
+      oppo: [
+        "Open “Photos” and go to the “Poda” album.",
+        "Open the picture and tap “More”.",
+        "Tap “Set as wallpaper” and choose the lock screen, the home screen or both.",
+      ],
+      general: [
+        "Open your photo gallery (Gallery, Photos or Google Photos) and find the “Poda” folder.",
+        "Open the picture and tap the menu (the three dots).",
+        "Look for “Use as” or “Set as wallpaper” and choose the screen.",
+      ],
+    },
+    noAparece: "If you can't see it, wait a few minutes or look for it in the “Files” app, under Pictures › Poda.",
+    borrar: "If you don't want it, delete it from the gallery like any other photo. Restoring the apps doesn't delete it.",
+  },
 };
