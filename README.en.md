@@ -48,13 +48,14 @@ Paste this into Claude Code:
 
 ```text
 Clone https://github.com/RedderLabs/PODA and follow the instructions in PROMPT.md.
-I want to clean my Android phone with the recommended profile.
-Detect the brand and model, and show me the proposal with each package explained in plain language.
-Before touching anything, save a backup so I can go back.
-Don't apply any change until I confirm.
+I'm not technical: guide me step by step, tell me exactly what to tap at each moment and wait until I say I've done it.
+My Android phone is on the same Wi‑Fi as this computer.
+Detect the brand and model, and show me the recommended profile with every app explained in plain language.
+Before touching anything, save a backup so I can undo the changes.
+Don't apply any changes until I confirm.
 ```
 
-The assistant uses Poda's MCP server, which refuses to apply anything without a prior backup and explicit confirmation. Full instructions: [PROMPT.md](PROMPT.md).
+The assistant guides you step by step (what to tap on the phone and when) and uses Poda's MCP server, which refuses to apply anything without a prior backup and explicit confirmation. Full instructions: [PROMPT.md](PROMPT.md).
 
 ## What Poda never touches
 

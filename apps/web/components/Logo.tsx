@@ -25,7 +25,7 @@ export function Cabecera({ idioma, conNav = true }: { idioma: Idioma; conNav?: b
       <Marca idioma={idioma} className="ah-logo" aria={t.inicio} />
       {conNav ? <MenuPrincipal idioma={idioma} t={t} /> : <span className="ah-menu" aria-hidden="true" />}
       <Link href={ruta(idioma, "/conectar/")} className="ah-lanzar">
-        <span aria-hidden="true">••</span> {t.conectar}
+        {t.conectar}
       </Link>
     </header>
   );

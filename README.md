@@ -55,13 +55,14 @@ Pega esto en Claude Code:
 
 ```text
 Clona https://github.com/RedderLabs/PODA y sigue las instrucciones de PROMPT.md.
-Quiero limpiar mi móvil Android con el perfil recomendado.
-Detecta la marca y el modelo, y enséñame la propuesta con cada paquete explicado en lenguaje normal.
+No sé de informática: guíame paso a paso, dime en cada momento qué tengo que tocar y espera a que te diga que lo he hecho.
+Mi móvil Android está en la misma Wi‑Fi que este ordenador.
+Detecta la marca y el modelo, y enséñame el perfil recomendado con cada app explicada en lenguaje normal.
 Antes de tocar nada, guarda una copia para poder volver atrás.
 No apliques ningún cambio hasta que yo lo confirme.
 ```
 
-El asistente instala lo necesario (preguntando antes), conecta el móvil por cable o por Wi‑Fi y usa el servidor MCP de Poda, que se niega a aplicar nada sin copia previa ni confirmación. Las instrucciones completas que sigue están en [PROMPT.md](PROMPT.md).
+El asistente te guía paso a paso (qué tocar en el móvil y cuándo), instala lo necesario preguntando antes, conecta el móvil por cable o por Wi‑Fi y usa el servidor MCP de Poda, que se niega a aplicar nada sin copia previa ni confirmación. Las instrucciones completas que sigue están en [PROMPT.md](PROMPT.md).
 
 ### Desde la línea de comandos
 

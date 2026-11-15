@@ -74,7 +74,7 @@ export function Portada() {
         </Link>
         <MenuPrincipal idioma={idioma} t={textos.nav} />
         <Link href={ruta(idioma, "/conectar/")} className="ah-lanzar">
-          <span aria-hidden="true">••</span> {textos.nav.conectar}
+          {textos.nav.conectar}
         </Link>
       </header>
 
