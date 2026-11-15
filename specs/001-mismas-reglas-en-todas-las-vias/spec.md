@@ -1,6 +1,6 @@
 # Aplicar y restaurar con las mismas reglas en todas las vías
 
-Estado: borrador (R-001 implementada el 15 de noviembre de 2026; R-002 a R-004 pendientes de aprobar)
+Estado: implementada (15 de noviembre de 2026). Pruebas en `apps/mcp/test/prueba.mjs`, con el identificador de cada requisito.
 
 ## Problema
 
@@ -16,15 +16,15 @@ AGENTS.md exige una sola fuente de verdad: la web, el MCP y la línea de comando
 - Volver a desactivar al restaurar: restaurar nunca quita ni desactiva nada.
 - Cambiar el formato de la copia (sigue siendo `CopiaEstado` versión 1).
 
-## Comportamiento actual (MCP y línea de comandos)
+## Comportamiento anterior (MCP y línea de comandos)
 
 - `aplicar` rechaza nombres no válidos, paquetes que no están en el móvil, ya quitados (o ya desactivados al desactivar), fuera de lista salvo que se pida, y de nivel `bloqueado`. Sin `confirmar` solo simula. Con `confirmar` exige una copia de las últimas 24 h. Si no puede quitar, prueba a desactivar.
 - `restaurar` con copia solo vuelve a poner las apps que en la copia estaban `instalado`. Con paquetes sueltos los reinstala o reactiva.
-- Las copias se leen sin validar el formato.
+- Las copias se leen sin validar el formato, y un `.json` sin fecha en la carpeta de copias rompía `listar_copias` y `aplicar`.
 
 ## Requisitos
 
-- **R-001** Ninguna vía quita ni desactiva un paquete protegido, esté o no en la lista de UAD-ng. *(implementada; pruebas «R-001» en `apps/mcp/test/prueba.mjs`)*
+- **R-001** Ninguna vía quita ni desactiva un paquete protegido, esté o no en la lista de UAD-ng.
   - CA-1: Dado un paquete protegido que no está en la lista (`com.android.networkstack`), cuando se pide aplicarlo con «incluir fuera de lista», entonces se rechaza con el motivo «protegido» y no se envía ningún comando al móvil.
   - CA-2: Dado un paquete que encaja con una familia protegida por patrón y no está en la lista, cuando se pide aplicarlo con «incluir fuera de lista», entonces se rechaza igual que en CA-1.
   - CA-3: Dado un paquete fuera de la lista y no protegido, cuando se pide con «incluir fuera de lista», entonces se acepta como hoy (nivel «desconocido»).
@@ -39,7 +39,7 @@ AGENTS.md exige una sola fuente de verdad: la web, el MCP y la línea de comando
 
 - **R-003** El MCP lee y escribe las copias con las funciones del núcleo.
   - CA-1: Una copia hecha por la web se puede restaurar con el MCP y al revés.
-  - CA-2: Dado un archivo que no es una copia de Poda o con un estado desconocido, cuando se restaura, entonces se rechaza con un mensaje claro y no se envía ningún comando.
+  - CA-2: Dado un archivo que no es una copia de Poda o con un estado desconocido, cuando se restaura, entonces se rechaza con un mensaje claro y no se envía ningún comando. Ese archivo no aparece al listar las copias ni impide aplicar.
 
 - **R-004** El MCP decide si una respuesta del móvil es un éxito con `RESPUESTA_OK` del núcleo.
   - CA-1: Las respuestas que la web da por buenas, el MCP también, y viceversa, para quitar, desactivar, reinstalar y activar.
@@ -52,4 +52,13 @@ AGENTS.md exige una sola fuente de verdad: la web, el MCP y la línea de comando
 ## Dudas
 
 - Resuelto: R-001 rechaza los protegidos siempre, aunque el usuario insista (pedido por el usuario como corrección de seguridad).
-- [POR ACLARAR: R-002 CA-1 cambia el comportamiento del MCP (ahora repone más apps al restaurar una copia). ¿De acuerdo? Se propone que sí, por coherencia con la web.]
+- Resuelto `(por defecto)`: R-002 CA-1 cambia el comportamiento del MCP (repone más apps al restaurar una copia), por coherencia con la web. El usuario pidió seguir con lo pendiente sin elegir.
+
+## Verificación
+
+| Requisito | Cómo se comprobó |
+|---|---|
+| R-001 | Pruebas «R-001»: fallaban antes del arreglo (el MCP quitaba `com.android.networkstack` y `com.android.carrierconfig.oppo`) |
+| R-002 | Pruebas «R-002»: CA-1 fallaba antes (la app desactivada en la copia se quedaba quitada) |
+| R-003 | Pruebas «R-003»: la copia de la web se restaura; las dañadas se rechazan y no rompen `listar_copias` ni `aplicar` |
+| R-004 | Revisión del código: el MCP ya no tiene expresiones propias para leer respuestas; todo el flujo pasa con el adb falso |

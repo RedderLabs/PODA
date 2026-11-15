@@ -10,7 +10,7 @@ const [ADB_EJECUTABLE, ADB_PREVIOS] = /\.m?js$/i.test(ADB) ? [process.execPath, 
 const RE_SERIE = /^[A-Za-z0-9._:\-\[\]]+$/;
 const RE_DIRECCION = /^[A-Za-z0-9.\-\[\]:]+:\d{1,5}$/;
 
-import { esPaqueteValido, parsearGetprop } from "@poda/nucleo";
+import { esPaqueteValido, parsearGetprop, RESPUESTA_OK, type EstadoPaquete } from "@poda/nucleo";
 export { esPaqueteValido };
 
 function ejecutar(args: string[], timeoutMs = 60_000): Promise<{ salida: string; error: string; codigo: number }> {
@@ -107,7 +107,7 @@ export async function propiedades(serie: string): Promise<Record<string, string>
   return out;
 }
 
-export type EstadoPaquete = "instalado" | "desactivado" | "quitado";
+export type { EstadoPaquete };
 
 /** Estado de cada paquete para el usuario 0: instalado, desactivado o quitado (sigue en sistema). */
 export async function estadoPaquetes(serie: string): Promise<Map<string, EstadoPaquete>> {
@@ -147,7 +147,7 @@ export async function desactivar(serie: string, p: string) {
 export async function reinstalar(serie: string, p: string) {
   comprobarPaquete(p);
   const r = await shell(serie, ["cmd", "package", "install-existing", "--user", "0", p]);
-  if (/Success|installed for user/i.test(r.salida)) return r;
+  if (RESPUESTA_OK.reinstalar(r.salida)) return r;
   // Android antiguo: sin `cmd package`.
   return shell(serie, ["pm", "install-existing", "--user", "0", p]);
 }

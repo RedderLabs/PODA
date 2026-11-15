@@ -38,7 +38,7 @@ flowchart LR
 | Formato de la copia | `CopiaEstado`, `crearCopiaEstado`, `leerCopiaEstado` |
 | Qué hace restaurar | `pasosParaRestaurar` |
 
-Hoy la web usa todas estas funciones. **El MCP no**: tiene su propia versión del formato de copia, de la lectura de respuestas y de la restauración, y hasta el 15 de noviembre de 2026 no comprobaba `estaProtegido` en los paquetes fuera de la lista (corregido: R-001). El resto lo corrige la especificación [001](001-mismas-reglas-en-todas-las-vias/spec.md).
+La web y el MCP usan todas estas funciones (desde la especificación [001](001-mismas-reglas-en-todas-las-vias/spec.md)). Una vía nueva no debe reimplementar ninguna.
 
 ## Datos
 

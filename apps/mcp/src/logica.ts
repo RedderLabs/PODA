@@ -1,6 +1,6 @@
 // Lógica común del servidor MCP y de la línea de comandos.
 import * as adb from "./adb.js";
-import { estaProtegido, fichaDesdeProps } from "@poda/nucleo";
+import { estaProtegido, fichaDesdeProps, pasosParaRestaurar, RESPUESTA_OK } from "@poda/nucleo";
 import { lista, nivelDe, origenDe, NIVELES_DE_PERFIL, resumenDescripcion, type Nivel, type Perfil } from "./datos.js";
 import { guardarCopia, leerCopia, hayCopiaReciente, registrar } from "./copias.js";
 
@@ -156,19 +156,18 @@ export async function aplicar(opts: {
     throw new ErrorPoda("No hay copia de seguridad de este móvil en las últimas 24 h. Crea antes una copia (crear_copia).");
   }
 
-  const ok = (out: string) => /Success|disabled-user|new state: disabled/i.test(out);
   const hechos: { paquete: string; resultado: string }[] = [];
   const fallidos: { paquete: string; error: string }[] = [];
   for (const { paquete } of plan) {
     let r = modo === "quitar" ? await adb.quitar(s, paquete) : await adb.desactivar(s, paquete);
-    if (ok(r.salida)) {
+    if (modo === "quitar" ? RESPUESTA_OK.quitar(r.salida) : RESPUESTA_OK.desactivar(r.salida)) {
       hechos.push({ paquete, resultado: modo === "quitar" ? "quitado" : "desactivado" });
       continue;
     }
     if (modo === "quitar") {
       // Algunos fabricantes no dejan quitar ciertos paquetes, pero sí desactivarlos.
       const r2 = await adb.desactivar(s, paquete);
-      if (ok(r2.salida)) {
+      if (RESPUESTA_OK.desactivar(r2.salida)) {
         hechos.push({ paquete, resultado: "desactivado (no se pudo quitar)" });
         continue;
       }
@@ -189,41 +188,51 @@ export async function aplicar(opts: {
 export async function restaurar(opts: { serie?: string; paquetes?: string[]; copia?: string }) {
   if (!opts.paquetes?.length && !opts.copia) throw new ErrorPoda("Indica paquetes o una copia.");
   const s = await adb.resolverSerie(opts.serie);
+  // La copia se lee (y se valida) antes de mirar el móvil: una copia dañada no envía ningún comando.
+  const copia = opts.copia ? leerCopia(s, opts.copia) : null;
   const ahora = await adb.estadoPaquetes(s);
-  const objetivo = new Set<string>();
-  if (opts.copia) {
-    const c = leerCopia(s, opts.copia);
-    for (const [p, est] of Object.entries(c.paquetes)) if (est === "instalado") objetivo.add(p);
+
+  // Qué hacer con cada paquete. Con copia, lo decide el núcleo, igual que en la web (specs/001, R-002).
+  const acciones = new Map<string, "reinstalar" | "activar">();
+  let sinCambios = 0;
+  if (copia) {
+    for (const { paquete, accion } of pasosParaRestaurar(copia, ahora)) acciones.set(paquete, accion);
+    for (const [p, antes] of Object.entries(copia.paquetes)) {
+      if (antes !== "quitado" && ahora.has(p) && !acciones.has(p)) sinCambios++;
+    }
   }
-  for (const p of opts.paquetes ?? []) objetivo.add(p);
 
   const hechos: { paquete: string; accion: string }[] = [];
   const fallidos: { paquete: string; error: string }[] = [];
-  for (const p of objetivo) {
+  for (const p of opts.paquetes ?? []) {
+    if (acciones.has(p)) continue;
     if (!adb.esPaqueteValido(p)) {
       fallidos.push({ paquete: p, error: "nombre no válido" });
       continue;
     }
     const est = ahora.get(p);
-    if (est === "instalado") continue;
-    if (!est) {
-      fallidos.push({ paquete: p, error: "el sistema no lo conoce (no se puede reinstalar desde el móvil)" });
-      continue;
-    }
-    if (est === "quitado") {
+    if (!est) fallidos.push({ paquete: p, error: "el sistema no lo conoce (no se puede reinstalar desde el móvil)" });
+    else if (est === "quitado") acciones.set(p, "reinstalar");
+    else if (est === "desactivado") acciones.set(p, "activar");
+    else sinCambios++;
+  }
+
+  // Restaurar solo reinstala o reactiva: nunca quita ni desactiva nada.
+  for (const [p, accion] of acciones) {
+    if (accion === "reinstalar") {
       const r = await adb.reinstalar(s, p);
-      if (!/Success|installed for user/i.test(r.salida)) {
-        fallidos.push({ paquete: p, error: (r.salida + r.error).trim() });
+      if (!RESPUESTA_OK.reinstalar(r.salida)) {
+        fallidos.push({ paquete: p, error: (r.salida + r.error).trim() || "sin respuesta" });
         continue;
       }
       await adb.activar(s, p); // por si además estaba desactivado
       hechos.push({ paquete: p, accion: "reinstalado" });
       continue;
     }
-    const r2 = await adb.activar(s, p);
-    if (/enabled/i.test(r2.salida)) hechos.push({ paquete: p, accion: "reactivado" });
-    else fallidos.push({ paquete: p, error: (r2.salida + r2.error).trim() });
+    const r = await adb.activar(s, p);
+    if (RESPUESTA_OK.activar(r.salida)) hechos.push({ paquete: p, accion: "reactivado" });
+    else fallidos.push({ paquete: p, error: (r.salida + r.error).trim() || "sin respuesta" });
   }
   registrar({ accion: "restaurar", serie: s, copia: opts.copia, hechos, fallidos });
-  return { serie: s, hechos, fallidos, sin_cambios: objetivo.size - hechos.length - fallidos.length };
+  return { serie: s, hechos, fallidos, sin_cambios: sinCambios };
 }

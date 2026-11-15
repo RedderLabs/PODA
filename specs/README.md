@@ -28,4 +28,4 @@ Estados de una especificación: `borrador` → `aprobada` → `implementada` (o 
 
 | Nº | Especificación | Estado |
 |---|---|---|
-| 001 | [Aplicar y restaurar con las mismas reglas en todas las vías](001-mismas-reglas-en-todas-las-vias/spec.md) | borrador (R-001 implementada) |
+| 001 | [Aplicar y restaurar con las mismas reglas en todas las vías](001-mismas-reglas-en-todas-las-vias/spec.md) | implementada |

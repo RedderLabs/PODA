@@ -1,7 +1,8 @@
 // Prueba de extremo a extremo: arranca el servidor MCP con un adb simulado y recorre el flujo completo.
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from "node:fs";
+import { crearCopiaEstado } from "@poda/nucleo";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -78,8 +79,33 @@ r = await llamar("analizar", { perfil: "seguro" }); assert.ok(!r.j.propuesta.som
 r = await llamar("restaurar", { paquetes: ["com.miui.msa.global"] }); assert.equal(r.j.hechos[0].accion, "reinstalado"); paso("restaurar un paquete");
 r = await llamar("restaurar", { copia: archivo });
 assert.deepEqual(r.j.hechos.map((x) => x.paquete).sort(), ["com.miui.analytics", "com.xiaomi.phone"]);
-paso("restaurar desde la copia deja el móvil como estaba");
+paso("restaurar desde la copia deja el móvil como estaba (R-002 CA-2: reactiva com.xiaomi.phone)");
 r = await llamar("listar_copias"); assert.equal(r.j.length, 1); paso("listar_copias");
+
+// R-003 (specs/001): copias con el formato del núcleo, compartido con la web.
+const carpetaCopias = join(tmp, "poda", "copias", "ABC123");
+mkdirSync(carpetaCopias, { recursive: true });
+writeFileSync(join(carpetaCopias, "web.json"), JSON.stringify(crearCopiaEstado("ABC123", {}, new Map([["com.miui.msa.global", "instalado"]]))));
+writeFileSync(join(carpetaCopias, "danada.json"), JSON.stringify({ version: 1, paquetes: { "com.miui.msa.global": "borrado" } }));
+writeFileSync(join(carpetaCopias, "otra-cosa.json"), JSON.stringify({ hola: 1 }));
+r = await llamar("listar_copias"); assert.equal(r.j.length, 2); paso("R-003 CA-2: listar_copias ignora los archivos que no son copias de Poda");
+r = await llamar("aplicar", { paquetes: ["com.miui.msa.global", "com.miui.videoplayer"], modo: "quitar", confirmar: true });
+assert.equal(r.j.hechos.length, 2); paso("aplicar sigue funcionando con archivos raros en la carpeta de copias");
+r = await llamar("restaurar", { copia: "danada.json" }); assert.ok(r.error && /dañada/.test(r.t));
+r = await llamar("restaurar", { copia: "otra-cosa.json" }); assert.ok(r.error && /No es una copia de Poda/.test(r.t));
+paso("R-003 CA-2: rechaza copias dañadas o ajenas");
+r = await llamar("restaurar", { copia: "web.json" }); assert.deepEqual(r.j.hechos.map((x) => x.paquete), ["com.miui.msa.global"]);
+paso("R-003 CA-1: restaura una copia hecha con el formato de la web (y la copia dañada no tocó nada)");
+
+// R-002 (specs/001): restaurar con copia hace lo mismo que la web (pasosParaRestaurar).
+r = await llamar("restaurar", { copia: archivo });
+assert.deepEqual(r.j.hechos.map((x) => [x.paquete, x.accion]), [["com.miui.videoplayer", "reinstalado"]]);
+paso("R-002 CA-1: vuelve a poner una app que estaba desactivada en la copia y ahora está quitada");
+r = await llamar("restaurar", { paquetes: ["com.miui.cleanmaster"] }); assert.equal(r.j.hechos[0].accion, "reinstalado");
+paso("R-002 CA-5: restaurar paquetes sueltos sigue funcionando");
+r = await llamar("restaurar", { copia: archivo });
+assert.equal(r.j.hechos.length, 0); assert.equal(r.j.fallidos.length, 0); assert.ok(r.j.sin_cambios > 0);
+paso("R-002 CA-3 y CA-4: no quita lo que en la copia estaba quitado y cuenta lo que no cambia");
 
 await c.close();
 rmSync(tmp, { recursive: true, force: true });
