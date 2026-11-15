@@ -18,8 +18,8 @@ data/descripciones/partes/
 # Archivos de trabajo que no van al repositorio
 Claude outputs/
 
-# Caché local del detector de diseño
-.impeccable/hook.cache.json
+# Configuración y caché del detector de diseño (Impeccable)
+.impeccable/
 
 # Notas locales de trabajo
 .claude/
