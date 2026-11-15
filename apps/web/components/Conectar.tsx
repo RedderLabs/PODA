@@ -248,7 +248,7 @@ export function Conectar() {
       return (
         <section className="tarjeta">
           <p className="etiqueta">{t.desconectadoEtiqueta}</p>
-          <h1 className="titulo t-l">{fmt(t.desconectadoTitulo, { nombre: estado.nombre })}</h1>
+          <h1 className="titulo t-l">{fmt(t.desconectadoTitulo, { nombre: estado.nombre }, idioma)}</h1>
           <p className="lead">{t.desconectadoTexto}</p>
           <div className="acciones">
             <button type="button" className="boton primario" onClick={conectarNuevo}>
@@ -275,11 +275,11 @@ export function Conectar() {
 }
 
 function Espera({ titulo, texto, nombre }: { titulo: string; texto: string; nombre?: string }) {
-  const { t } = useTextos();
+  const { idioma, t } = useTextos();
   return (
     <section className="tarjeta" aria-live="polite">
       <div className="pulso" aria-hidden="true" />
-      {nombre && <p className="etiqueta">{fmt(t.conectar.detectado, { nombre })}</p>}
+      {nombre && <p className="etiqueta">{fmt(t.conectar.detectado, { nombre }, idioma)}</p>}
       <h1 className="titulo t-l">{titulo}</h1>
       <p className="lead">{texto}</p>
     </section>
@@ -316,7 +316,7 @@ function Ficha_({ e, volver, podar }: { e: Extract<Estado, { t: "listo" }>; volv
         <span className="chip-claro">
           {f.fabricante} · {f.modelo}
         </span>
-        {fecha && <span className="chip-claro">{fmt(t.parche, { fecha })}</span>}
+        {fecha && <span className="chip-claro">{fmt(t.parche, { fecha }, idioma)}</span>}
         <span className="chip-claro">{f.wifiPosible ? t.wifi : t.soloCable}</span>
       </div>
 
@@ -324,13 +324,13 @@ function Ficha_({ e, volver, podar }: { e: Extract<Estado, { t: "listo" }>; volv
         {r ? (
           <>
             {quitables === 0 && r.yaQuitados > 0 ? (
-              <p className="grande">{rico(fmt(t.yaQuitadas, { n: r.yaQuitados }), idioma)}</p>
+              <p className="grande">{rico(fmt(t.yaQuitadas, { n: r.yaQuitados }, idioma), idioma)}</p>
             ) : (
-              <p className="grande">{rico(fmt(t.quitables, { n: quitables }), idioma)}</p>
+              <p className="grande">{rico(fmt(t.quitables, { n: quitables }, idioma), idioma)}</p>
             )}
             <p className="sub">
-              {masAlla > 0 && fmt(t.masAlla, { n: masAlla })}
-              {fmt(t.totales, { total: r.total, conocidas: r.conocidos })}
+              {masAlla > 0 && fmt(t.masAlla, { n: masAlla }, idioma)}
+              {fmt(t.totales, { total: r.total, conocidas: r.conocidos }, idioma)}
             </p>
             <ul className="niveles">
               {NIVELES.filter((n) => n !== "bloqueado").map((n) => (
@@ -344,11 +344,11 @@ function Ficha_({ e, volver, podar }: { e: Extract<Estado, { t: "listo" }>; volv
               {t.porOrigen}{" "}
               {Object.entries(r.porOrigen)
                 .sort((a, b) => b[1] - a[1])
-                .map(([o, n]) => fmt(t.deOrigen, { n, origen: origenEn(o, idioma) }))
+                .map(([o, n]) => fmt(t.deOrigen, { n, origen: origenEn(o, idioma) }, idioma))
                 .join(" · ") || t.ninguna}
-              {r.yaQuitados ? ` · ${fmt(t.yaEstaban, { n: r.yaQuitados })}` : ""}
+              {r.yaQuitados ? ` · ${fmt(t.yaEstaban, { n: r.yaQuitados }, idioma)}` : ""}
             </p>
-            {r.porNivel.bloqueado > 0 && <p className="sub">{fmt(t.imprescindibles, { n: r.porNivel.bloqueado })}</p>}
+            {r.porNivel.bloqueado > 0 && <p className="sub">{fmt(t.imprescindibles, { n: r.porNivel.bloqueado }, idioma)}</p>}
           </>
         ) : (
           <p className="sub">{t.contando}</p>
@@ -417,7 +417,7 @@ function Reiniciando({ e }: { e: Extract<Estado, { t: "reiniciando" }> }) {
   return (
     <section className="tarjeta" aria-live="polite">
       <div className="pulso" aria-hidden="true" />
-      <p className="etiqueta">{fmt(t.noDesconectes, { nombre: e.nombre })}</p>
+      <p className="etiqueta">{fmt(t.noDesconectes, { nombre: e.nombre }, idioma)}</p>
       <h1 className="titulo t-l">{e.arrancando ? t.arrancando : t.reiniciando}</h1>
       <p className="lead">{e.arrancando ? t.arrancandoTexto : t.reiniciandoTexto}</p>
       {tarda && (

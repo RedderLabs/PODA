@@ -4,16 +4,18 @@
 import { execFile } from "node:child_process";
 
 const ADB = process.env.PODA_ADB || "adb";
+// Un adb escrito en JavaScript (el falso de las pruebas) se lanza con Node: Windows no ejecuta un .mjs por su `#!`.
+const [ADB_EJECUTABLE, ADB_PREVIOS] = /\.m?js$/i.test(ADB) ? [process.execPath, [ADB]] : [ADB, []];
 
 const RE_SERIE = /^[A-Za-z0-9._:\-\[\]]+$/;
 const RE_DIRECCION = /^[A-Za-z0-9.\-\[\]:]+:\d{1,5}$/;
 
-import { esPaqueteValido, parsearGetprop } from "@poda/nucleo";
+import { esPaqueteValido, parsearGetprop, RESPUESTA_OK, type EstadoPaquete } from "@poda/nucleo";
 export { esPaqueteValido };
 
 function ejecutar(args: string[], timeoutMs = 60_000): Promise<{ salida: string; error: string; codigo: number }> {
   return new Promise((resolve) => {
-    execFile(ADB, args, { timeout: timeoutMs, maxBuffer: 32 * 1024 * 1024 }, (err, stdout, stderr) => {
+    execFile(ADB_EJECUTABLE, [...ADB_PREVIOS, ...args], { timeout: timeoutMs, maxBuffer: 32 * 1024 * 1024 }, (err, stdout, stderr) => {
       const codigo = err ? (typeof (err as NodeJS.ErrnoException).code === "number" ? Number((err as NodeJS.ErrnoException).code) : 1) : 0;
       if (err && (err as NodeJS.ErrnoException).code === "ENOENT") {
         resolve({ salida: "", error: `No encuentro adb ("${ADB}"). Instala Android Platform Tools o indica la ruta en PODA_ADB.`, codigo: 127 });
@@ -105,7 +107,7 @@ export async function propiedades(serie: string): Promise<Record<string, string>
   return out;
 }
 
-export type EstadoPaquete = "instalado" | "desactivado" | "quitado";
+export type { EstadoPaquete };
 
 /** Estado de cada paquete para el usuario 0: instalado, desactivado o quitado (sigue en sistema). */
 export async function estadoPaquetes(serie: string): Promise<Map<string, EstadoPaquete>> {
@@ -145,7 +147,7 @@ export async function desactivar(serie: string, p: string) {
 export async function reinstalar(serie: string, p: string) {
   comprobarPaquete(p);
   const r = await shell(serie, ["cmd", "package", "install-existing", "--user", "0", p]);
-  if (/Success|installed for user/i.test(r.salida)) return r;
+  if (RESPUESTA_OK.reinstalar(r.salida)) return r;
   // Android antiguo: sin `cmd package`.
   return shell(serie, ["pm", "install-existing", "--user", "0", p]);
 }

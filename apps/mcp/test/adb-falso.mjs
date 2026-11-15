@@ -12,6 +12,8 @@ const inicial = {
   "com.xiaomi.micloud.sdk": "instalado",
   "com.facebook.appmanager": "instalado",
   "com.ejemplo.desconocido": "instalado",
+  "com.android.networkstack": "instalado",
+  "com.android.carrierconfig.oppo": "instalado",
   "com.miui.cleanmaster": "quitado",
   "com.miui.videoplayer": "desactivado"
 };

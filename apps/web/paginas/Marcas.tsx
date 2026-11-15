@@ -88,10 +88,10 @@ export function metaMarca(idioma: Idioma, slug: string) {
   const datos = { ...r, marca: nombreMarca(m, textos) };
   return metaPagina({
     idioma,
-    titulo: fmt(t.marcaMetaTitulo, datos),
-    descripcion: fmt(t.marcaMetaDescripcion, datos),
+    titulo: fmt(t.marcaMetaTitulo, datos, idioma),
+    descripcion: fmt(t.marcaMetaDescripcion, datos, idioma),
     r: `/marcas/${m.slug}/`,
-    imagen: { url: ruta(idioma, `/og/marca/${m.slug}.png`), width: 1200, height: 630, alt: fmt(t.marcaImagenAlt, datos) },
+    imagen: { url: ruta(idioma, `/og/marca/${m.slug}.png`), width: 1200, height: 630, alt: fmt(t.marcaImagenAlt, datos, idioma) },
   });
 }
 
@@ -120,14 +120,14 @@ export function PaginaMarca({ idioma, slug }: { idioma: Idioma; slug: string }) 
           <Link href={ruta(idioma, "/marcas/")}>{t.migaMarcas}</Link> / {nombre}
         </p>
         <h1 className="titulo t-l" style={{ margin: "14px 0 18px" }}>
-          {rico(fmt(t.marcaTitulo, datos), idioma)}
+          {rico(fmt(t.marcaTitulo, datos, idioma), idioma)}
         </h1>
         <p className="lead" style={{ maxWidth: 760 }}>
-          {fmt(t.marcaLead, datos)}
+          {fmt(t.marcaLead, datos, idioma)}
         </p>
         <div className="acciones" style={{ marginTop: 24 }}>
           <Link href={ruta(idioma, "/conectar/")} className="boton primario">
-            {fmt(t.analizar, { marca: nombreCorto(nombre) })}
+            {fmt(t.analizar, { marca: nombreCorto(nombre) }, idioma)}
           </Link>
         </div>
 

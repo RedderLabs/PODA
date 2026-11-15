@@ -53,3 +53,21 @@ export const capaEn = (capa: string | null, idioma: Idioma) => (capa === CAPA_PI
 
 /** Nombre de un origen en un idioma. Si no se conoce, se devuelve tal cual. */
 export const origenEn = (origen: string, idioma: Idioma) => TEXTOS_NUCLEO[idioma].origen[origen as Origen] ?? origen;
+
+const reglasPlural = new Map<Idioma, Intl.PluralRules>();
+
+/**
+ * Sustituye `{clave}` por su valor y `{clave|singular|plural}` por la forma que pide el idioma para
+ * esa cantidad (las formas pueden llevar `{clave}` dentro). La categoría «one» usa la primera forma; cualquier otra, la segunda (en francés y en
+ * portugués de Brasil el 0 también es «one»). Lo que no está en los datos se deja tal cual.
+ */
+export function formatear(texto: string, datos: Readonly<Record<string, string | number>>, idioma: Idioma): string {
+  return texto
+    .replace(/\{(\w+)\|((?:[^|{}]|\{\w+\})*)\|((?:[^{}]|\{\w+\})*)\}/g, (todo, k: string, uno: string, varios: string) => {
+      if (!(k in datos)) return todo;
+      let reglas = reglasPlural.get(idioma);
+      if (!reglas) reglasPlural.set(idioma, (reglas = new Intl.PluralRules(idioma)));
+      return reglas.select(Number(datos[k])) === "one" ? uno : varios;
+    })
+    .replace(/\{(\w+)\}/g, (todo, k: string) => (k in datos ? String(datos[k]) : todo));
+}
