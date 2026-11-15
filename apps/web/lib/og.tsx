@@ -76,7 +76,7 @@ export function ogMarca(idioma: Idioma, archivo: string) {
   return imagenOg({
     etiqueta: textos.og.marcaEtiqueta,
     titulo: nombre,
-    resaltado: fmt(textos.og.marcaResaltado, { n: r.seguro }),
-    pie: fmt(textos.og.marcaPie, { total: r.total }),
+    resaltado: fmt(textos.og.marcaResaltado, { n: r.seguro }, idioma),
+    pie: fmt(textos.og.marcaPie, { total: r.total }, idioma),
   });
 }

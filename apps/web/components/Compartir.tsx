@@ -12,7 +12,7 @@ export function TarjetaResultado({ nombre, quitables, total, rom }: { nombre: st
   // La portada en el idioma de la página, para que quien lo reciba la lea en el mismo idioma.
   const url = (typeof window !== "undefined" ? window.location.origin : "https://podamovil.com") + ruta(idioma, "/");
   const datos = { nombre, n: quitables, total, rom: rom ?? "" };
-  const texto = fmt(rom ? t.textoRom : t.texto, datos);
+  const texto = fmt(rom ? t.textoRom : t.texto, datos, idioma);
 
   const mensaje = `${texto} ${url}`;
   const redes = [
@@ -56,10 +56,10 @@ export function TarjetaResultado({ nombre, quitables, total, rom }: { nombre: st
           {t.etiqueta}
         </p>
         <p className="resultado-cifra">
-          <span className="ah-recuadro oscuro">{fmt(t.apps, datos)}</span> {rom ? t.queSobran : t.deSerie}
+          <span className="ah-recuadro oscuro">{fmt(t.apps, datos, idioma)}</span> {rom ? t.queSobran : t.deSerie}
         </p>
         <p className="resultado-sub">
-          {fmt(rom ? t.subRom : t.sub, datos)}
+          {fmt(rom ? t.subRom : t.sub, datos, idioma)}
         </p>
         <div className="acciones">
           <button type="button" className="boton primario" onClick={compartir}>
@@ -68,7 +68,7 @@ export function TarjetaResultado({ nombre, quitables, total, rom }: { nombre: st
         </div>
         {(estado === "copiado" || estado === "sin-portapapeles") && (
           <div className="resultado-redes">
-            {estado === "sin-portapapeles" && <p className="resultado-sub">{fmt(t.copiaTexto, { texto: mensaje })}</p>}
+            {estado === "sin-portapapeles" && <p className="resultado-sub">{fmt(t.copiaTexto, { texto: mensaje }, idioma)}</p>}
             <p className="resultado-sub">{t.enRedes}</p>
             <div className="acciones">
               {redes.map((r) => (

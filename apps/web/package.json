@@ -18,6 +18,7 @@
     "dev": "pnpm lista && next dev",
     "build": "pnpm lista && next build",
     "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --no-warnings --test test/textos.test.mjs",
     "start": "npx serve out"
   },
   "dependencies": {

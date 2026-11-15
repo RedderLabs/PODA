@@ -238,7 +238,7 @@ export function Podar({
       return (
         <section className="tarjeta" aria-live="polite">
           <div className="pulso" aria-hidden="true" />
-          <h1 className="titulo t-l">{fmt(t.leyendo, { nombre: ficha.nombre })}</h1>
+          <h1 className="titulo t-l">{fmt(t.leyendo, { nombre: ficha.nombre }, idioma)}</h1>
         </section>
       );
 
@@ -279,7 +279,7 @@ export function Podar({
                 >
                   <span className="perfil-cab">
                     <strong>{t.perfil[p].nombre}</strong>
-                    <span className="perfil-n">{fmt(t.nApps, { n: tamanos?.[p] ?? 0 })}</span>
+                    <span className="perfil-n">{fmt(t.nApps, { n: tamanos?.[p] ?? 0 }, idioma)}</span>
                   </span>
                   <span className="perfil-texto">{t.perfil[p].texto}</span>
                 </button>
@@ -308,7 +308,7 @@ export function Podar({
                   setPaso({ t: "confirmar" });
                 }}
               >
-                {elegidos.length ? fmt(t.revisar, { n: elegidos.length }) : aplicables.length ? t.marcaUna : t.nadaQueQuitar}
+                {elegidos.length ? fmt(t.revisar, { n: elegidos.length }, idioma) : aplicables.length ? t.marcaUna : t.nadaQueQuitar}
               </button>
               <button type="button" className="boton" onClick={alSalir}>
                 {t.volver}
@@ -330,7 +330,7 @@ export function Podar({
         <section className="tarjeta dos">
           <div className="col">
             <p className="etiqueta">{t.confirmarEtiqueta}</p>
-            <h1 className="titulo t-l">{r(fmt(modo === "quitar" ? t.vasAQuitar : t.vasADesactivar, { n: elegidos.length, nombre: ficha.nombre }))}</h1>
+            <h1 className="titulo t-l">{r(fmt(modo === "quitar" ? t.vasAQuitar : t.vasADesactivar, { n: elegidos.length, nombre: ficha.nombre }, idioma))}</h1>
             <ul className="niveles">
               {(["seguro", "avanzado", "experto"] as const).map((n) => (
                 <li key={n} className={`nivel ${n}`}>
@@ -382,7 +382,7 @@ export function Podar({
       return (
         <section className="tarjeta" aria-live="polite">
           <p className="etiqueta">{paso.t === "aplicando" ? t.aplicando : t.restaurando}</p>
-          <h1 className="titulo t-l">{fmt(t.deTotal, { n: hechos, total: paso.total })}</h1>
+          <h1 className="titulo t-l">{fmt(t.deTotal, { n: hechos, total: paso.total }, idioma)}</h1>
           <div className="barra" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
             <span style={{ width: `${pct}%` }} />
           </div>
@@ -404,7 +404,7 @@ export function Podar({
         <section className="tarjeta dos">
           <div className="col">
             <p className="etiqueta">{paso.detenido ? t.parado : t.hecho}</p>
-            <h1 className="titulo t-l">{r(fmt(t.menos, { n: ok.length, nombre: ficha.nombre }))}</h1>
+            <h1 className="titulo t-l">{r(fmt(t.menos, { n: ok.length, nombre: ficha.nombre }, idioma))}</h1>
             <div className="avisos" role="note">
               <h2>{t.antesReiniciar}</h2>
               <ul>
@@ -434,7 +434,7 @@ export function Podar({
           </div>
           <div className="col">
             <Resultados resultados={paso.resultados} />
-            {mal.length > 0 && <p className="sub">{fmt(t.noSePudieron, { n: mal.length })}</p>}
+            {mal.length > 0 && <p className="sub">{fmt(t.noSePudieron, { n: mal.length }, idioma)}</p>}
           </div>
         </section>
       );
@@ -451,7 +451,7 @@ export function Podar({
         <section className="tarjeta dos">
           <div className="col">
             <p className="etiqueta">{t.restauradoEtiqueta}</p>
-            <h1 className="titulo t-l">{r(fmt(t.deVuelta, { n: paso.resultados.filter((x) => x.ok).length }))}</h1>
+            <h1 className="titulo t-l">{r(fmt(t.deVuelta, { n: paso.resultados.filter((x) => x.ok).length }, idioma))}</h1>
             <p className="lead">{t.reiniciaTexto}</p>
             <div className="acciones">
               <button type="button" className="boton primario" onClick={reiniciar}>
@@ -525,7 +525,7 @@ function Lista({
                         <code>{x.paquete}</code>
                         {aviso && <span className="app-aviso fuerte">{aviso}</span>}
                         {d?.[0] && <span className="app-desc">{d[0]}</span>}
-                        {d?.[1]?.length ? <span className="app-aviso">{fmt(t.loUsan, { lista: d[1].join(", ") })}</span> : null}
+                        {d?.[1]?.length ? <span className="app-aviso">{fmt(t.loUsan, { lista: d[1].join(", ") }, idioma)}</span> : null}
                       </span>
                       <span className="app-chips">
                         {conIcono.has(x.paquete) && <span className="chip-claro icono">{t.tieneIcono}</span>}
@@ -596,7 +596,7 @@ function ConfirmarBloqueo({
       const n = fallos + 1;
       setFallos(n);
       setMensaje(
-        n >= MAX_FALLOS_PIN ? t.pinAgotado : fmt(t.pinMal, { n: MAX_FALLOS_PIN - n }),
+        n >= MAX_FALLOS_PIN ? t.pinAgotado : fmt(t.pinMal, { n: MAX_FALLOS_PIN - n }, idioma),
       );
     } else if (r === "esperar") setMensaje(t.pinEsperar);
     else {
@@ -611,7 +611,7 @@ function ConfirmarBloqueo({
         {mensaje && <p className="sub">{mensaje}</p>}
         <label className="entiendo">
           <input type="checkbox" checked={confirmado} onChange={(e) => setConfirmado(e.target.checked)} />
-          <span>{fmt(accion === "quitar" ? t.pinCasillaQuitar : t.pinCasillaDesactivar, { n: total })}</span>
+          <span>{fmt(accion === "quitar" ? t.pinCasillaQuitar : t.pinCasillaDesactivar, { n: total }, idioma)}</span>
         </label>
       </>
     );
@@ -707,7 +707,7 @@ function ElegirCopia({ serie, alElegir, alVolver }: { serie: string; alElegir: (
               <li key={c.creada}>
                 <span className="app-texto">
                   <strong>{new Date(c.creada).toLocaleString(textos.idioma.fecha, { dateStyle: "long", timeStyle: "short" })}</strong>
-                  <span className="app-desc">{fmt(t.appsEnCopia, { n: Object.values(c.paquetes).filter((x) => x !== "quitado").length })}</span>
+                  <span className="app-desc">{fmt(t.appsEnCopia, { n: Object.values(c.paquetes).filter((x) => x !== "quitado").length }, idioma)}</span>
                 </span>
                 <button type="button" className="boton pequeno" onClick={() => alElegir(c)}>
                   {t.usarEsta}
@@ -751,7 +751,7 @@ function ConfirmarRestaurar({
   if (!pasos.length) {
     return (
       <section className="tarjeta">
-        <p className="etiqueta">{fmt(t.copiaDel, { fecha })}</p>
+        <p className="etiqueta">{fmt(t.copiaDel, { fecha }, idioma)}</p>
         <h1 className="titulo t-l">{t.yaComoCopia}</h1>
         <div className="acciones">
           <button type="button" className="boton primario" onClick={salir}>
@@ -767,13 +767,13 @@ function ConfirmarRestaurar({
   return (
     <section className="tarjeta dos podar">
       <div className="col podar-lateral">
-        <p className="etiqueta">{fmt(t.copiaDel, { fecha })}</p>
-        <h1 className="titulo t-l">{rico(fmt(t.recuperar, { n: elegidos.length }), idioma)}</h1>
+        <p className="etiqueta">{fmt(t.copiaDel, { fecha }, idioma)}</p>
+        <h1 className="titulo t-l">{rico(fmt(t.recuperar, { n: elegidos.length }, idioma), idioma)}</h1>
         <p className="lead">{t.recuperarTexto}</p>
         {otroMovil && <p className="sub">{t.otroMovil}</p>}
         <div className="acciones">
           <button type="button" className="boton primario" disabled={!elegidos.length} onClick={() => restaurar(copia, elegidos)}>
-            {fmt(t.restaurarN, { n: elegidos.length })}
+            {fmt(t.restaurarN, { n: elegidos.length }, idioma)}
           </button>
           <button type="button" className="boton" onClick={volver}>
             {t.elegirOtra}

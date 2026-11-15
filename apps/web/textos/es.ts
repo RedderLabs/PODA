@@ -3,6 +3,8 @@
 // Marcas que entiende <Rico>:  *cursiva*  **negrita**  `monoespaciada`  [enlace](/ruta/)  y saltos de línea \n.
 // Los enlaces que empiezan por "/" se adaptan solos al idioma (/conectar/ → /en/conectar/).
 // {nombre} se sustituye por un dato (con fmt). No traduzcas lo que va entre llaves.
+// {n|singular|plural} elige la forma según la cantidad y el idioma: «{n} {n|app|apps}». Traduce las dos
+// formas (pueden llevar {n} dentro: «{n|esta app|estas {n} apps}»). En francés y portugués el 0 va en singular.
 
 export const es = {
   idioma: {
@@ -44,8 +46,8 @@ export const es = {
     portadaResaltado: "sin relleno.",
     portadaPie: "Quita las apps de serie desde el navegador. Con vuelta atrás.",
     marcaEtiqueta: "Bloatware por marca",
-    marcaResaltado: "{n} apps fuera sin riesgo",
-    marcaPie: "De {total} apps propias que Poda conoce. Sin root y con vuelta atrás.",
+    marcaResaltado: "{n} {n|app fuera|apps fuera} sin riesgo",
+    marcaPie: "De {total} {total|app propia|apps propias} que Poda conoce. Sin root y con vuelta atrás.",
   },
 
   nav: {
@@ -250,16 +252,16 @@ export const es = {
     parche: "Parche de seguridad: {fecha}",
     wifi: "Admite conexión por Wi‑Fi",
     soloCable: "Solo por cable",
-    yaQuitadas: "**{n}** apps ya quitadas: no queda nada seguro por quitar",
-    quitables: "**{n}** apps de serie que puedes quitar sin riesgo",
+    yaQuitadas: "**{n}** {n|app ya quitada|apps ya quitadas}: no queda nada seguro por quitar",
+    quitables: "**{n}** {n|app de serie|apps de serie} que puedes quitar sin riesgo",
     masAlla: "Y {n} más si quieres ir más lejos, con más cuidado. ",
-    totales: "De {total} apps instaladas, {conocidas} están en nuestra lista; las que no conocemos no se tocan.",
+    totales: "De {total} {total|app instalada|apps instaladas}, {conocidas} {conocidas|está|están} en nuestra lista; las que no conocemos no se tocan.",
     nombreNivel: { seguro: "seguras", avanzado: "avanzadas", experto: "para expertos" },
     porOrigen: "Por origen:",
     deOrigen: "{n} de {origen}",
     ninguna: "ninguna",
-    yaEstaban: "{n} ya estaban quitadas",
-    imprescindibles: "{n} apps del sistema son imprescindibles: Poda no las tocará nunca.",
+    yaEstaban: "{n} {n|ya estaba quitada|ya estaban quitadas}",
+    imprescindibles: "{n} {n|app del sistema es imprescindible|apps del sistema son imprescindibles}: Poda no {n|la|las} tocará nunca.",
     contando: "Contando las apps del móvil…",
     antesDeSeguir: "Antes de seguir",
     elegirPerfil: "Elegir perfil y limpiar",
@@ -282,13 +284,13 @@ export const es = {
 
   compartir: {
     etiqueta: "Resultado",
-    apps: "{n} apps",
+    apps: "{n} {n|app|apps}",
     queSobran: "que sobran",
     deSerie: "de serie",
     subRom: "Con {rom} tu {nombre} ya viene ligero. ¿Y el de tus amigos, con el sistema de fábrica?",
-    sub: "Tu {nombre} trae {n} apps que no pediste y que puedes quitar sin riesgo. ¿Y el de tus amigos?",
-    textoRom: "Mi {nombre} con {rom} solo tiene {n} apps que sobran. ¿Cuántas trae el tuyo? Míralo con Poda, sin instalar nada:",
-    texto: "Mi {nombre} traía {n} apps de serie que se pueden quitar sin riesgo (de {total} instaladas). Míralo en el tuyo con Poda, sin instalar nada:",
+    sub: "Tu {nombre} trae {n} {n|app|apps} que no pediste y que puedes quitar sin riesgo. ¿Y el de tus amigos?",
+    textoRom: "Mi {nombre} con {rom} solo tiene {n} {n|app que sobra|apps que sobran}. ¿Cuántas trae el tuyo? Míralo con Poda, sin instalar nada:",
+    texto: "Mi {nombre} traía {n} {n|app de serie que se puede quitar|apps de serie que se pueden quitar} sin riesgo (de {total} instaladas). Míralo en el tuyo con Poda, sin instalar nada:",
     boton: "Compartir resultado",
     copiado: "Copiado, pégalo donde quieras",
     compartido: "¡Compartido!",
@@ -311,7 +313,7 @@ export const es = {
     elegirEtiqueta: "Paso 2 · Elegir perfil",
     elegirTitulo: "¿Hasta *dónde?*",
     perfilAria: "Perfil",
-    nApps: "{n} apps",
+    nApps: "{n} {n|app|apps}",
     como: "Cómo",
     modoQuitar: "**Quitar para tu usuario** — desaparecen y dejan de ejecutarse. Se recuperan con un clic.",
     modoDesactivar: "**Solo desactivar** — más prudente: siguen en el móvil, pero apagadas.",
@@ -333,8 +335,8 @@ export const es = {
       "Las apps con «tiene icono» aparecen en tu cajón de apps: vienen marcadas, desmárcalas si las usas. Avisos de Poda en español; descripciones en inglés de la lista de Universal Android Debloater (UAD-ng).",
     // Confirmar
     confirmarEtiqueta: "Paso 3 · Confirmar",
-    vasAQuitar: "Vas a quitar *{n} apps* de {nombre}.",
-    vasADesactivar: "Vas a desactivar *{n} apps* de {nombre}.",
+    vasAQuitar: "Vas a quitar *{n} {n|app|apps}* de {nombre}.",
+    vasADesactivar: "Vas a desactivar *{n} {n|app|apps}* de {nombre}.",
     pasoCopia:
       "**Copia de seguridad.** Se guarda en este navegador y se descarga un archivo `poda-copia-….json`. Guárdalo: con él puedes deshacerlo todo aunque borres el navegador.",
     pasoQuitar: "**Quitar una a una.** Si el fabricante no deja quitar alguna, se desactiva. Puedes parar en cualquier momento.",
@@ -351,12 +353,12 @@ export const es = {
     pinVacio: "Escribe el PIN, la contraseña o el patrón (como números del 1 al 9).",
     pinAgotado:
       "Has fallado 3 veces. Para que el móvil no se bloquee, Poda no deja probar más. Desbloquea el móvil a mano para comprobar el PIN y vuelve a abrir esta página.",
-    pinMal: "No es correcto. Te quedan {n} intentos.",
+    pinMal: "No es correcto. {n|Te queda|Te quedan} {n} {n|intento|intentos}.",
     pinEsperar: "El móvil pide esperar un poco antes de otro intento.",
     pinSinBloqueo: "Tu móvil no tiene bloqueo de pantalla: confirma con la casilla.",
     pinNoDisponible: "Tu móvil no deja comprobar el PIN por el cable: confirma con la casilla.",
-    pinCasillaQuitar: "Confirmo que quiero quitar estas {n} apps.",
-    pinCasillaDesactivar: "Confirmo que quiero desactivar estas {n} apps.",
+    pinCasillaQuitar: "Confirmo que quiero quitar {n|esta app|estas {n} apps}.",
+    pinCasillaDesactivar: "Confirmo que quiero desactivar {n|esta app|estas {n} apps}.",
     pinOkQuitar: "PIN correcto: ya puedes quitar las apps.",
     pinOkDesactivar: "PIN correcto: ya puedes desactivar las apps.",
     comprobar: "Comprobar",
@@ -384,7 +386,7 @@ export const es = {
     sinCambios: "No se ha cambiado nada.",
     parado: "Parado a mitad",
     hecho: "Hecho",
-    menos: "*{n} apps* menos en {nombre}.",
+    menos: "*{n} {n|app|apps}* menos en {nombre}.",
     antesReiniciar: "Antes de reiniciar el móvil",
     probar: [
       "Haz una llamada, escribe algo con el teclado y pon una alarma de prueba.",
@@ -397,10 +399,10 @@ export const es = {
     volverFicha: "Volver a la ficha",
     deshacer: "Deshacer estos cambios",
     descargarOtra: "Descargar la copia otra vez",
-    noSePudieron: "{n} no se pudieron cambiar. Suele ser porque el fabricante lo impide; el resto del móvil no se ve afectado.",
+    noSePudieron: "{n} {n|no se pudo|no se pudieron} cambiar. Suele ser porque el fabricante lo impide; el resto del móvil no se ve afectado.",
     // Restaurar
     restauradoEtiqueta: "Restaurado",
-    deVuelta: "*{n} apps* de vuelta.",
+    deVuelta: "*{n} {n|app|apps}* de vuelta.",
     reiniciaTexto: "Reinicia el móvil para que todo vuelva a su sitio.",
     reiniciar: "Reiniciar el móvil",
     restaurarEtiqueta: "Restaurar una copia",
@@ -408,13 +410,13 @@ export const es = {
     restaurarTexto: "Elige una copia guardada en este navegador o sube el archivo poda-copia-….json que se descargó. Restaurar solo devuelve apps: no quita nada.",
     subirArchivo: "Subir archivo de copia",
     archivoMal: "No se pudo leer el archivo.",
-    appsEnCopia: "{n} apps en el móvil en ese momento",
+    appsEnCopia: "{n} {n|app|apps} en el móvil en ese momento",
     usarEsta: "Usar esta",
     sinCopias: "No hay copias de este móvil en este navegador.",
     copiaDel: "Restaurar · copia del {fecha}",
     yaComoCopia: "Ya está todo como en la copia.",
     elegirOtra: "Elegir otra copia",
-    recuperar: "Recuperar *{n} apps.*",
+    recuperar: "Recuperar *{n} {n|app|apps}.*",
     recuperarTexto: "Elige qué apps quieres de vuelta. Restaurar solo reinstala o reactiva: nunca quita nada.",
     otroMovil: "Ojo: esta copia es de otro móvil. Solo se recuperarán las apps que existan en este.",
     restaurarN: "Restaurar ({n})",
@@ -542,12 +544,12 @@ export const es = {
     // Página de cada marca
     marcaMetaTitulo: "Quitar bloatware de {marca} sin root",
     marcaMetaDescripcion:
-      "{total} apps de serie de {marca} y cuáles se pueden quitar sin riesgo: {seguro} seguras, {avanzado} avanzadas y {experto} para expertos. Con vuelta atrás.",
-    marcaImagenAlt: "{marca}: {seguro} apps de serie se pueden quitar sin riesgo",
+      "{total} {total|app|apps} de serie de {marca} y cuáles se pueden quitar sin riesgo: {seguro} {seguro|segura|seguras}, {avanzado} {avanzado|avanzada|avanzadas} y {experto} para expertos. Con vuelta atrás.",
+    marcaImagenAlt: "{marca}: {seguro} {seguro|app de serie se puede quitar|apps de serie se pueden quitar} sin riesgo",
     migaMarcas: "Marcas",
     marcaTitulo: "Bloatware de {marca}: *qué se puede quitar.*",
     marcaLead:
-      "Poda conoce {total} apps propias de {marca}: {seguro} se pueden quitar sin riesgo, {avanzado} son servicios que quizá no uses, {experto} solo para expertos y {bloqueado} imprescindibles que nunca se tocan. Todo sin root y con vuelta atrás.",
+      "Poda conoce {total} {total|app propia|apps propias} de {marca}: {seguro} {seguro|se puede|se pueden} quitar sin riesgo, {avanzado} {avanzado|es un servicio|son servicios} que quizá no uses, {experto} solo para expertos y {bloqueado} {bloqueado|imprescindible que nunca se toca|imprescindibles que nunca se tocan}. Todo sin root y con vuelta atrás.",
     analizar: "Analizar mi {marca}",
     tituloNivel: { seguro: "Seguras de quitar", avanzado: "Avanzadas", experto: "Solo para expertos", bloqueado: "Imprescindibles: no se tocan" },
     descripcionesIngles: "Descripciones originales en inglés de la lista de UAD‑ng.",

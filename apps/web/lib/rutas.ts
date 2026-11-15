@@ -1,6 +1,6 @@
 // Idiomas y direcciones. El español vive en la raíz (/conectar/) y los demás con prefijo (/en/conectar/).
 // Sin textos: se puede usar en el navegador sin cargar ningún diccionario.
-import { IDIOMA_BASE, IDIOMAS, esIdioma, type Idioma } from "@poda/nucleo";
+import { IDIOMA_BASE, IDIOMAS, esIdioma, formatear, type Idioma } from "@poda/nucleo";
 
 export { IDIOMA_BASE, IDIOMAS, esIdioma, type Idioma };
 
@@ -23,9 +23,9 @@ export function sinIdioma(r: string): { idioma: Idioma; ruta: string } {
   return { idioma: IDIOMA_BASE, ruta: r };
 }
 
-/** Sustituye {clave} por su valor. */
-export function fmt(texto: string, datos: Record<string, string | number>): string {
-  return texto.replace(/\{(\w+)\}/g, (todo, k: string) => (k in datos ? String(datos[k]) : todo));
+/** Sustituye {clave} por su valor y {n|singular|plural} por la forma que toca en ese idioma. */
+export function fmt(texto: string, datos: Record<string, string | number>, idioma: Idioma): string {
+  return formatear(texto, datos, idioma);
 }
 
 /** hreflang de una página: la misma ruta en cada idioma, y x-default en español. */

@@ -182,3 +182,35 @@ test("idiomas: cada traducción del núcleo tiene todos los textos", () => {
     });
   }
 });
+
+// Especificación 002: singular y plural.
+import { formatear } from "../dist/index.js";
+
+test("002 R-002 CA-1: {n|uno|varios} elige la forma por la cantidad", () => {
+  assert.equal(formatear("{n} {n|app|apps}", { n: 1 }, "es"), "1 app");
+  assert.equal(formatear("{n} {n|app|apps}", { n: 3 }, "es"), "3 apps");
+});
+
+test("002 R-002 CA-2: {clave} sin formas se sustituye como siempre", () => {
+  assert.equal(formatear("{nombre}: {n}", { nombre: "Pixel 8", n: 2 }, "es"), "Pixel 8: 2");
+});
+
+test("002 R-002 CA-3: una clave que no viene en los datos queda tal cual", () => {
+  assert.equal(formatear("{x} {x|uno|varios} {y}", { n: 1 }, "es"), "{x} {x|uno|varios} {y}");
+});
+
+test("002 R-001: cada idioma decide su singular (fr y pt-BR: el 0 también)", () => {
+  const f = (idioma, n) => formatear("{n|uno|varios}", { n }, idioma);
+  for (const idioma of ["es", "en", "ca"]) assert.deepEqual([f(idioma, 0), f(idioma, 1), f(idioma, 2)], ["varios", "uno", "varios"], idioma);
+  for (const idioma of ["fr", "pt"]) assert.deepEqual([f(idioma, 0), f(idioma, 1), f(idioma, 2)], ["uno", "uno", "varios"], idioma);
+});
+
+test("002 R-002: las formas pueden llevar espacios, marcas y estar vacías", () => {
+  assert.equal(formatear("{n|app ya quitada|apps ya quitadas}", { n: 1 }, "es"), "app ya quitada");
+  assert.equal(formatear("*{n} app{n||s}*", { n: 2 }, "es"), "*2 apps*");
+});
+
+test("002 R-002: una forma puede llevar la cifra dentro", () => {
+  assert.equal(formatear("quitar {n|esta app|estas {n} apps}.", { n: 1 }, "es"), "quitar esta app.");
+  assert.equal(formatear("quitar {n|esta app|estas {n} apps}.", { n: 4 }, "es"), "quitar estas 4 apps.");
+});
