@@ -363,6 +363,16 @@ export const ca: Textos = {
     traducidasPoda: "Descripcions traduïdes automàticament de la llista d'UAD-ng, que és en anglès. Poden tenir alguna errada.",
     traducidas: "Descripcions traduïdes pel teu navegador, al teu ordinador. És traducció automàtica: pot tenir errors.",
     sinTraductor: "Descripcions en anglès: el teu navegador no les pot traduir al català. Chrome 138 o posterior sí que pot.",
+    // Antes y después (specs/009)
+    compTitulo: "Abans i després",
+    compTexto: "Comparat amb la còpia que Poda va desar abans de tocar res ({fecha}). L'«ara» l'acaba de llegir Poda del mòbil: no surt del que Poda creu que ha fet.",
+    compApps: "Apps",
+    compCopia: "A la còpia",
+    compAhora: "Ara",
+    compFilas: { instalado: "Instal·lades", desactivado: "Desactivades", quitado: "Tretes" },
+    compVer: "Veure {n|l'app que ha canviat|les {n} apps que han canviat}",
+    compSinCambios: "Cap app no ha canviat respecte a la còpia.",
+    compMovil: "Ho pots comprovar al mòbil: a Configuració › Aplicacions, les tretes ja no hi surten o surten com a «no instal·lada per a aquest usuari».",
     listaNota:
       "Les apps amb «té icona» apareixen al teu calaix d'apps: si vénen marcades, desmarca-les si les fas servir. Avisos de Poda en català; descripcions de la llista d'Universal Android Debloater (UAD-ng), traduïdes automàticament.",
     // Confirmar

@@ -379,3 +379,21 @@ test("008 R-005: las comprobaciones solo leen", () => {
     assert.ok(c.includes("resolve-activity") || c.includes("get"), c.join(" "));
   }
 });
+
+// ------------------------------------------------------------------ 009: comparar con la copia
+import { compararConCopia } from "../dist/index.js";
+
+test("009 R-001: antes y después frente a la copia, leído del móvil", () => {
+  const copia = { version: 1, creada: "2026-11-15T10:00:00.000Z", serie: "x", dispositivo: {}, paquetes: { "a.b.uno": "instalado", "a.b.dos": "instalado", "a.b.tres": "desactivado", "a.b.cuatro": "quitado", "a.b.cinco": "instalado" } };
+  const ahora = new Map([["a.b.uno", "quitado"], ["a.b.dos", "desactivado"], ["a.b.tres", "desactivado"], ["a.b.cinco", "instalado"], ["a.b.nueva", "instalado"]]); // cuatro ni aparece
+  const c = compararConCopia(copia, ahora);
+  assert.equal(c.creada, copia.creada);
+  assert.deepEqual(c.antes, { instalado: 3, desactivado: 1, quitado: 1 });
+  assert.deepEqual(c.ahora, { instalado: 1, desactivado: 2, quitado: 2 }); // solo las de la copia
+  assert.deepEqual(c.cambios, [
+    { paquete: "a.b.dos", antes: "instalado", ahora: "desactivado" },
+    { paquete: "a.b.uno", antes: "instalado", ahora: "quitado" },
+  ]);
+  // R-003: tras restaurar, sin diferencias
+  assert.deepEqual(compararConCopia(copia, new Map(Object.entries(copia.paquetes))).cambios, []);
+});

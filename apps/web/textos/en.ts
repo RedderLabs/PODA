@@ -363,6 +363,16 @@ export const en: Textos = {
     traducidasPoda: "Descriptions machine-translated from the UAD-ng list. They may have mistakes.",
     traducidas: "Descriptions translated by your browser, on your computer. It's machine translation: it may have mistakes.",
     sinTraductor: "Descriptions in English: your browser can't translate them.",
+    // Antes y después (specs/009)
+    compTitulo: "Before and after",
+    compTexto: "Compared with the backup Poda saved before touching anything ({fecha}). “Now” is what Poda has just read from the phone, not what Poda thinks it did.",
+    compApps: "Apps",
+    compCopia: "In the backup",
+    compAhora: "Now",
+    compFilas: { instalado: "Installed", desactivado: "Disabled", quitado: "Removed" },
+    compVer: "See {n|the app that changed|the {n} apps that changed}",
+    compSinCambios: "No app has changed compared with the backup.",
+    compMovil: "You can check it on the phone: in Settings › Apps, the removed ones no longer appear or show as “not installed for this user”.",
     listaNota:
       "Apps labeled “has icon” appear in your app drawer: if they come ticked, untick them if you use them. Warnings are Poda's own; descriptions come from the Universal Android Debloater (UAD-ng) list.",
     // Confirmar

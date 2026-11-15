@@ -15,6 +15,7 @@ import {
   paquetesDe,
   parsearGetprop,
   type ComprobacionReinicio,
+  type CopiaEstado,
   type EstadoPaquete,
   type Ficha,
   type Recuento,
@@ -51,7 +52,7 @@ export function Conectar() {
   const ocupado = useRef(false);
   const reiniciando = useRef(false); // durante un reinicio, la desconexión es lo esperado
   // Lo que hay que comprobar al volver del reinicio (specs/008): cómo dejó Poda cada app y el estado de antes.
-  const pendiente = useRef<{ esperado: Record<string, EstadoPaquete>; antes: Map<string, EstadoPaquete> } | null>(null);
+  const pendiente = useRef<{ esperado: Record<string, EstadoPaquete>; antes: Map<string, EstadoPaquete>; copia: CopiaEstado | null } | null>(null);
 
   /** Solo lee el móvil. Si un comando falla, esa comprobación queda «sin comprobar». */
   const comprobar = async (movil: Movil, arranco: boolean) => {
@@ -61,7 +62,7 @@ export function Conectar() {
     const leer = (c: readonly string[]) => movil.shell([...c]).catch(() => null);
     try {
       const [inicio, teclado, ahora] = await Promise.all([leer(COMANDOS_COMPROBAR.inicio), leer(COMANDOS_COMPROBAR.teclado), leerEstados(movil)]);
-      const comprobacion = comprobarTrasReinicio({ arranco, inicio, teclado, esperado: p.esperado, antes: p.antes, ahora });
+      const comprobacion = comprobarTrasReinicio({ arranco, inicio, teclado, esperado: p.esperado, antes: p.antes, ahora, copia: p.copia });
       if (movilRef.current === movil) setEstado((e) => (e.t === "listo" ? { ...e, comprobacion } : e));
     } catch {
       // Sin la lista de apps no hay comprobación que enseñar; al menos se dice si arrancó.
@@ -130,12 +131,12 @@ export function Conectar() {
     [leerMovil, t],
   );
 
-  const reiniciar = async (nombre: string, esperado: Record<string, EstadoPaquete>) => {
+  const reiniciar = async (nombre: string, esperado: Record<string, EstadoPaquete>, copia: CopiaEstado | null) => {
     const movil = movilRef.current;
     if (!movil) return;
     // Estado justo antes de reiniciar: así se ve si algo imprescindible cambia al arrancar.
     const antes = await leerEstados(movil).catch(() => new Map<string, EstadoPaquete>());
-    pendiente.current = { esperado, antes };
+    pendiente.current = { esperado, antes, copia };
     reiniciando.current = true;
     movilRef.current = null; // la desconexión que viene no es un error
     setEstado({ t: "reiniciando", nombre, desde: Date.now(), arrancando: false });
@@ -263,7 +264,7 @@ export function Conectar() {
           ficha={estado.ficha}
           props={estado.props}
           inicio={estado.inicio}
-          reiniciar={(esperado) => reiniciar(estado.ficha.nombre, esperado)}
+          reiniciar={(esperado, copia) => reiniciar(estado.ficha.nombre, esperado, copia)}
           alSalir={() => {
             const { t: _t, inicio: _i, ...resto } = estado;
             setEstado({ t: "listo", ...resto, recuento: null });

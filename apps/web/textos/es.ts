@@ -368,6 +368,16 @@ export const es = {
     traducidasPoda: "Descripciones traducidas automáticamente de la lista de UAD-ng, que está en inglés. Pueden tener algún fallo.",
     traducidas: "Descripciones traducidas por tu navegador, en tu ordenador. Es traducción automática: puede tener fallos.",
     sinTraductor: "Descripciones en inglés: tu navegador no puede traducirlas al español. Chrome 138 o posterior sí puede.",
+    // Antes y después (specs/009)
+    compTitulo: "Antes y después",
+    compTexto: "Frente a la copia que Poda guardó antes de tocar nada ({fecha}). Lo de «ahora» lo acaba de leer Poda del móvil: no sale de lo que Poda cree haber hecho.",
+    compApps: "Apps",
+    compCopia: "En la copia",
+    compAhora: "Ahora",
+    compFilas: { instalado: "Instaladas", desactivado: "Desactivadas", quitado: "Quitadas" },
+    compVer: "Ver {n|la app que ha cambiado|las {n} apps que han cambiado}",
+    compSinCambios: "Ninguna app ha cambiado respecto a la copia.",
+    compMovil: "Puedes comprobarlo en el móvil: en Ajustes › Aplicaciones, las quitadas ya no aparecen o salen como «no instalada para este usuario».",
     listaNota:
       "Las apps con «tiene icono» aparecen en tu cajón de apps: si vienen marcadas, desmárcalas si las usas. Avisos de Poda en español; descripciones de la lista de Universal Android Debloater (UAD-ng), traducidas automáticamente.",
     // Confirmar

@@ -37,6 +37,7 @@ import { fmt } from "@/lib/rutas";
 import { rico } from "./Rico";
 import { useTextos } from "./Textos";
 import { useTraduccion } from "./usarTraduccion";
+import { Comparativa } from "./Comparativa";
 import { cargarDescripciones, cargarDetalles, cargarLista, copiasGuardadas, descargarCopia, guardarCopiaLocal, type Descripciones, type Detalles } from "@/lib/datos";
 
 type Modo = "quitar" | "desactivar";
@@ -54,7 +55,7 @@ type Paso =
   | { t: "restaurar" }
   | { t: "restaurar-confirmar"; copia: CopiaEstado; pasos: PasoRestaurar[] }
   | { t: "restaurando"; hechos: Resultado[]; total: number; actual: string }
-  | { t: "restaurado"; resultados: Resultado[] }
+  | { t: "restaurado"; resultados: Resultado[]; copia: CopiaEstado }
   | { t: "error"; mensaje: string };
 
 /** Respuesta del móvil cuando algo falla: se enseña tal cual, recortada. */
@@ -103,7 +104,7 @@ export function Podar({
   props: Record<string, string>;
   inicio: "perfil" | "restaurar";
   /** Reinicia el móvil; `esperado` dice cómo dejó Poda cada app, para comprobarlo al volver (specs/008). */
-  reiniciar: (esperado: Record<string, EstadoPaquete>) => void;
+  reiniciar: (esperado: Record<string, EstadoPaquete>, copia: CopiaEstado | null) => void;
   alSalir: () => void;
 }) {
   const { idioma, t: textos } = useTextos();
@@ -241,7 +242,7 @@ export function Podar({
         }
       }
       await recargar();
-      setPaso({ t: "restaurado", resultados: hechos });
+      setPaso({ t: "restaurado", resultados: hechos, copia });
     } catch (err) {
       setPaso({ t: "error", mensaje: err instanceof Error ? err.message : String(err) });
     }
@@ -434,7 +435,7 @@ export function Podar({
             <p className="sub">{r(t.enElLogo)}</p>
             {!paso.copiaLocal && <p className="sub">{t.sinCopiaLocal}</p>}
             <div className="acciones">
-              <button type="button" className="boton primario" onClick={() => reiniciar(esperado)}>
+              <button type="button" className="boton primario" onClick={() => reiniciar(esperado, paso.copia)}>
                 {t.yaProbado}
               </button>
               <button type="button" className="boton" onClick={alSalir}>
@@ -451,6 +452,7 @@ export function Podar({
             </div>
           </div>
           <div className="col">
+            <Comparativa copia={paso.copia} ahora={estados} />
             <Resultados resultados={paso.resultados} />
             {mal.length > 0 && <p className="sub">{fmt(t.noSePudieron, { n: mal.length }, idioma)}</p>}
           </div>
@@ -472,7 +474,7 @@ export function Podar({
             <h1 className="titulo t-l">{r(fmt(t.deVuelta, { n: paso.resultados.filter((x) => x.ok).length }, idioma))}</h1>
             <p className="lead">{t.reiniciaTexto}</p>
             <div className="acciones">
-              <button type="button" className="boton primario" onClick={() => reiniciar(comoQuedaron(paso.resultados))}>
+              <button type="button" className="boton primario" onClick={() => reiniciar(comoQuedaron(paso.resultados), paso.copia)}>
                 {t.reiniciar}
               </button>
               <button type="button" className="boton" onClick={alSalir}>
@@ -481,6 +483,7 @@ export function Podar({
             </div>
           </div>
           <div className="col">
+            <Comparativa copia={paso.copia} ahora={estados} />
             <Resultados resultados={paso.resultados} />
           </div>
         </section>

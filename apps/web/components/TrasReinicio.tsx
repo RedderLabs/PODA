@@ -4,6 +4,7 @@ import { todoEnOrden, type ComprobacionReinicio } from "@poda/nucleo";
 import { fmt } from "@/lib/rutas";
 import { rico } from "./Rico";
 import { useTextos } from "./Textos";
+import { Comparativa } from "./Comparativa";
 
 type Marca = "bien" | "mal" | "duda";
 
@@ -64,6 +65,7 @@ export function TrasReinicio({ c, podar }: { c: ComprobacionReinicio | "comproba
         </ul>
       )}
       {volvieron && <p className="sub">{t.volvieron}</p>}
+      {c.comparativa && <Comparativa datos={c.comparativa} />}
       <p className="sub">{t.llamada}</p>
       {(volvieron || c.protegidasAfectadas.length > 0 || c.inicio === false || c.teclado === false) && (
         <div className="acciones">

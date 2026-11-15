@@ -363,6 +363,16 @@ export const pt: Textos = {
     traducidasPoda: "Descrições traduzidas automaticamente da lista do UAD-ng, que está em inglês. Podem ter algum erro.",
     traducidas: "Descrições traduzidas pelo seu navegador, no seu computador. É tradução automática: pode ter erros.",
     sinTraductor: "Descrições em inglês: seu navegador não consegue traduzi-las para português. O Chrome 138 ou mais recente consegue.",
+    // Antes y después (specs/009)
+    compTitulo: "Antes e depois",
+    compTexto: "Comparado com a cópia que o Poda salvou antes de mexer em qualquer coisa ({fecha}). O «agora» o Poda acabou de ler do celular: não vem do que o Poda acha que fez.",
+    compApps: "Apps",
+    compCopia: "Na cópia",
+    compAhora: "Agora",
+    compFilas: { instalado: "Instalados", desactivado: "Desativados", quitado: "Removidos" },
+    compVer: "Ver {n|o app que mudou|os {n} apps que mudaram}",
+    compSinCambios: "Nenhum app mudou em relação à cópia.",
+    compMovil: "Você pode conferir no celular: em Configurações › Apps, os removidos não aparecem mais ou aparecem como «não instalado para este usuário».",
     listaNota:
       "Os apps com “tem ícone” aparecem na sua gaveta de apps: se vierem marcados, desmarque-os se usar. Avisos do Poda em português; descrições da lista do Universal Android Debloater (UAD-ng), traduzidas automaticamente.",
     // Confirmar

@@ -363,6 +363,16 @@ export const fr: Textos = {
     traducidasPoda: "Descriptions traduites automatiquement depuis la liste d'UAD-ng, qui est en anglais. Elles peuvent contenir des erreurs.",
     traducidas: "Descriptions traduites par votre navigateur, sur votre ordinateur. C'est une traduction automatique : elle peut contenir des erreurs.",
     sinTraductor: "Descriptions en anglais : votre navigateur ne peut pas les traduire en français. Chrome 138 ou plus récent le peut.",
+    // Antes y después (specs/009)
+    compTitulo: "Avant et après",
+    compTexto: "Par rapport à la copie que Poda a enregistrée avant de toucher à quoi que ce soit ({fecha}). Le « maintenant » vient d'être lu sur le téléphone par Poda : ce n'est pas ce que Poda pense avoir fait.",
+    compApps: "Apps",
+    compCopia: "Dans la copie",
+    compAhora: "Maintenant",
+    compFilas: { instalado: "Installées", desactivado: "Désactivées", quitado: "Retirées" },
+    compVer: "Voir {n|l'app qui a changé|les {n} apps qui ont changé}",
+    compSinCambios: "Aucune app n'a changé par rapport à la copie.",
+    compMovil: "Vous pouvez le vérifier sur le téléphone : dans Paramètres › Applications, celles qui ont été retirées n'apparaissent plus ou sont indiquées « non installée pour cet utilisateur ».",
     listaNota:
       "Les applis marquées « a une icône » apparaissent dans votre tiroir d'applis : si elles sont cochées, décochez-les si vous les utilisez. Avertissements de Poda en français ; descriptions issues de la liste d'Universal Android Debloater (UAD-ng), traduites automatiquement.",
     // Confirmar

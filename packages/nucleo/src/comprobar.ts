@@ -1,5 +1,5 @@
 // Comprobar el móvil después de reiniciarlo (specs/008). Solo lee: ningún comando cambia nada.
-import type { EstadoPaquete } from "./operaciones.js";
+import type { CopiaEstado, EstadoPaquete } from "./operaciones.js";
 import { estaProtegido } from "./protecciones.js";
 
 /** Comandos de solo lectura para comprobar que el móvil tiene lo imprescindible. */
@@ -38,6 +38,8 @@ export interface ComprobacionReinicio {
   siguen: string[];
   /** Apps que Poda cambió y ya no están como se dejaron (por ejemplo, el fabricante las reinstaló). */
   cambiaron: CambioTrasReinicio[];
+  /** La copia de antes de tocar nada frente al móvil ya reiniciado (specs/009), si hay copia. */
+  comparativa: Comparativa | null;
 }
 
 // «instalado» (tras restaurar): basta con que siga en el móvil; si la copia la tenía desactivada, vuelve desactivada.
@@ -64,6 +66,7 @@ export function comprobarTrasReinicio(e: {
   /** Estado de todas las apps justo antes de reiniciar y después. */
   antes: Map<string, EstadoPaquete>;
   ahora: Map<string, EstadoPaquete>;
+  copia?: CopiaEstado | null;
 }): ComprobacionReinicio {
   const siguen: string[] = [];
   const cambiaron: CambioTrasReinicio[] = [];
@@ -83,10 +86,42 @@ export function comprobarTrasReinicio(e: {
     protegidasAfectadas,
     siguen: siguen.sort(),
     cambiaron: cambiaron.sort((a, b) => a.paquete.localeCompare(b.paquete)),
+    comparativa: e.copia ? compararConCopia(e.copia, e.ahora) : null,
   };
 }
 
 /** Todo bien: arrancó, nada imprescindible falta y todas las apps siguen como se dejaron. */
 export function todoEnOrden(c: ComprobacionReinicio): boolean {
   return c.arranco && c.inicio !== false && c.teclado !== false && c.protegidasAfectadas.length === 0 && c.cambiaron.length === 0;
+}
+
+// ------------------------------------------------------------------ antes y después (specs/009)
+export interface CambioCopia {
+  paquete: string;
+  antes: EstadoPaquete;
+  ahora: EstadoPaquete;
+}
+
+export interface Comparativa {
+  /** Cuándo se hizo la copia. */
+  creada: string;
+  /** Cuántas apps de la copia había en cada estado, y cuántas de esas mismas hay ahora. */
+  antes: Record<EstadoPaquete, number>;
+  ahora: Record<EstadoPaquete, number>;
+  /** Las que han cambiado, por nombre. */
+  cambios: CambioCopia[];
+}
+
+/** La copia (antes de tocar nada) frente al estado que se acaba de leer del móvil. Solo lee. */
+export function compararConCopia(copia: CopiaEstado, ahora: Map<string, EstadoPaquete>): Comparativa {
+  const cero = (): Record<EstadoPaquete, number> => ({ instalado: 0, desactivado: 0, quitado: 0 });
+  const r: Comparativa = { creada: copia.creada, antes: cero(), ahora: cero(), cambios: [] };
+  for (const [paquete, antes] of Object.entries(copia.paquetes)) {
+    const hoy = ahora.get(paquete) ?? "quitado"; // si ni aparece, no está instalada
+    r.antes[antes]++;
+    r.ahora[hoy]++;
+    if (hoy !== antes) r.cambios.push({ paquete, antes, ahora: hoy });
+  }
+  r.cambios.sort((a, b) => a.paquete.localeCompare(b.paquete));
+  return r;
 }
