@@ -160,15 +160,15 @@ export const ca: Textos = {
       {
         pregunta: "Puc espatllar el mòbil?",
         respuesta:
-          "Poda no toca mai el que el mòbil necessita per arrencar, trucar o connectar-se. En triar un perfil, vénen marcades les segures i les avançades del fabricant, l'operadora i tercers; les d'Android base, Google i expert les marques tu, una a una o per grup. Les que veus al teu mòbil porten l'etiqueta «té icona» perquè desmarquis les que facis servir. Abans de canviar res es desa una còpia i es demana el PIN del mòbil, i si alguna cosa falla es desfà des del web o amb la guia de rescat.",
+          "Poda no toca mai el que el mòbil necessita per arrencar, trucar o connectar-se. En triar un perfil, vénen marcades les segures i les avançades del fabricant, l'operadora i tercers; les d'Android base, Google i expert les marques tu, una a una o per grup. Les que veus al teu mòbil porten l'etiqueta «té icona» perquè desmarquis les que facis servir. Abans de canviar res es desa una còpia i confirmes amb el PIN del mòbil (o amb una casella si no té bloqueig o no deixa comprovar-lo), i si alguna cosa falla es desfà des del web o amb la guia de rescat.",
       },
       {
         pregunta: "Perdo la garantia?",
-        respuesta: "No cal root ni tocar el bootloader. Només es desactiven apps per al teu usuari, el mateix que pots fer a mà a Configuració amb algunes.",
+        respuesta: "No cal root ni tocar el bootloader. Les apps només es treuen o es desactiven per al teu usuari: continuen al sistema i es poden tornar. És el mateix que pots fer a mà a Configuració amb algunes.",
       },
       {
         pregunta: "Què passa quan el mòbil s'actualitza?",
-        respuesta: "Algunes actualitzacions reinstal·len apps. Torna a connectar el mòbil: Poda et mostrarà les que han tornat i les podràs treure una altra vegada.",
+        respuesta: "Els pegats de cada mes no solen tocar el que has tret: Android ho apunta a les teves dades, no al sistema. Un salt de versió gran pot reinstal·lar algunes apps o portar-ne de noves, i restablir el mòbil de fàbrica les torna totes. Si passa, torna a connectar el mòbil: Poda et mostrarà les que han tornat i les podràs treure una altra vegada.",
       },
       {
         pregunta: "S'envien les meves dades a algun lloc?",

@@ -160,15 +160,15 @@ export const pt: Textos = {
       {
         pregunta: "Posso estragar o celular?",
         respuesta:
-          "O Poda nunca mexe no que o celular precisa para ligar, fazer chamadas ou se conectar. Ao escolher um perfil, vêm marcados os seguros e os avançados do fabricante, da operadora e de terceiros; os do Android base, do Google e de especialista você marca, um a um ou por grupo. Os que você vê no celular trazem a etiqueta “tem ícone” para você desmarcar os que usa. Antes de mudar qualquer coisa, um backup é salvo e o PIN do celular é pedido; se algo der errado, você desfaz pelo site ou com o guia de resgate.",
+          "O Poda nunca mexe no que o celular precisa para ligar, fazer chamadas ou se conectar. Ao escolher um perfil, vêm marcados os seguros e os avançados do fabricante, da operadora e de terceiros; os do Android base, do Google e de especialista você marca, um a um ou por grupo. Os que você vê no celular trazem a etiqueta “tem ícone” para você desmarcar os que usa. Antes de mudar qualquer coisa, um backup é salvo e você confirma com o PIN do celular (ou com uma caixa de seleção se ele não tiver bloqueio de tela ou não deixar verificar o PIN); se algo der errado, você desfaz pelo site ou com o guia de resgate.",
       },
       {
         pregunta: "Perco a garantia?",
-        respuesta: "Não precisa de root nem mexer no bootloader. Só os apps do seu usuário são desativados, o mesmo que você pode fazer à mão nas Configurações com alguns deles.",
+        respuesta: "Não precisa de root nem mexer no bootloader. Os apps só são removidos ou desativados para o seu usuário: continuam no sistema e podem ser devolvidos. É o mesmo que você pode fazer à mão nas Configurações com alguns deles.",
       },
       {
         pregunta: "O que acontece quando o celular atualiza?",
-        respuesta: "Algumas atualizações reinstalam apps. Conecte o celular de novo: o Poda vai mostrar os que voltaram e você pode removê-los outra vez.",
+        respuesta: "Os patches mensais normalmente não mexem no que você removeu: o Android guarda essa anotação nos seus dados, não no sistema. Uma atualização grande de versão pode reinstalar alguns apps ou trazer outros novos, e restaurar o celular para as configurações de fábrica traz todos de volta. Se acontecer, conecte o celular de novo: o Poda vai mostrar os que voltaram e você pode removê-los outra vez.",
       },
       {
         pregunta: "Meus dados são enviados para algum lugar?",

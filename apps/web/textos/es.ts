@@ -165,15 +165,15 @@ export const es = {
       {
         pregunta: "¿Puedo romper el móvil?",
         respuesta:
-          "Poda nunca toca lo que el móvil necesita para arrancar, llamar o conectarse. Al elegir perfil vienen marcadas las seguras y las avanzadas del fabricante, la operadora y terceros; las de Android base, Google y experto las marcas tú, una a una o por grupo. Las que ves en tu móvil llevan la etiqueta «tiene icono» para que desmarques las que uses. Antes de cambiar nada se guarda una copia y se pide el PIN del móvil, y si algo falla se deshace desde la web o con la guía de rescate.",
+          "Poda nunca toca lo que el móvil necesita para arrancar, llamar o conectarse. Al elegir perfil vienen marcadas las seguras y las avanzadas del fabricante, la operadora y terceros; las de Android base, Google y experto las marcas tú, una a una o por grupo. Las que ves en tu móvil llevan la etiqueta «tiene icono» para que desmarques las que uses. Antes de cambiar nada se guarda una copia y confirmas con el PIN del móvil (o con una casilla si no tiene bloqueo o no deja comprobarlo), y si algo falla se deshace desde la web o con la guía de rescate.",
       },
       {
         pregunta: "¿Pierdo la garantía?",
-        respuesta: "No hace falta root ni tocar el bootloader. Solo se desactivan apps para tu usuario, lo mismo que puedes hacer a mano en Ajustes con algunas.",
+        respuesta: "No hace falta root ni tocar el bootloader. Las apps solo se quitan o se desactivan para tu usuario: siguen en el sistema y se pueden devolver. Es lo mismo que puedes hacer a mano en Ajustes con algunas.",
       },
       {
         pregunta: "¿Qué pasa cuando el móvil se actualiza?",
-        respuesta: "Algunas actualizaciones reinstalan apps. Vuelve a conectar el móvil: Poda te enseñará las que han vuelto y podrás quitarlas otra vez.",
+        respuesta: "Los parches de cada mes no suelen tocar lo que has quitado: Android lo apunta en tus datos, no en el sistema. Un salto de versión grande puede reinstalar algunas apps o traer otras nuevas, y restablecer de fábrica las devuelve todas. Si pasa, vuelve a conectar el móvil: Poda te enseñará las que han vuelto y podrás quitarlas otra vez.",
       },
       {
         pregunta: "¿Se envían mis datos a algún sitio?",

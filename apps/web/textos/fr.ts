@@ -160,15 +160,15 @@ export const fr: Textos = {
       {
         pregunta: "Est-ce que je peux casser mon téléphone ?",
         respuesta:
-          "Poda ne touche jamais à ce dont le téléphone a besoin pour démarrer, appeler ou se connecter. Quand vous choisissez un profil, les applis sûres et les avancées du fabricant, de l'opérateur et des tiers sont cochées ; vous cochez vous-même celles d'Android de base, de Google et pour experts, une par une ou par groupe. Celles que vous voyez sur votre téléphone portent l'étiquette « a une icône » pour que vous décochiez celles que vous utilisez. Avant tout changement, une sauvegarde est enregistrée et le code PIN du téléphone est demandé : si quelque chose ne va pas, vous annulez depuis le site ou avec le guide de secours.",
+          "Poda ne touche jamais à ce dont le téléphone a besoin pour démarrer, appeler ou se connecter. Quand vous choisissez un profil, les applis sûres et les avancées du fabricant, de l'opérateur et des tiers sont cochées ; vous cochez vous-même celles d'Android de base, de Google et pour experts, une par une ou par groupe. Celles que vous voyez sur votre téléphone portent l'étiquette « a une icône » pour que vous décochiez celles que vous utilisez. Avant tout changement, une sauvegarde est enregistrée et vous confirmez avec le code PIN du téléphone (ou avec une case à cocher s'il n'a pas de verrouillage ou ne permet pas de vérifier le code) : si quelque chose ne va pas, vous annulez depuis le site ou avec le guide de secours.",
       },
       {
         pregunta: "Est-ce que je perds la garantie ?",
-        respuesta: "Pas besoin de root ni de toucher au bootloader. Les applis sont seulement désactivées pour votre utilisateur, comme vous pouvez le faire à la main dans les Paramètres pour certaines.",
+        respuesta: "Pas besoin de root ni de toucher au bootloader. Les applis sont seulement retirées ou désactivées pour votre utilisateur : elles restent dans le système et peuvent être remises. C'est comme vous pouvez le faire à la main dans les Paramètres pour certaines.",
       },
       {
         pregunta: "Que se passe-t-il quand le téléphone se met à jour ?",
-        respuesta: "Certaines mises à jour réinstallent des applis. Reconnectez le téléphone : Poda vous montrera celles qui sont revenues et vous pourrez les retirer à nouveau.",
+        respuesta: "Les correctifs mensuels ne touchent généralement pas ce que vous avez retiré : Android le note dans vos données, pas dans le système. Une mise à jour majeure peut réinstaller quelques applis ou en ajouter de nouvelles, et une réinitialisation d'usine les remet toutes. Si cela arrive, reconnectez le téléphone : Poda vous montrera celles qui sont revenues et vous pourrez les retirer à nouveau.",
       },
       {
         pregunta: "Mes données sont-elles envoyées quelque part ?",

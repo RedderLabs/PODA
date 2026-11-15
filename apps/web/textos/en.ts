@@ -160,15 +160,15 @@ export const en: Textos = {
       {
         pregunta: "Can I break my phone?",
         respuesta:
-          "Poda never touches what your phone needs to start up, make calls or connect. When you pick a profile, the safe apps and the advanced manufacturer, carrier and third-party apps come ticked; you tick the base Android, Google and expert ones yourself, one by one or by group. The ones you see on your phone are labeled “has icon” so you can untick the ones you use. Before anything changes, a backup is saved and your phone's PIN is required, and if something goes wrong you can undo it from the website or with the rescue guide.",
+          "Poda never touches what your phone needs to start up, make calls or connect. When you pick a profile, the safe apps and the advanced manufacturer, carrier and third-party apps come ticked; you tick the base Android, Google and expert ones yourself, one by one or by group. The ones you see on your phone are labeled “has icon” so you can untick the ones you use. Before anything changes, a backup is saved and you confirm with your phone's PIN (or with a checkbox if it has no screen lock or won't let the PIN be checked), and if something goes wrong you can undo it from the website or with the rescue guide.",
       },
       {
         pregunta: "Will I void my warranty?",
-        respuesta: "No root and no bootloader changes needed. Apps are only disabled for your user, the same thing you can do by hand in Settings with some of them.",
+        respuesta: "No root and no bootloader changes needed. Apps are only removed or disabled for your user: they stay in the system and can be brought back. It's the same thing you can do by hand in Settings with some of them.",
       },
       {
         pregunta: "What happens when my phone updates?",
-        respuesta: "Some updates reinstall apps. Connect your phone again: Poda will show you the ones that came back and you can remove them again.",
+        respuesta: "Monthly patches usually leave what you removed alone: Android keeps that note in your data, not in the system. A major version upgrade can reinstall some apps or bring new ones, and a factory reset brings them all back. If that happens, connect your phone again: Poda will show you the ones that came back and you can remove them again.",
       },
       {
         pregunta: "Is my data sent anywhere?",
