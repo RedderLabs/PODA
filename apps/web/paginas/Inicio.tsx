@@ -98,7 +98,7 @@ export function Inicio({ idioma }: { idioma: Idioma }) {
 
         <section id="perfiles" className="oscura">
           <div className="contenedor seccion">
-            <p className="etiqueta" style={{ marginBottom: 14 }}>
+            <p className="etiqueta" style={{ marginBottom: 12 }}>
               {t.perfilesEtiqueta}
             </p>
             <h2 className="titulo t-l" style={{ marginBottom: 40 }}>

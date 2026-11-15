@@ -157,3 +157,11 @@ test("008 R-006: textos de la comprobación tras reiniciar en los cinco idiomas"
     assert.equal(t.conectar.arranco, undefined, `${idioma}: el antiguo «arrancó bien» ya no existe`);
   }
 });
+
+test("009 R-005: textos de «Antes y después» en los cinco idiomas", () => {
+  for (const [idioma, t] of Object.entries(TODOS)) {
+    for (const k of ["compTitulo", "compTexto", "compApps", "compCopia", "compAhora", "compVer", "compSinCambios", "compMovil"]) assert.ok(t.podar[k]?.trim(), `${idioma}: podar.${k}`);
+    for (const e of ["instalado", "desactivado", "quitado"]) assert.ok(t.podar.compFilas?.[e]?.trim(), `${idioma}: compFilas.${e}`);
+    assert.match(t.podar.compTexto, /\{fecha\}/, `${idioma}: la fecha de la copia`);
+  }
+});

@@ -36,3 +36,4 @@ Estados de una especificación: `borrador` → `aprobada` → `implementada` (o 
 | 006 | [Al elegir perfil, qué viene marcado](006-solo-seguras-marcadas/spec.md) | implementada (falta revisar en la demo) |
 | 007 | [Descripciones de las apps en el idioma de la web](007-descripciones-traducidas/spec.md) | implementada (falta revisión nativa de las traducciones) |
 | 008 | [Comprobar el móvil después del reinicio](008-comprobar-tras-reiniciar/spec.md) | implementada (revisada en la demo) |
+| 009 | [Antes y después: comparar con la copia](009-comparar-con-la-copia/spec.md) | implementada |
