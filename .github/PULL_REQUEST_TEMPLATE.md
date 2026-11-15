@@ -5,7 +5,7 @@
 ## Cómo lo he probado
 
 - [ ] `pnpm build && pnpm test && pnpm typecheck`
-- [ ] Flujo completo en el modo de ejemplo (`/conectar/?demo`): quitar, reiniciar y restaurar
+- [ ] Flujo completo en el modo de ejemplo (`/conectar/`, «Ver con un móvil de ejemplo»): quitar, reiniciar y restaurar
 - [ ] En un móvil real (marca, modelo y Android): 
 
 ## Seguridad

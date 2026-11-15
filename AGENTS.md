@@ -37,7 +37,7 @@ Los cambios de comportamiento se especifican antes de programarlos, en [specs/](
 pnpm build && pnpm test && pnpm typecheck
 ```
 
-Prueba la web en el modo de ejemplo: `pnpm dev` y abre `http://localhost:3000/conectar/?demo` (quitar, reiniciar y restaurar). Si tocas las protecciones o los perfiles, añade una prueba en `packages/nucleo/test/nucleo.test.mjs`.
+Prueba la web en el modo de ejemplo: `pnpm dev`, abre `http://localhost:3000/conectar/` y pulsa «Ver con un móvil de ejemplo» (quitar, reiniciar y restaurar). Si tocas las protecciones o los perfiles, añade una prueba en `packages/nucleo/test/nucleo.test.mjs`.
 
 ## Mapa
 

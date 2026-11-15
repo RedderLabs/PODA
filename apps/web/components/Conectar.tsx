@@ -157,10 +157,9 @@ export function Conectar() {
     setEstado(webUsbDisponible() ? { t: "inicio" } : { t: "sin-webusb" });
   };
 
-  // Al cargar: modo demo, o reconocer un móvil al que ya se dio permiso; y escuchar enchufes y desenchufes.
+  // Al cargar: modo demo (solo con NEXT_PUBLIC_DEMO), o reconocer un móvil al que ya se dio permiso; y escuchar enchufes y desenchufes.
   useEffect(() => {
-    const demo = new URLSearchParams(location.search).has("demo") || process.env.NEXT_PUBLIC_DEMO === "1";
-    if (demo) {
+    if (process.env.NEXT_PUBLIC_DEMO === "1") {
       verDemo();
       return;
     }

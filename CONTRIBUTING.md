@@ -29,7 +29,7 @@ Muchas apps tienen la descripción solo en inglés. Las traducciones claras y co
    pnpm build && pnpm test && pnpm typecheck
    ```
 
-3. Prueba el flujo completo en el modo de ejemplo (`/conectar/?demo`) y, si puedes, en un móvil real.
+3. Prueba el flujo completo en el modo de ejemplo (`/conectar/`, botón «Ver con un móvil de ejemplo») y, si puedes, en un móvil real.
 4. En el PR, explica qué cambia para el usuario y cómo lo has probado.
 
 Reglas del proyecto (seguridad, una sola fuente de verdad, textos honestos): [AGENTS.md](AGENTS.md). Cómo está organizado el código: [docs/desarrollo.md](docs/desarrollo.md).

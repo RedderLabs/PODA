@@ -40,7 +40,7 @@ The website and the docs are in Spanish for now. The tool itself works with any 
 4. **Choose how far to go** (safe, recommended or expert), review the list, a backup is saved, and it's applied.
 5. **Test the phone, then reboot.** If something's wrong, undo it from the same screen.
 
-Try it without a phone: [podamovil.com/conectar/?demo](https://podamovil.com/conectar/?demo).
+Try it without a phone: open [podamovil.com/conectar](https://podamovil.com/conectar/) and press “Try it with a sample phone”.
 
 ## With Claude (or another assistant)
 
